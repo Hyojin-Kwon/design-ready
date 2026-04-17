@@ -1,0 +1,19 @@
+{
+  "name": "design-ready",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Figma plugin for file health check and semantic naming",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "preact": "^10.22.0"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.100.0",
+    "esbuild": "^0.21.5",
+    "typescript": "^5.4.5"
+  }
+}
