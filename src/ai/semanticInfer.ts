@@ -58,6 +58,16 @@ function buildContext(node: SceneNode): AiNodeContext {
   return ctx;
 }
 
+export async function collectAiContextsForIds(nodeIds: string[]): Promise<AiNodeContext[]> {
+  const contexts: AiNodeContext[] = [];
+  for (const id of nodeIds) {
+    const node = await figma.getNodeByIdAsync(id);
+    if (!node || node.type === "DOCUMENT" || node.type === "PAGE") continue;
+    contexts.push(buildContext(node as SceneNode));
+  }
+  return contexts;
+}
+
 export function collectAiCandidates(root: BaseNode, skipIds: Set<string>): AiNodeContext[] {
   const candidates: AiNodeContext[] = [];
   walk(root, (node) => {
@@ -214,12 +224,21 @@ async function callOnce(
       "content-type": "application/json",
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
+      "anthropic-beta": "prompt-caching-2024-07-31",
       "anthropic-dangerous-direct-browser-access": "true"
     },
     body: JSON.stringify({
       model,
       max_tokens: 4096,
-      system: buildSystemPrompt(ldsReference, libraryComponents),
+      // 시스템 프롬프트에 cache_control을 붙이면 동일 세션 내 반복 청크에서
+      // 입력 토큰 비용이 ~90% 절감됨. 여러 청크로 쪼갤 때 효과 큼.
+      system: [
+        {
+          type: "text",
+          text: buildSystemPrompt(ldsReference, libraryComponents),
+          cache_control: { type: "ephemeral" }
+        }
+      ],
       messages: [{ role: "user", content: userPrompt }]
     })
   });

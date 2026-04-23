@@ -19,6 +19,27 @@ export function checkMissingAutoLayout(node: SceneNode): Issue | null {
   };
 }
 
+export function checkAbsoluteInsideAutoLayout(node: SceneNode): Issue | null {
+  const parent = node.parent;
+  if (!parent || parent.type !== "FRAME") return null;
+  const frame = parent as FrameNode;
+  if (frame.layoutMode === "NONE") return null;
+  const positioning = (node as unknown as { layoutPositioning?: "AUTO" | "ABSOLUTE" })
+    .layoutPositioning;
+  if (positioning !== "ABSOLUTE") return null;
+  return {
+    id: `absolute-in-autolayout:${node.id}`,
+    nodeId: node.id,
+    nodeName: node.name,
+    nodeType: node.type,
+    ruleId: "absolute-in-autolayout",
+    title: "오토레이아웃 안 절대위치",
+    description: `"${node.name}"이 오토레이아웃 프레임 안에서 절대위치로 배치되어 있습니다. Flexbox로 변환 시 position:absolute로 바뀌며, 의도한 흐름이 깨질 수 있습니다.`,
+    severity: "warning",
+    category: "layout"
+  };
+}
+
 export function checkGroupNestingDepth(node: SceneNode): Issue | null {
   if (node.type !== "GROUP") return null;
   const depth = getGroupDepth(node);

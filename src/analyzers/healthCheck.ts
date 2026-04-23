@@ -2,25 +2,60 @@ import type { HealthReport, Issue } from "../types";
 import { isComponentInternal, isInsideHidden, walk } from "../utils/nodeTraversal";
 import { computeCategoryScores, computeScore } from "../utils/scoring";
 import { checkDefaultNaming, checkDetachedInstance } from "../rules/namingRules";
-import { checkGroupNestingDepth, checkMissingAutoLayout } from "../rules/layoutRules";
-import { checkStyleOrTokenMissing } from "../rules/styleRules";
+import {
+  checkAbsoluteInsideAutoLayout,
+  checkGroupNestingDepth,
+  checkMissingAutoLayout
+} from "../rules/layoutRules";
+import {
+  checkEffectTokenMissing,
+  checkRadiusTokenMissing,
+  checkStrokeTokenMissing,
+  checkStyleOrTokenMissing,
+  createSpacingTokenCheck,
+  hasSpacingVariablesInFile
+} from "../rules/styleRules";
 import {
   checkEmptyFrame,
   checkHiddenSubtreeRoot,
   checkNearlyInvisible
 } from "../rules/hygieneRules";
-
-const ACTIVE_CHECKS: Array<(node: SceneNode) => Issue | null> = [
-  checkDefaultNaming,
-  checkDetachedInstance,
-  checkMissingAutoLayout,
-  checkGroupNestingDepth,
-  checkEmptyFrame,
-  checkNearlyInvisible,
-  checkStyleOrTokenMissing
-];
+import {
+  checkSubpixelPosition,
+  checkSubpixelSize,
+  checkSubpixelSpacing
+} from "../rules/precisionRules";
+import {
+  checkIconWithoutVector,
+  checkOversizedRaster,
+  checkRasterInIconSlot
+} from "../rules/assetRules";
+import { checkSingleChildWrapper } from "../rules/wrapperRules";
 
 export function runHealthCheck(root: BaseNode): HealthReport {
+  const checkSpacingToken = createSpacingTokenCheck(hasSpacingVariablesInFile());
+  const activeChecks: Array<(node: SceneNode) => Issue | null> = [
+    checkDefaultNaming,
+    checkDetachedInstance,
+    checkMissingAutoLayout,
+    checkAbsoluteInsideAutoLayout,
+    checkGroupNestingDepth,
+    checkEmptyFrame,
+    checkNearlyInvisible,
+    checkStyleOrTokenMissing,
+    checkStrokeTokenMissing,
+    checkEffectTokenMissing,
+    checkRadiusTokenMissing,
+    checkSpacingToken,
+    checkSubpixelSpacing,
+    checkSubpixelPosition,
+    checkSubpixelSize,
+    checkRasterInIconSlot,
+    checkIconWithoutVector,
+    checkOversizedRaster,
+    checkSingleChildWrapper
+  ];
+
   const issues: Issue[] = [];
   let totalNodes = 0;
   walk(root, (node) => {
@@ -34,7 +69,7 @@ export function runHealthCheck(root: BaseNode): HealthReport {
       return;
     }
 
-    for (const check of ACTIVE_CHECKS) {
+    for (const check of activeChecks) {
       const issue = check(node);
       if (issue) issues.push(issue);
     }

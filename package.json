@@ -6,9 +6,11 @@
   "scripts": {
     "build": "node esbuild.config.mjs",
     "watch": "node esbuild.config.mjs --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "preview": "npm --prefix preview run dev"
   },
   "dependencies": {
+    "jszip": "^3.10.1",
     "preact": "^10.22.0"
   },
   "devDependencies": {

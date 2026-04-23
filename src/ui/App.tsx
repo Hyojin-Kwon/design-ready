@@ -2,22 +2,28 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import type {
   AiNodeContext,
   ApplyNamingItem,
+  AutofixItem,
+  NameOverride,
   NamingSuggestion,
   PluginMessage,
   PluginSettings,
   ScanResult
 } from "../types";
 import { callAnthropic } from "../ai/semanticInfer";
+import { buildExportPack } from "../export/exportPack";
+import { DEFAULT_SYSTEM_PROMPT } from "../export/systemPrompt";
+import type { ExportPayload } from "../types";
+import type { Category } from "../types";
 import { Tabs } from "./components/Tabs";
-import { HealthCheckTab } from "./tabs/HealthCheckTab";
-import { SemanticNamingTab } from "./tabs/SemanticNamingTab";
-import { CodeReadinessTab } from "./tabs/CodeReadinessTab";
+import { DiagnoseTab } from "./tabs/DiagnoseTab";
+import { FixTab } from "./tabs/FixTab";
+import { ConversionTab } from "./tabs/ConversionTab";
 import { SettingsTab } from "./tabs/SettingsTab";
 
 const TABS = [
-  { id: "health", label: "헬스체크" },
-  { id: "naming", label: "시맨틱 네이밍" },
-  { id: "readiness", label: "코드 준비도" },
+  { id: "diagnose", label: "진단" },
+  { id: "fix", label: "수정" },
+  { id: "convert", label: "Export Pack" },
   { id: "settings", label: "설정" }
 ];
 
@@ -33,7 +39,8 @@ function post(msg: PluginMessage) {
 }
 
 export function App() {
-  const [active, setActive] = useState("health");
+  const [active, setActive] = useState("diagnose");
+  const [fixInitialCategory, setFixInitialCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +49,9 @@ export function App() {
   const [applyError, setApplyError] = useState<string | null>(null);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [fixedIssueIds, setFixedIssueIds] = useState<Set<string>>(new Set());
+  const [fixingIssueIds, setFixingIssueIds] = useState<Set<string>>(new Set());
+  const [fixFailures, setFixFailures] = useState<Map<string, string>>(new Map());
   const [replacedIds, setReplacedIds] = useState<Set<string>>(new Set());
   const [replacingIds, setReplacingIds] = useState<Set<string>>(new Set());
   const [replaceError, setReplaceError] = useState<string | null>(null);
@@ -61,6 +71,25 @@ export function App() {
     componentCount: number;
   } | null>(null);
   const [extracting, setExtracting] = useState(false);
+  const [nameOverrides, setNameOverrides] = useState<Map<string, NameOverride>>(new Map());
+  const [exportRunning, setExportRunning] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportSummary, setExportSummary] = useState<{
+    filename: string;
+    screens: number;
+    icons: number;
+    flowLinks: number;
+    optStats?: {
+      beforeNodes: number;
+      afterNodes: number;
+      flattenedGroups: number;
+      flattenedFrames: number;
+      inferredLayouts: number;
+      totalIconNodes: number;
+      uniqueIcons: number;
+      iconBytes: number;
+    };
+  } | null>(null);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -73,8 +102,12 @@ export function App() {
         setAppliedIds(new Set());
         setApplyingIds(new Set());
         setApplyError(null);
+        setNameOverrides(new Map());
         setDeletedIds(new Set());
         setDeletingIds(new Set());
+        setFixedIssueIds(new Set());
+        setFixingIssueIds(new Set());
+        setFixFailures(new Map());
         setAiSuggestions([]);
         setAiNotice(null);
         setAiError(null);
@@ -104,6 +137,20 @@ export function App() {
           return next;
         });
         setDeletingIds(new Set());
+      } else if (msg.type === "autofix:result") {
+        setFixedIssueIds((prev) => {
+          const next = new Set(prev);
+          for (const id of msg.result.fixed) next.add(id);
+          return next;
+        });
+        setFixingIssueIds(new Set());
+        setFixFailures((prev) => {
+          const next = new Map(prev);
+          // Clear stale failures for ids that have now succeeded.
+          for (const id of msg.result.fixed) next.delete(id);
+          for (const f of msg.result.failed) next.set(f.issueId, f.error);
+          return next;
+        });
       } else if (msg.type === "settings:loaded") {
         setSettings(msg.settings);
         settingsRef.current = msg.settings;
@@ -115,6 +162,11 @@ export function App() {
       } else if (msg.type === "library:extracted") {
         setExtractedLibrary(msg.payload);
         setExtracting(false);
+      } else if (msg.type === "export:prepared") {
+        runExport(msg.payload);
+      } else if (msg.type === "export:error") {
+        setExportError(msg.message);
+        setExportRunning(false);
       } else if (msg.type === "replace:lds:result") {
         setReplacedIds((prev) => {
           const next = new Set(prev);
@@ -128,7 +180,7 @@ export function App() {
             first.error.toLowerCase().includes("not found") ||
             first.error.toLowerCase().includes("published");
           const hint = looksLikeKeyIssue
-            ? " · 이 key가 현재 라이브러리에 존재하지 않습니다. 해당 매칭은 교체 불가로 표시됩니다."
+            ? " · 이 key가 현재 라이브러리에 없습니다 (원본 재발행/삭제 추정). 설정 탭 → 라이브러리 재추출 후 다시 스캔하세요. 실패한 항목은 교체 불가로 표시됩니다."
             : "";
           setReplaceError(
             `${msg.result.failed.length}개 교체 실패 — ${first.error}${hint}`
@@ -199,19 +251,87 @@ export function App() {
     }
   };
 
+  const runExport = async (payload: ExportPayload) => {
+    try {
+      const current = settingsRef.current;
+      const screens = payload.screens.map((s) => ({
+        rootLabel: s.rootLabel,
+        tree: s.tree,
+        iconMap: s.iconMap,
+        healthReport: s.healthReport,
+        semanticMap: s.semanticMap
+      }));
+      const { blob, filename } = await buildExportPack({
+        projectName: payload.projectName,
+        screens,
+        libraryComponents: payload.libraryComponents,
+        ldsReference: current.ldsReference ?? "",
+        systemPrompt: current.systemPrompt?.trim() || DEFAULT_SYSTEM_PROMPT,
+        flow: payload.flow,
+        includeTreeJson: true
+      });
+      triggerDownload(blob, filename);
+      const iconTotal = payload.screens.reduce(
+        (acc, s) => acc + Object.keys(s.iconMap).length,
+        0
+      );
+      setExportSummary({
+        filename,
+        screens: payload.screens.length,
+        icons: iconTotal,
+        flowLinks: payload.flow.length,
+        optStats: payload.optStats
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setExportError(message);
+    } finally {
+      setExportRunning(false);
+    }
+  };
+
+  const onExport = () => {
+    setExportRunning(true);
+    setExportError(null);
+    setExportSummary(null);
+    const overrides = Array.from(nameOverrides.values());
+    post({ type: "export:start", overrides: overrides.length > 0 ? overrides : undefined });
+  };
+
   const onScan = () => {
     setLoading(true);
     setError(null);
     post({ type: "scan:start" });
   };
 
-  const onSelectNode = (nodeId: string) => {
-    post({ type: "select:node", nodeId });
+  const onSelectNode = (nodeId: string, hint?: string) => {
+    post({ type: "select:node", nodeId, hint });
   };
 
-  const onApplyNaming = (items: ApplyNamingItem[]) => {
+  const onApplyNaming = (items: ApplyNamingItem[], mode: "rename" | "map-only") => {
     if (items.length === 0) return;
     setApplyError(null);
+    if (mode === "map-only") {
+      const allSuggestions = combinedSuggestions;
+      setNameOverrides((prev) => {
+        const next = new Map(prev);
+        for (const i of items) {
+          const s = allSuggestions.find((x) => x.nodeId === i.nodeId);
+          next.set(i.nodeId, {
+            nodeId: i.nodeId,
+            originalName: s?.currentName ?? "",
+            suggestedName: i.suggestedName
+          });
+        }
+        return next;
+      });
+      setAppliedIds((prev) => {
+        const next = new Set(prev);
+        for (const i of items) next.add(i.nodeId);
+        return next;
+      });
+      return;
+    }
     setApplyingIds((prev) => {
       const next = new Set(prev);
       for (const i of items) next.add(i.nodeId);
@@ -229,6 +349,22 @@ export function App() {
       return next;
     });
     post({ type: "replace:lds", items });
+  };
+
+  const onAutofix = (items: AutofixItem[]) => {
+    if (items.length === 0) return;
+    // Clear prior failures for items we're retrying.
+    setFixFailures((prev) => {
+      const next = new Map(prev);
+      for (const i of items) next.delete(i.issueId);
+      return next;
+    });
+    setFixingIssueIds((prev) => {
+      const next = new Set(prev);
+      for (const i of items) next.add(i.issueId);
+      return next;
+    });
+    post({ type: "autofix:apply", items });
   };
 
   const onDeleteNodes = (nodeIds: string[]) => {
@@ -268,6 +404,22 @@ export function App() {
     post({ type: "ai:collect", existingSuggestionIds: Array.from(existing) });
   };
 
+  const onRunAiForNode = (nodeId: string) => {
+    if (!result) return;
+    if (!settings.aiEnabled || !settings.apiKey) {
+      setAiError("설정 탭에서 API 키 저장 및 활성화 후 다시 시도해주세요.");
+      return;
+    }
+    setAiRunning(true);
+    setAiError(null);
+    setAiNotice(null);
+    post({
+      type: "ai:collect",
+      existingSuggestionIds: [],
+      targetNodeIds: [nodeId]
+    });
+  };
+
   const combinedSuggestions = result
     ? mergeSuggestions(result.suggestions, aiSuggestions)
     : [];
@@ -276,22 +428,30 @@ export function App() {
     <div class="app">
       <Tabs tabs={TABS} active={active} onChange={setActive} />
       <main class="tab-body">
-        {active === "health" && (
-          <HealthCheckTab
+        {active === "diagnose" && (
+          <DiagnoseTab
+            result={result}
+            loading={loading}
+            error={error}
+            scanTarget={result?.scanRoot ?? null}
+            onScan={onScan}
+            onGoToFix={(category) => {
+              setFixInitialCategory(category ?? null);
+              setActive("fix");
+            }}
+          />
+        )}
+        {active === "fix" && (
+          <FixTab
             result={result}
             loading={loading}
             error={error}
             scanTarget={result?.scanRoot ?? null}
             deletedIds={deletedIds}
             deletingIds={deletingIds}
-            onScan={onScan}
-            onSelectNode={onSelectNode}
-            onDelete={onDeleteNodes}
-          />
-        )}
-        {active === "naming" && (
-          <SemanticNamingTab
-            result={result}
+            fixedIssueIds={fixedIssueIds}
+            fixingIssueIds={fixingIssueIds}
+            fixFailures={fixFailures}
             combinedSuggestions={combinedSuggestions}
             appliedIds={appliedIds}
             applyingIds={applyingIds}
@@ -300,18 +460,22 @@ export function App() {
             replacingIds={replacingIds}
             replaceError={replaceError}
             invalidLdsKeys={invalidLdsKeys}
-            aiEnabled={settings.aiEnabled && settings.apiKey.length > 0}
-            aiRunning={aiRunning}
-            aiError={aiError}
-            aiNotice={aiNotice}
+            initialCategory={fixInitialCategory}
+            onScan={onScan}
             onSelectNode={onSelectNode}
-            onApply={onApplyNaming}
+            onDelete={onDeleteNodes}
+            onAutofix={onAutofix}
+            onApplyNaming={onApplyNaming}
             onReplaceWithLds={onReplaceWithLds}
-            onRunAi={onRunAi}
           />
         )}
-        {active === "readiness" && (
-          <CodeReadinessTab result={result} onScan={onScan} loading={loading} />
+        {active === "convert" && (
+          <ConversionTab
+            running={exportRunning}
+            error={exportError}
+            summary={exportSummary}
+            onExport={onExport}
+          />
         )}
         {active === "settings" && (
           <SettingsTab
@@ -326,6 +490,17 @@ export function App() {
       </main>
     </div>
   );
+}
+
+function triggerDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function mergeSuggestions(

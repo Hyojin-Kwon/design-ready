@@ -77,6 +77,59 @@ html, body, #root {
   margin-bottom: 12px;
 }
 
+.tab-with-sticky {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.toolbar-sticky {
+  position: sticky;
+  bottom: -12px;
+  margin: auto -12px -12px -12px;
+  padding: 12px 12px 24px 12px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  z-index: 10;
+}
+
+.btn.full { width: 100%; }
+
+.scan-target-line {
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.apply-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.apply-mode-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  background: #fff;
+}
+.apply-mode-option.active {
+  border-color: #4f46e5;
+  background: #eef2ff;
+}
+.apply-mode-option input {
+  margin-right: 6px;
+}
+.apply-mode-hint {
+  font-size: 11px;
+  color: #6b7280;
+}
+
 .btn {
   padding: 6px 12px;
   border-radius: 6px;
@@ -183,6 +236,61 @@ html, body, #root {
   flex-shrink: 0;
   align-self: stretch;
   min-width: 56px;
+}
+
+.autofix-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  margin: 10px 0 8px;
+  background: var(--surface-subtle, #f5f7fb);
+  border: 1px solid var(--border, #e2e6ef);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.autofix-bar strong {
+  font-weight: 600;
+}
+
+.autofix-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.autofix-summary:hover { text-decoration: underline; }
+
+.autofix-caret {
+  display: inline-block;
+  width: 10px;
+  color: var(--text-muted, #6b7280);
+}
+
+.autofix-list {
+  margin-bottom: 12px;
+  padding: 8px;
+  background: var(--surface-subtle, #f5f7fb);
+  border: 1px solid var(--border, #e2e6ef);
+  border-radius: 8px;
+}
+
+.fix-fail {
+  margin-top: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #b91c1c;
+  background: #fef2f2;
+  border-radius: 4px;
 }
 
 .filter-chips {
@@ -328,7 +436,7 @@ html, body, #root {
 .issue-list, .suggestion-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 16px;
 }
 
 .issue-row {
@@ -404,13 +512,50 @@ html, body, #root {
 }
 
 .suggestion-row {
-  padding: 10px;
+  padding: 16px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+/* 카드 내부에 들어온 IssueRow는 자체 경계 제거 (카드가 경계를 그린다) */
+.suggestion-row .issue-row {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.suggestion-row .issue-row:hover {
+  background: transparent;
+}
+/* 박스 내 IssueRow: 아이콘은 타이틀 수직 중앙에 고정 */
+.suggestion-row .issue-row {
+  display: flex;
+  align-items: flex-start;
   gap: 6px;
+}
+.suggestion-row .sev-icon {
+  width: 6px;
+  height: 6px;
+  margin-top: 4px; /* 13px 타이틀 line-height 중앙 */
+  flex-shrink: 0;
+}
+.suggestion-row .issue-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+.suggestion-row .issue-node {
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 12px;
+}
+.suggestion-row .issue-desc {
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 4px;
 }
 
 .suggestion-row.applied {
@@ -423,13 +568,28 @@ html, body, #root {
   align-items: center;
   gap: 6px;
   font-size: 11px;
-  cursor: pointer;
 }
 
 .suggestion-actions {
   display: flex;
-  justify-content: flex-end;
   gap: 6px;
+  margin: 0 -16px -16px -16px;
+  border-top: 1px solid #F3F3F3;
+}
+
+/* 카드 내 개별 액션 버튼: 외곽선 없는 텍스트 버튼, 전체 너비 hover */
+.suggestion-actions .btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 0 0 6px 6px;
+}
+.suggestion-actions .btn:hover:not(:disabled) {
+  background: #F3F3F3;
 }
 
 .badge.success {

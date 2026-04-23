@@ -6,6 +6,7 @@ import {
   getFigmaComponentName,
   type LdsFigmaComponent
 } from "../../data/ldsComponents";
+import { DEFAULT_SYSTEM_PROMPT } from "../../export/systemPrompt";
 
 interface ExtractedLibrary {
   components: Array<{ name: string; key: string }>;
@@ -23,6 +24,10 @@ interface Props {
   onExtract: () => void;
   extracting: boolean;
 }
+
+// AI 네이밍 추론 기능은 잘못된 LDS 매칭을 유발해 일시 비활성화.
+// 코드는 보존 — 테스트 후 영구삭제 여부 결정. true로 바꾸면 UI 복구됨.
+const SHOW_AI_UI = false;
 
 const MODELS = [
   { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 (빠름·저렴)" },
@@ -105,6 +110,7 @@ export function SettingsTab({
   const [model, setModel] = useState(settings.model);
   const [aiEnabled, setAiEnabled] = useState(settings.aiEnabled);
   const [ldsReference, setLdsReference] = useState(settings.ldsReference ?? "");
+  const [systemPrompt, setSystemPrompt] = useState(settings.systemPrompt ?? "");
   const [copyMark, setCopyMark] = useState("");
   const jsonTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -141,81 +147,118 @@ export function SettingsTab({
       apiKey: apiKey.trim(),
       model,
       aiEnabled,
-      ldsReference
+      ldsReference,
+      systemPrompt: systemPrompt.trim() ? systemPrompt : undefined
     });
+
+  const resetSystemPrompt = () => setSystemPrompt("");
 
   return (
     <div class="settings">
-      <div class="section-title">AI 시맨틱 추론</div>
-      <p class="settings-desc">
-        룰로 못 잡은 디폴트 네이밍 노드를 Claude API로 추론합니다. API 키는 이 기기에만
-        저장됩니다.
-      </p>
+      {SHOW_AI_UI && (
+        <>
+          <div class="section-title">AI 시맨틱 추론</div>
+          <p class="settings-desc">
+            룰로 못 잡은 디폴트 네이밍 노드를 Claude API로 추론합니다. API 키는 이 기기에만
+            저장됩니다.
+          </p>
 
-      <label class="settings-field">
-        <span class="settings-label">Anthropic API Key</span>
-        <input
-          type="password"
-          class="settings-input"
-          placeholder="sk-ant-..."
-          value={apiKey}
-          onInput={(e) => setApiKey((e.target as HTMLInputElement).value)}
-        />
-      </label>
+          <label class="settings-field">
+            <span class="settings-label">Anthropic API Key</span>
+            <input
+              type="password"
+              class="settings-input"
+              placeholder="sk-ant-..."
+              value={apiKey}
+              onInput={(e) => setApiKey((e.target as HTMLInputElement).value)}
+            />
+          </label>
 
-      <label class="settings-field">
-        <span class="settings-label">모델</span>
-        <select
-          class="settings-input"
-          value={model}
-          onChange={(e) => setModel((e.target as HTMLSelectElement).value)}
-        >
-          {MODELS.map((m) => (
-            <option value={m.id} key={m.id}>
-              {m.label}
-            </option>
-          ))}
-        </select>
-      </label>
+          <label class="settings-field">
+            <span class="settings-label">모델</span>
+            <select
+              class="settings-input"
+              value={model}
+              onChange={(e) => setModel((e.target as HTMLSelectElement).value)}
+            >
+              {MODELS.map((m) => (
+                <option value={m.id} key={m.id}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <label class="settings-toggle">
-        <input
-          type="checkbox"
-          checked={aiEnabled}
-          onChange={(e) => setAiEnabled((e.target as HTMLInputElement).checked)}
-        />
-        <span>AI 추론 기능 활성화</span>
-      </label>
+          <label class="settings-toggle">
+            <input
+              type="checkbox"
+              checked={aiEnabled}
+              onChange={(e) => setAiEnabled((e.target as HTMLInputElement).checked)}
+            />
+            <span>AI 추론 기능 활성화</span>
+          </label>
+
+          <div class="section-title" style={{ marginTop: 16 }}>
+            디자인 시스템 레퍼런스
+          </div>
+          <p class="settings-desc">
+            LDS(또는 쓰는 디자인 시스템) 컴포넌트/네이밍 규칙을 붙여넣으면 AI가 이 이름에 맞춰
+            제안합니다. 비워두면 일반 UI 컨벤션으로 동작합니다.
+          </p>
+
+          <label class="settings-field">
+            <span class="settings-label">LDS 컴포넌트 · 규칙</span>
+            <textarea
+              class="settings-input settings-textarea"
+              placeholder={LDS_PLACEHOLDER}
+              rows={10}
+              value={ldsReference}
+              onInput={(e) => setLdsReference((e.target as HTMLTextAreaElement).value)}
+            />
+          </label>
+        </>
+      )}
 
       <div class="section-title" style={{ marginTop: 16 }}>
-        디자인 시스템 레퍼런스
+        Export Pack 시스템 프롬프트
       </div>
       <p class="settings-desc">
-        LDS(또는 쓰는 디자인 시스템) 컴포넌트/네이밍 규칙을 붙여넣으면 AI가 이 이름에 맞춰
-        제안합니다. 비워두면 일반 UI 컨벤션으로 동작합니다.
+        Export Pack의 <code>PROMPT.md</code>에 포함되는 변환 규칙입니다. 비워두면 기본
+        프롬프트가 사용됩니다. 프로젝트별 컨벤션이 있다면 여기서 덮어쓰세요.
       </p>
 
       <label class="settings-field">
-        <span class="settings-label">LDS 컴포넌트 · 규칙</span>
+        <span class="settings-label">시스템 프롬프트 (선택)</span>
         <textarea
           class="settings-input settings-textarea"
-          placeholder={LDS_PLACEHOLDER}
-          rows={10}
-          value={ldsReference}
-          onInput={(e) => setLdsReference((e.target as HTMLTextAreaElement).value)}
+          placeholder={DEFAULT_SYSTEM_PROMPT}
+          rows={12}
+          value={systemPrompt}
+          onInput={(e) => setSystemPrompt((e.target as HTMLTextAreaElement).value)}
         />
       </label>
+      <div class="settings-actions">
+        <button class="btn" onClick={resetSystemPrompt} disabled={systemPrompt.length === 0}>
+          기본값으로 초기화
+        </button>
+      </div>
 
       <div class="settings-actions">
-        <button class="btn primary" onClick={save} disabled={apiKey.trim().length === 0}>
+        <button
+          class="btn primary"
+          onClick={save}
+          disabled={SHOW_AI_UI && apiKey.trim().length === 0}
+        >
           저장
         </button>
         {savedMark && <span class="settings-saved">저장됨</span>}
       </div>
 
-      <p class="settings-note">
-        키 발급: <code>https://console.anthropic.com/</code>
-      </p>
+      {SHOW_AI_UI && (
+        <p class="settings-note">
+          키 발급: <code>https://console.anthropic.com/</code>
+        </p>
+      )}
 
       <div class="section-title" style={{ marginTop: 20 }}>
         개발자 모드: LDS Figma 추출

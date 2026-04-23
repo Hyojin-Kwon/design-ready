@@ -1,5 +1,14 @@
 export type AnyNode = BaseNode & { children?: readonly SceneNode[] };
 
+// 스캔 시 페이지 직계 최상위 프레임을 이 ID 집합으로 제한한다.
+// 예: 프로토타입 연결 플로우에 포함된 프레임만 스캔하고 싶을 때.
+// null 이면 필터 없음(모든 top-level 프레임 스캔).
+let topLevelFilter: Set<string> | null = null;
+
+export function setTopLevelFilter(ids: Set<string> | null): void {
+  topLevelFilter = ids;
+}
+
 export function walk(root: BaseNode, visit: (node: SceneNode, depth: number) => void): void {
   function recurse(node: BaseNode, depth: number) {
     if (!("children" in node)) return;
@@ -7,6 +16,14 @@ export function walk(root: BaseNode, visit: (node: SceneNode, depth: number) => 
     for (const child of children) {
       if (child.type === "PAGE") {
         recurse(child, depth);
+        continue;
+      }
+      // 페이지 바로 아래 최상위 노드에서 필터 적용
+      if (
+        topLevelFilter &&
+        node.type === "PAGE" &&
+        !topLevelFilter.has((child as SceneNode).id)
+      ) {
         continue;
       }
       visit(child as SceneNode, depth);

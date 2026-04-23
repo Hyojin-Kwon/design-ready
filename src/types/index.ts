@@ -87,11 +87,84 @@ export interface DeleteNodesResult {
   failed: Array<{ nodeId: string; error: string }>;
 }
 
+export type AutofixRuleId =
+  | "subpixel-position"
+  | "subpixel-size"
+  | "subpixel-spacing"
+  | "single-child-group"
+  | "single-child-frame-wrapper"
+  | "deep-group-nesting"
+  | "empty-frame"
+  | "missing-auto-layout";
+
+export const AUTOFIX_RULE_IDS: ReadonlySet<string> = new Set<AutofixRuleId>([
+  "subpixel-position",
+  "subpixel-size",
+  "subpixel-spacing",
+  "single-child-group",
+  "single-child-frame-wrapper",
+  "deep-group-nesting",
+  "empty-frame",
+  "missing-auto-layout"
+]);
+
+export interface AutofixItem {
+  issueId: string;
+  nodeId: string;
+  ruleId: string;
+}
+
+export interface AutofixResult {
+  fixed: string[];
+  failed: Array<{ issueId: string; error: string }>;
+}
+
 export interface PluginSettings {
   apiKey: string;
   model: string;
   aiEnabled: boolean;
   ldsReference: string;
+  systemPrompt?: string;
+}
+
+export interface ExportScreenPayload {
+  rootLabel: string;
+  tree: import("../ai/conversionSerialize").SerializedNode;
+  iconMap: Record<string, string>;
+  healthReport?: string;
+  semanticMap?: Array<{ nodeId: string; originalName: string; suggestedName: string }>;
+}
+
+export interface NameOverride {
+  nodeId: string;
+  originalName: string;
+  suggestedName: string;
+}
+
+export interface ExportFlowLink {
+  from: { screen: string; nodeId: string; nodeName: string };
+  to: { screen: string };
+  trigger: string;
+  action: string;
+}
+
+export interface ExportOptStats {
+  beforeNodes: number;
+  afterNodes: number;
+  flattenedGroups: number;
+  flattenedFrames: number;
+  inferredLayouts: number;
+  totalIconNodes: number;
+  uniqueIcons: number;
+  iconBytes: number;
+}
+
+export interface ExportPayload {
+  projectName: string;
+  screens: ExportScreenPayload[];
+  libraryComponents: string[];
+  flow: ExportFlowLink[];
+  optStats?: ExportOptStats;
 }
 
 export interface AiNodeContext {
@@ -112,7 +185,7 @@ export type PluginMessage =
   | { type: "scan:start" }
   | { type: "scan:result"; result: ScanResult }
   | { type: "scan:error"; message: string }
-  | { type: "select:node"; nodeId: string }
+  | { type: "select:node"; nodeId: string; hint?: string }
   | { type: "apply:naming"; items: ApplyNamingItem[] }
   | { type: "apply:naming:result"; result: ApplyNamingResult }
   | { type: "delete:nodes"; nodeIds: string[] }
@@ -121,7 +194,12 @@ export type PluginMessage =
   | { type: "settings:loaded"; settings: PluginSettings }
   | { type: "settings:save"; settings: PluginSettings }
   | { type: "settings:saved" }
-  | { type: "ai:collect"; existingSuggestionIds: string[] }
+  | {
+      type: "ai:collect";
+      existingSuggestionIds: string[];
+      // 지정되면 해당 노드만 대상 (룰 필터 건너뜀). 미지정이면 전체 스캔 루트에서 디폴트 네이밍 수집.
+      targetNodeIds?: string[];
+    }
   | {
       type: "ai:collected";
       contexts: AiNodeContext[];
@@ -140,4 +218,9 @@ export type PluginMessage =
     }
   | { type: "replace:lds"; items: Array<{ nodeId: string; componentKey: string }> }
   | { type: "replace:lds:result"; result: ReplaceWithLdsResult }
+  | { type: "autofix:apply"; items: AutofixItem[] }
+  | { type: "autofix:result"; result: AutofixResult }
+  | { type: "export:start"; overrides?: NameOverride[] }
+  | { type: "export:prepared"; payload: ExportPayload }
+  | { type: "export:error"; message: string }
   | { type: "ready" };
