@@ -38,10 +38,11 @@ function findFirstVisibleText(node: SceneNode, depth = 0): string | null {
   return null;
 }
 
-function suggestFromInstance(node: SceneNode): Suggestion | null {
+async function suggestFromInstance(node: SceneNode): Promise<Suggestion | null> {
   if (node.type !== "INSTANCE") return null;
   const instance = node as InstanceNode;
-  const main = instance.mainComponent;
+  // documentAccess: "dynamic-page" 모드에서는 동기 getter 대신 async 필수.
+  const main = await instance.getMainComponentAsync();
   if (!main) return null;
   const text = findFirstVisibleText(node);
   if (text) {
@@ -120,7 +121,7 @@ function suggestFromTextContent(node: SceneNode): Suggestion | null {
   return null;
 }
 
-function suggestFromAutoLayout(node: SceneNode): Suggestion | null {
+async function suggestFromAutoLayout(node: SceneNode): Promise<Suggestion | null> {
   if (node.type !== "FRAME") return null;
   const frame = node as FrameNode;
   if (frame.layoutMode === "NONE") return null;
@@ -133,7 +134,7 @@ function suggestFromAutoLayout(node: SceneNode): Suggestion | null {
   if (uniformType && kids[0].type === "INSTANCE") {
     const names = new Set<string>();
     for (const c of kids) {
-      const main = (c as InstanceNode).mainComponent;
+      const main = await (c as InstanceNode).getMainComponentAsync();
       if (main) names.add(main.name);
     }
     if (names.size === 1) {
@@ -232,7 +233,9 @@ function suggestCaption(node: SceneNode): Suggestion | null {
   return { name: "Caption", reason: "작은 회색 계열 텍스트" };
 }
 
-const RULES: Array<(node: SceneNode) => Suggestion | null> = [
+// async 룰(suggestFromInstance, suggestFromAutoLayout)과 sync 룰 혼재.
+// `await`은 non-Promise 값도 무해하게 통과하므로 호출자에서 일괄 await으로 처리.
+const RULES: Array<(node: SceneNode) => Promise<Suggestion | null> | Suggestion | null> = [
   suggestFromInstance,
   suggestFromTextContent,
   suggestAvatar,
@@ -304,15 +307,20 @@ function isDetachedSuspect(node: SceneNode): boolean {
   return true;
 }
 
-export function proposeSemanticNames(root: BaseNode): NamingSuggestion[] {
-  const suggestions: NamingSuggestion[] = [];
+export async function proposeSemanticNames(root: BaseNode): Promise<NamingSuggestion[]> {
+  // walk 콜백이 sync라 async 룰을 못 돌림 → 먼저 노드를 모은 뒤 순차 async 처리.
+  const candidates: SceneNode[] = [];
   walk(root, (node) => {
     if (isComponentInternal(node)) return;
     if (node.visible === false || isInsideHidden(node)) return;
+    candidates.push(node as SceneNode);
+  });
 
+  const suggestions: NamingSuggestion[] = [];
+  for (const node of candidates) {
     if (isDefaultName(node.name)) {
       for (const rule of RULES) {
-        const hit = rule(node);
+        const hit = await rule(node);
         if (hit) {
           const inherited = applyContextInheritance(node, hit);
           suggestions.push({
@@ -322,10 +330,10 @@ export function proposeSemanticNames(root: BaseNode): NamingSuggestion[] {
             suggestedName: inherited.name,
             reason: inherited.reason
           });
-          return;
+          break;
         }
       }
-      return;
+      continue;
     }
 
     if (isDetachedSuspect(node)) {
@@ -350,7 +358,7 @@ export function proposeSemanticNames(root: BaseNode): NamingSuggestion[] {
         });
       }
     }
-  });
+  }
   return dedupeSiblings(suggestions);
 }
 

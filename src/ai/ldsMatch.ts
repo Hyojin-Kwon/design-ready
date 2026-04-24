@@ -5,6 +5,18 @@ import {
   type LdsFigmaComponentEntry
 } from "../data/ldsComponents";
 
+// 런타임에 주입되는 추가 풀. LDS 템플릿 파일에서 추출한 catalog가 들어감.
+// BUILTIN_LDS.figmaComponents는 빌드 타임 정적 어휘, 이건 사용자가 런타임에 확장한 어휘.
+let EXTRA_FIGMA_POOL: Array<{ name: string; key: string }> = [];
+
+export function setExtraFigmaPool(pool: Array<{ name: string; key: string }>): void {
+  EXTRA_FIGMA_POOL = pool;
+}
+
+export function getExtraFigmaPoolSize(): number {
+  return EXTRA_FIGMA_POOL.length;
+}
+
 export interface LdsMatch {
   match: string;
   key: string | null;
@@ -59,13 +71,35 @@ export function isCompositeContainer(name: string): boolean {
 const PLATFORM_TOKENS = new Set(["ios", "android", "web", "desktop"]);
 const THEME_TOKENS = new Set(["light", "dark", "overlay", "common"]);
 
+// "단어 + 숫자" 인접 쌍은 합성 토큰으로 유지해서 사이즈/레벨 suffix가 매칭에 반영되도록 함.
+// 예: "Title 1" → "title1", "Size 12" → "size12". 단독 숫자는 의미 없으니 계속 드랍.
+// (LDS 네이밍에서 "Title 1 + Body 2", "Size 12" 등은 사이즈/레벨을 가르는 핵심 신호.)
+function filterAndMergeTokens(raw: string[]): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < raw.length; i += 1) {
+    const cur = raw[i];
+    const nxt = raw[i + 1];
+    if (/^[a-z]+$/.test(cur) && nxt && /^\d+$/.test(nxt)) {
+      if (cur.length >= 2 && !STOPWORDS.has(cur)) out.push(`${cur}${nxt}`);
+      i += 1;
+      continue;
+    }
+    if (/^\d+$/.test(cur)) continue;
+    if (cur.length < 2) continue;
+    if (STOPWORDS.has(cur)) continue;
+    out.push(cur);
+  }
+  return out;
+}
+
 export function tokenListOrdered(name: string): string[] {
   const normalized = stripVariantPropertyNames(name);
-  return normalized
+  const raw = normalized
     .toLowerCase()
     .replace(/[◻️◼️]/g, " ")
     .split(/[^a-z0-9]+/)
-    .filter((t) => t.length >= 2 && !STOPWORDS.has(t) && !/^\d+$/.test(t));
+    .filter(Boolean);
+  return filterAndMergeTokens(raw);
 }
 
 // 경로에서 마지막 세그먼트(실제 컴포넌트명)의 토큰만. 경로가 없으면 전체 반환.
@@ -74,13 +108,12 @@ function terminalTokens(name: string): Set<string> {
   const normalized = stripVariantPropertyNames(name);
   const segments = normalized.split("/").map((s) => s.trim()).filter(Boolean);
   const last = segments.length > 0 ? segments[segments.length - 1] : normalized;
-  return new Set(
-    last
-      .toLowerCase()
-      .replace(/[◻️◼️]/g, " ")
-      .split(/[^a-z0-9]+/)
-      .filter((t) => t.length >= 2 && !STOPWORDS.has(t) && !/^\d+$/.test(t))
-  );
+  const raw = last
+    .toLowerCase()
+    .replace(/[◻️◼️]/g, " ")
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+  return new Set(filterAndMergeTokens(raw));
 }
 
 function tokenize(name: string): Set<string> {
@@ -172,8 +205,8 @@ function scorePair(
     }
   }
 
-  // 보너스로 1.0을 넘지 않도록 클램프 (UI에 140% 같은 값이 뜨는 것 방지).
-  if (score > 1) score = 1;
+  // 내부 점수는 clamp하지 않음 — 후보 간 비교 시 bonus 적층이 clamp에 가려져
+  // 테마/플랫폼 페널티가 동점에 묻히는 버그를 피한다. 최종 반환 시에만 clamp.
   if (score < 0) score = 0;
   return { score, jaccard };
 }
@@ -194,13 +227,28 @@ export function findLdsMatch(
   const queryPrefix = keepNumericPrefix(nodeName);
   let best: LdsMatch | null = null;
 
-  const figmaPool: LdsFigmaComponentEntry[] = BUILTIN_LDS.figmaComponents ?? [];
+  // 정적 figmaComponents + 런타임 주입 EXTRA 풀 병합. key 기준 dedupe (EXTRA 우선 — 최신).
+  const figmaPool: LdsFigmaComponentEntry[] = (() => {
+    const byKey = new Map<string, LdsFigmaComponentEntry>();
+    const byName = new Map<string, LdsFigmaComponentEntry>();
+    const add = (entry: LdsFigmaComponentEntry) => {
+      const key = getFigmaComponentKey(entry);
+      const name = getFigmaComponentName(entry);
+      if (key && byKey.has(key)) return;
+      if (byName.has(name) && !key) return;
+      if (key) byKey.set(key, entry);
+      byName.set(name, entry);
+    };
+    for (const e of EXTRA_FIGMA_POOL) add(e);
+    for (const e of BUILTIN_LDS.figmaComponents ?? []) add(e);
+    return Array.from(byName.values());
+  })();
 
   for (const candidate of BUILTIN_LDS.components) {
     const { score: raw, jaccard } = scorePair(queryTokens, queryBigrams, queryTerminal, candidate);
     let score = raw;
     if (queryPrefix && keepNumericPrefix(candidate) === queryPrefix) score += 0.1;
-    if (score > 1) score = 1;
+    // 내부 비교용 score는 clamp하지 않음 — bonus 적층 차이로 정당하게 순위가 갈려야 함.
     if (!best || score > best.score) {
       best = { match: candidate, key: null, score, jaccard, source: "components" };
     }
@@ -211,7 +259,6 @@ export function findLdsMatch(
     const { score: raw, jaccard } = scorePair(queryTokens, queryBigrams, queryTerminal, name);
     let score = raw;
     if (queryPrefix && keepNumericPrefix(name) === queryPrefix) score += 0.1;
-    if (score > 1) score = 1;
     if (!best || score > best.score) {
       best = {
         match: name,
@@ -224,5 +271,7 @@ export function findLdsMatch(
   }
 
   if (!best || best.score < minScore) return null;
+  // UI 표시용으로만 최종 clamp.
+  if (best.score > 1) best.score = 1;
   return best;
 }

@@ -135,6 +135,20 @@ export interface ExportScreenPayload {
   semanticMap?: Array<{ nodeId: string; originalName: string; suggestedName: string }>;
 }
 
+export interface LdsTemplateCatalogEntry {
+  name: string;
+  key: string;
+  // COMPONENT_SET의 경우 variant property 정의. variant를 가진 세트만 포함.
+  // 예: { "Style": ["Primary", "Secondary"], "Size": ["S", "M", "L"] }
+  variantProperties?: Record<string, string[]>;
+}
+
+export interface LdsTemplateCatalog {
+  components: LdsTemplateCatalogEntry[];
+  sourceFileName: string;
+  extractedAt: string;
+}
+
 export interface NameOverride {
   nodeId: string;
   originalName: string;
@@ -216,6 +230,12 @@ export type PluginMessage =
         componentCount: number;
       };
     }
+  | { type: "lds-template:extract" }
+  | { type: "lds-template:extracted"; catalog: LdsTemplateCatalog }
+  | { type: "lds-template:get" }
+  | { type: "lds-template:loaded"; catalog: LdsTemplateCatalog | null }
+  | { type: "lds-template:clear" }
+  | { type: "lds-template:cleared" }
   | { type: "replace:lds"; items: Array<{ nodeId: string; componentKey: string }> }
   | { type: "replace:lds:result"; result: ReplaceWithLdsResult }
   | { type: "autofix:apply"; items: AutofixItem[] }

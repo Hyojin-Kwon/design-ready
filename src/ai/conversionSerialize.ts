@@ -286,10 +286,13 @@ function describeBoundTokens(node: SceneNode): Record<string, string> | undefine
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
-function describeComponentRef(node: SceneNode): SerializedNode["componentRef"] {
+async function describeComponentRef(
+  node: SceneNode
+): Promise<SerializedNode["componentRef"]> {
   if (node.type !== "INSTANCE") return undefined;
   const instance = node as InstanceNode;
-  const main = instance.mainComponent;
+  // documentAccess: "dynamic-page" 모드에서는 동기 mainComponent 접근 금지.
+  const main = await instance.getMainComponentAsync();
   if (!main) return undefined;
   const parent = main.parent;
   const name = parent && parent.type === "COMPONENT_SET" ? parent.name : main.name;
@@ -369,7 +372,7 @@ export async function serializeNode(
     result.text = describeText(node as TextNode);
   }
 
-  const componentRef = describeComponentRef(node);
+  const componentRef = await describeComponentRef(node);
   if (componentRef) result.componentRef = componentRef;
 
   if (node.type === "COMPONENT_SET") {

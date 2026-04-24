@@ -3,3 +3,6 @@ dist/
 .DS_Store
 *.log
 .claude/settings.local.json
+.claude/worktrees/
+# esbuild이 foundation/*.css에서 빌드 타임에 재생성
+src/data/foundationTokens.generated.ts

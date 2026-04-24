@@ -3,6 +3,7 @@ import type {
   AiNodeContext,
   ApplyNamingItem,
   AutofixItem,
+  LdsTemplateCatalog,
   NameOverride,
   NamingSuggestion,
   PluginMessage,
@@ -71,6 +72,8 @@ export function App() {
     componentCount: number;
   } | null>(null);
   const [extracting, setExtracting] = useState(false);
+  const [ldsTemplateCatalog, setLdsTemplateCatalog] = useState<LdsTemplateCatalog | null>(null);
+  const [ldsTemplateExtracting, setLdsTemplateExtracting] = useState(false);
   const [nameOverrides, setNameOverrides] = useState<Map<string, NameOverride>>(new Map());
   const [exportRunning, setExportRunning] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -162,6 +165,13 @@ export function App() {
       } else if (msg.type === "library:extracted") {
         setExtractedLibrary(msg.payload);
         setExtracting(false);
+      } else if (msg.type === "lds-template:loaded") {
+        setLdsTemplateCatalog(msg.catalog);
+      } else if (msg.type === "lds-template:extracted") {
+        setLdsTemplateCatalog(msg.catalog);
+        setLdsTemplateExtracting(false);
+      } else if (msg.type === "lds-template:cleared") {
+        setLdsTemplateCatalog(null);
       } else if (msg.type === "export:prepared") {
         runExport(msg.payload);
       } else if (msg.type === "export:error") {
@@ -208,6 +218,7 @@ export function App() {
     }
     window.addEventListener("message", onMessage);
     post({ type: "settings:get" });
+    post({ type: "lds-template:get" });
     return () => window.removeEventListener("message", onMessage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -265,6 +276,7 @@ export function App() {
         projectName: payload.projectName,
         screens,
         libraryComponents: payload.libraryComponents,
+        ldsTemplateCatalog,
         ldsReference: current.ldsReference ?? "",
         systemPrompt: current.systemPrompt?.trim() || DEFAULT_SYSTEM_PROMPT,
         flow: payload.flow,
@@ -388,6 +400,15 @@ export function App() {
     post({ type: "library:extract" });
   };
 
+  const onExtractLdsTemplate = () => {
+    setLdsTemplateExtracting(true);
+    post({ type: "lds-template:extract" });
+  };
+
+  const onClearLdsTemplate = () => {
+    post({ type: "lds-template:clear" });
+  };
+
   const onRunAi = () => {
     if (!result) return;
     if (!settings.aiEnabled || !settings.apiKey) {
@@ -485,6 +506,10 @@ export function App() {
             extractedLibrary={extractedLibrary}
             onExtract={onExtractLibrary}
             extracting={extracting}
+            ldsTemplateCatalog={ldsTemplateCatalog}
+            onExtractLdsTemplate={onExtractLdsTemplate}
+            onClearLdsTemplate={onClearLdsTemplate}
+            ldsTemplateExtracting={ldsTemplateExtracting}
           />
         )}
       </main>

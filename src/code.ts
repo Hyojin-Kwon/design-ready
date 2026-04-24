@@ -1,5 +1,6 @@
 import { collectAiCandidates, collectAiContextsForIds } from "./ai/semanticInfer";
 import { serializeNode, extractIcons } from "./ai/conversionSerialize";
+import { setExtraFigmaPool } from "./ai/ldsMatch";
 import { optimizeTree } from "./ai/treeOptimize";
 import { computeCodeReadiness } from "./analyzers/codeReadiness";
 import { runHealthCheck } from "./analyzers/healthCheck";
@@ -14,6 +15,8 @@ import type {
   DeleteNodesResult,
   ExportFlowLink,
   ExportScreenPayload,
+  LdsTemplateCatalog,
+  LdsTemplateCatalogEntry,
   PluginMessage,
   PluginSettings,
   ReplaceWithLdsResult,
@@ -21,6 +24,7 @@ import type {
 } from "./types";
 
 const SETTINGS_KEY = "design-ready-settings";
+const LDS_TEMPLATE_CATALOG_KEY = "design-ready-lds-template-catalog";
 const DEFAULT_SETTINGS: PluginSettings = {
   apiKey: "",
   model: "claude-haiku-4-5-20251001",
@@ -143,6 +147,92 @@ async function saveSettings(settings: PluginSettings): Promise<void> {
   await figma.clientStorage.setAsync(SETTINGS_KEY, settings);
 }
 
+// ============================================================================
+// LDS 템플릿 카탈로그 — published 템플릿 파일을 한 번 스캔하면 clientStorage에 캐싱,
+// 모든 작업 파일에서 매처 풀에 자동 병합된다.
+// ============================================================================
+
+async function loadLdsTemplateCatalog(): Promise<LdsTemplateCatalog | null> {
+  const stored = await figma.clientStorage.getAsync(LDS_TEMPLATE_CATALOG_KEY);
+  if (!stored || typeof stored !== "object") return null;
+  const catalog = stored as LdsTemplateCatalog;
+  if (!Array.isArray(catalog.components)) return null;
+  return catalog;
+}
+
+async function saveLdsTemplateCatalog(catalog: LdsTemplateCatalog): Promise<void> {
+  await figma.clientStorage.setAsync(LDS_TEMPLATE_CATALOG_KEY, catalog);
+}
+
+async function clearLdsTemplateCatalog(): Promise<void> {
+  await figma.clientStorage.deleteAsync(LDS_TEMPLATE_CATALOG_KEY);
+}
+
+// 현재 파일이 LDS 템플릿이라고 가정하고 모든 COMPONENT / COMPONENT_SET을 스캔.
+// COMPONENT_SET은 set 레벨에서 한 엔트리로 캡처 (variant들은 교체 시 defaultVariant fallback).
+// published(팀 라이브러리)된 컴포넌트만 타 파일에서 importComponentByKeyAsync가 먹히므로
+// key가 있는 것만 수집. 로컬 unpublished는 필연적으로 타 파일에서 실패하지만
+// key 유무만으로는 판별 어려움 — 사용자가 published 파일에서만 실행한다는 전제.
+async function extractLdsTemplateCatalog(): Promise<LdsTemplateCatalog> {
+  const loader = (figma as unknown as { loadAllPagesAsync?: () => Promise<void> })
+    .loadAllPagesAsync;
+  if (typeof loader === "function") {
+    await loader.call(figma);
+  }
+
+  const seenKeys = new Set<string>();
+  const entries: LdsTemplateCatalogEntry[] = [];
+
+  const nodes = figma.root.findAllWithCriteria({ types: ["COMPONENT", "COMPONENT_SET"] });
+  for (const node of nodes) {
+    // COMPONENT_SET 안의 COMPONENT는 skip — set 레벨에서 이미 잡힘.
+    if (node.type === "COMPONENT" && node.parent && node.parent.type === "COMPONENT_SET") {
+      continue;
+    }
+    const target = node as ComponentNode | ComponentSetNode;
+    const key = target.key;
+    if (!key) continue;
+    if (seenKeys.has(key)) continue;
+    seenKeys.add(key);
+
+    // variant property 정의 추출 — COMPONENT_SET만 가짐. AI가 valid variant 조합을 알게.
+    let variantProperties: Record<string, string[]> | undefined;
+    if (target.type === "COMPONENT_SET") {
+      const defs = (target as unknown as {
+        componentPropertyDefinitions?: Record<
+          string,
+          { type: string; defaultValue: unknown; variantOptions?: string[] }
+        >;
+      }).componentPropertyDefinitions;
+      if (defs) {
+        const result: Record<string, string[]> = {};
+        for (const [propName, def] of Object.entries(defs)) {
+          if (def.type === "VARIANT" && Array.isArray(def.variantOptions)) {
+            result[propName] = def.variantOptions;
+          }
+        }
+        if (Object.keys(result).length > 0) variantProperties = result;
+      }
+    }
+
+    entries.push({ name: target.name, key, variantProperties });
+  }
+
+  entries.sort((a, b) => a.name.localeCompare(b.name));
+
+  return {
+    components: entries,
+    sourceFileName: figma.root.name,
+    extractedAt: new Date().toISOString()
+  };
+}
+
+async function initLdsTemplatePool(): Promise<LdsTemplateCatalog | null> {
+  const catalog = await loadLdsTemplateCatalog();
+  if (catalog) setExtraFigmaPool(catalog.components);
+  return catalog;
+}
+
 async function extractLibraryComponents(): Promise<{
   components: Array<{ name: string; key: string }>;
   extractedAt: string;
@@ -222,6 +312,9 @@ async function collectLibraryVocabulary(root: BaseNode): Promise<string[]> {
 
 figma.showUI(__html__, { width: 380, height: 620, themeColors: true });
 
+// 캐싱된 LDS 템플릿 catalog가 있으면 매처 풀에 주입. UI에는 "ready" 수신 시 broadcast.
+initLdsTemplatePool().catch((err) => console.warn("[DesignReady] lds template init failed:", err));
+
 function pickScanRoot(): { root: BaseNode; label: string } {
   const selection = figma.currentPage.selection;
   if (selection.length === 1) {
@@ -298,7 +391,7 @@ function collectPrototypeConnectedTopFrameIds(page: PageNode): Set<string> | nul
   return connected.size > 0 ? connected : null;
 }
 
-function runScan(): ScanResult {
+async function runScan(): Promise<ScanResult> {
   const { root, label } = pickScanRoot();
   // 선택 없이 페이지 전체 스캔일 때만 프로토타입 필터 적용
   let filter: Set<string> | null = null;
@@ -310,7 +403,7 @@ function runScan(): ScanResult {
   setTopLevelFilter(filter);
   try {
     const health = runHealthCheck(root);
-    const suggestions = proposeSemanticNames(root);
+    const suggestions = await proposeSemanticNames(root);
     const readiness = computeCodeReadiness(root);
     return { health, suggestions, readiness, scanRoot: scanLabel };
   } finally {
@@ -399,7 +492,7 @@ async function applyAutofix(item: AutofixItem): Promise<void> {
 figma.ui.onmessage = async (msg: PluginMessage) => {
   if (msg.type === "scan:start") {
     try {
-      const result = runScan();
+      const result = await runScan();
       figma.ui.postMessage({ type: "scan:result", result });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -524,6 +617,29 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
     const payload = await extractLibraryComponents();
     figma.ui.postMessage({ type: "library:extracted", payload });
     figma.notify(`${payload.components.length}개 컴포넌트 추출 완료`);
+    return;
+  }
+
+  if (msg.type === "lds-template:extract") {
+    const catalog = await extractLdsTemplateCatalog();
+    await saveLdsTemplateCatalog(catalog);
+    setExtraFigmaPool(catalog.components);
+    figma.ui.postMessage({ type: "lds-template:extracted", catalog });
+    figma.notify(`LDS 템플릿 ${catalog.components.length}개 컴포넌트 캐싱 완료`);
+    return;
+  }
+
+  if (msg.type === "lds-template:get") {
+    const catalog = await loadLdsTemplateCatalog();
+    figma.ui.postMessage({ type: "lds-template:loaded", catalog });
+    return;
+  }
+
+  if (msg.type === "lds-template:clear") {
+    await clearLdsTemplateCatalog();
+    setExtraFigmaPool([]);
+    figma.ui.postMessage({ type: "lds-template:cleared" });
+    figma.notify("LDS 템플릿 카탈로그 삭제됨");
     return;
   }
 

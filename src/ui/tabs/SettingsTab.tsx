@@ -1,5 +1,5 @@
 import { useRef, useState } from "preact/hooks";
-import type { PluginSettings } from "../../types";
+import type { LdsTemplateCatalog, PluginSettings } from "../../types";
 import {
   BUILTIN_LDS,
   getFigmaComponentKey,
@@ -23,6 +23,23 @@ interface Props {
   extractedLibrary: ExtractedLibrary | null;
   onExtract: () => void;
   extracting: boolean;
+  ldsTemplateCatalog: LdsTemplateCatalog | null;
+  onExtractLdsTemplate: () => void;
+  onClearLdsTemplate: () => void;
+  ldsTemplateExtracting: boolean;
+}
+
+function formatRelativeTime(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return iso;
+  const diff = Date.now() - then;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "방금 전";
+  if (min < 60) return `${min}분 전`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}시간 전`;
+  const day = Math.floor(hr / 24);
+  return `${day}일 전`;
 }
 
 // AI 네이밍 추론 기능은 잘못된 LDS 매칭을 유발해 일시 비활성화.
@@ -104,7 +121,11 @@ export function SettingsTab({
   savedMark,
   extractedLibrary,
   onExtract,
-  extracting
+  extracting,
+  ldsTemplateCatalog,
+  onExtractLdsTemplate,
+  onClearLdsTemplate,
+  ldsTemplateExtracting
 }: Props) {
   const [apiKey, setApiKey] = useState(settings.apiKey);
   const [model, setModel] = useState(settings.model);
@@ -258,6 +279,46 @@ export function SettingsTab({
         <p class="settings-note">
           키 발급: <code>https://console.anthropic.com/</code>
         </p>
+      )}
+
+      <div class="section-title" style={{ marginTop: 20 }}>
+        LDS 템플릿 카탈로그
+      </div>
+      <p class="settings-desc">
+        Published된 LDS 템플릿 파일에서 플러그인을 실행 → COMPONENT/COMPONENT_SET 전체 스캔 →
+        이 기기에 캐싱됩니다. 이후 모든 작업 파일에서 매처가 자동으로 이 어휘를 활용합니다.
+      </p>
+      {ldsTemplateCatalog ? (
+        <>
+          <p class="settings-desc" style={{ marginTop: 4 }}>
+            <strong>{ldsTemplateCatalog.sourceFileName}</strong> ·{" "}
+            <strong>{ldsTemplateCatalog.components.length}개</strong> 컴포넌트 ·{" "}
+            {formatRelativeTime(ldsTemplateCatalog.extractedAt)} 추출
+          </p>
+          <div class="settings-actions">
+            <button class="btn" onClick={onExtractLdsTemplate} disabled={ldsTemplateExtracting}>
+              {ldsTemplateExtracting ? "추출 중..." : "다시 추출 (현재 파일)"}
+            </button>
+            <button class="btn" onClick={onClearLdsTemplate} disabled={ldsTemplateExtracting}>
+              캐시 삭제
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p class="settings-desc" style={{ marginTop: 4 }}>
+            아직 캐싱된 템플릿이 없습니다. LDS 템플릿 파일에서 실행해주세요.
+          </p>
+          <div class="settings-actions">
+            <button
+              class="btn primary"
+              onClick={onExtractLdsTemplate}
+              disabled={ldsTemplateExtracting}
+            >
+              {ldsTemplateExtracting ? "추출 중..." : "현재 파일에서 템플릿 추출"}
+            </button>
+          </div>
+        </>
       )}
 
       <div class="section-title" style={{ marginTop: 20 }}>

@@ -1,5 +1,10 @@
 import JSZip from "jszip";
 import type { SerializedNode } from "../ai/conversionSerialize";
+import type { LdsTemplateCatalog } from "../types";
+import {
+  FOUNDATION_CSS,
+  FOUNDATION_TOKEN_NAMES_BY_FILE
+} from "../data/foundationTokens.generated";
 
 export interface ExportPackScreen {
   rootLabel: string;
@@ -20,6 +25,8 @@ export interface ExportPackInput {
   projectName: string;
   screens: ExportPackScreen[];
   libraryComponents: string[];
+  // 캐싱된 LDS 템플릿 catalog — 있으면 variant property까지 PROMPT.md에 나열.
+  ldsTemplateCatalog?: LdsTemplateCatalog | null;
   ldsReference: string;
   systemPrompt: string;
   flow?: FlowLink[];
@@ -82,6 +89,12 @@ export async function buildExportPack(input: ExportPackInput): Promise<ExportPac
 
   if (input.ldsReference.trim()) {
     zip.file("lds.md", input.ldsReference.trim() + "\n");
+  }
+
+  // foundation CSS 파일 번들 — AI가 실제 토큰 값을 확인할 수 있게 원본 포함.
+  const foundationFolder = zip.folder("foundation");
+  for (const [filename, content] of Object.entries(FOUNDATION_CSS)) {
+    foundationFolder?.file(filename, content);
   }
 
   if (input.flow && input.flow.length > 0) {
@@ -178,8 +191,25 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
 
   parts.push("## 라이브러리 컴포넌트 (컴포넌트 참조 시 이 이름을 verbatim 사용)");
   const cleanComponents = filterLibraryComponents(input.libraryComponents);
+  // catalog가 있으면 variant property까지 같이 출력. 이름 → catalog entry 매핑.
+  const variantByName = new Map<string, Record<string, string[]>>();
+  if (input.ldsTemplateCatalog) {
+    for (const e of input.ldsTemplateCatalog.components) {
+      if (e.variantProperties) variantByName.set(e.name, e.variantProperties);
+    }
+  }
   if (cleanComponents.length > 0) {
-    for (const name of cleanComponents) parts.push(`- ${name}`);
+    for (const name of cleanComponents) {
+      const variants = variantByName.get(name);
+      if (variants) {
+        const spec = Object.entries(variants)
+          .map(([prop, opts]) => `${prop}: ${opts.join("|")}`)
+          .join(" · ");
+        parts.push(`- ${name} (${spec})`);
+      } else {
+        parts.push(`- ${name}`);
+      }
+    }
   } else {
     parts.push("- (없음)");
   }
@@ -189,7 +219,33 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
       `_${input.libraryComponents.length - cleanComponents.length}개 항목이 deprecated/placeholder로 간주되어 제외됨._`
     );
   }
+  if (variantByName.size > 0) {
+    parts.push("");
+    parts.push(
+      "_variant property 표기: 괄호 안 값만 유효한 조합. 다른 조합을 만들어내지 말 것._"
+    );
+  }
   parts.push("");
+
+  // 디자인 토큰 enumeration — AI가 리터럴 값 대신 이 변수명만 쓰게 강제.
+  const tokenFiles = Object.entries(FOUNDATION_TOKEN_NAMES_BY_FILE).filter(
+    ([, names]) => names.length > 0
+  );
+  if (tokenFiles.length > 0) {
+    parts.push("## 사용 가능한 디자인 토큰");
+    parts.push(
+      "아래 CSS 변수만 사용. 색상/타이포/간격은 **리터럴 값 금지** — 반드시 `var(--name)` 참조. " +
+        "원본 정의와 값은 `foundation/` 디렉토리의 CSS 파일 참고. 여기 없는 토큰을 지어내지 말 것."
+    );
+    parts.push("");
+    for (const [filename, names] of tokenFiles) {
+      parts.push(`### ${filename} (${names.length}개)`);
+      parts.push("```");
+      for (const n of names) parts.push(n);
+      parts.push("```");
+      parts.push("");
+    }
+  }
 
   parts.push("## 변환 시스템 프롬프트\n");
   parts.push(input.systemPrompt.trim());
@@ -223,6 +279,7 @@ function renderReadmeMd(input: ExportPackInput, slugs: string[]): string {
     "- `README.md` — 이 파일",
     "- `icons/` — 추출된 아이콘 SVG + `_manifest.json` (화면별 localId → file 매핑)",
     "- `screens/<slug>/` — 화면별 메타/리포트" + (input.includeTreeJson ? "/트리" : ""),
+    "- `foundation/` — 디자인 토큰 CSS (변수 정의/값)",
     input.ldsReference.trim() ? "- `lds.md` — 디자인 시스템 레퍼런스" : null,
     input.flow && input.flow.length > 0 ? "- `flow.md` — 프로토타입 네비게이션 그래프" : null,
     "",
