@@ -1,6 +1,7 @@
 import { collectAiCandidates, collectAiContextsForIds } from "./ai/semanticInfer";
 import { serializeNode, extractIcons } from "./ai/conversionSerialize";
 import { setExtraFigmaPool } from "./ai/ldsMatch";
+import { BUNDLED_LDS_CATALOG } from "./data/ldsCatalog.generated";
 import { optimizeTree } from "./ai/treeOptimize";
 import { computeCodeReadiness } from "./analyzers/codeReadiness";
 import { runHealthCheck } from "./analyzers/healthCheck";
@@ -152,7 +153,14 @@ async function saveSettings(settings: PluginSettings): Promise<void> {
 // 모든 작업 파일에서 매처 풀에 자동 병합된다.
 // ============================================================================
 
-async function loadLdsTemplateCatalog(): Promise<LdsTemplateCatalog | null> {
+// 번들 카탈로그 = 빌드 타임에 인라인된 메인테이너 추출본 (모든 사용자 공통).
+// override 카탈로그 = clientStorage 로컬 추출본 (개발자/테스터가 빌드 없이 시험).
+// 런타임 풀: bundled.components + override.components (key 기준 dedupe, override 우선).
+function getBundledLdsCatalog(): LdsTemplateCatalog | null {
+  return BUNDLED_LDS_CATALOG;
+}
+
+async function loadLdsOverrideCatalog(): Promise<LdsTemplateCatalog | null> {
   const stored = await figma.clientStorage.getAsync(LDS_TEMPLATE_CATALOG_KEY);
   if (!stored || typeof stored !== "object") return null;
   const catalog = stored as LdsTemplateCatalog;
@@ -160,12 +168,22 @@ async function loadLdsTemplateCatalog(): Promise<LdsTemplateCatalog | null> {
   return catalog;
 }
 
-async function saveLdsTemplateCatalog(catalog: LdsTemplateCatalog): Promise<void> {
+async function saveLdsOverrideCatalog(catalog: LdsTemplateCatalog): Promise<void> {
   await figma.clientStorage.setAsync(LDS_TEMPLATE_CATALOG_KEY, catalog);
 }
 
-async function clearLdsTemplateCatalog(): Promise<void> {
+async function clearLdsOverrideCatalog(): Promise<void> {
   await figma.clientStorage.deleteAsync(LDS_TEMPLATE_CATALOG_KEY);
+}
+
+function mergeCatalogPool(
+  bundled: LdsTemplateCatalog | null,
+  override: LdsTemplateCatalog | null
+): LdsTemplateCatalogEntry[] {
+  const byKey = new Map<string, LdsTemplateCatalogEntry>();
+  if (bundled) for (const c of bundled.components) byKey.set(c.key, c);
+  if (override) for (const c of override.components) byKey.set(c.key, c); // override wins
+  return Array.from(byKey.values());
 }
 
 // 현재 파일이 LDS 템플릿이라고 가정하고 모든 COMPONENT / COMPONENT_SET을 스캔.
@@ -227,10 +245,14 @@ async function extractLdsTemplateCatalog(): Promise<LdsTemplateCatalog> {
   };
 }
 
-async function initLdsTemplatePool(): Promise<LdsTemplateCatalog | null> {
-  const catalog = await loadLdsTemplateCatalog();
-  if (catalog) setExtraFigmaPool(catalog.components);
-  return catalog;
+async function initLdsTemplatePool(): Promise<{
+  bundled: LdsTemplateCatalog | null;
+  override: LdsTemplateCatalog | null;
+}> {
+  const bundled = getBundledLdsCatalog();
+  const override = await loadLdsOverrideCatalog();
+  setExtraFigmaPool(mergeCatalogPool(bundled, override));
+  return { bundled, override };
 }
 
 async function extractLibraryComponents(): Promise<{
@@ -310,7 +332,7 @@ async function collectLibraryVocabulary(root: BaseNode): Promise<string[]> {
   return Array.from(names).sort();
 }
 
-figma.showUI(__html__, { width: 380, height: 620, themeColors: true });
+figma.showUI(__html__, { width: 420, height: 660, themeColors: true });
 
 // 캐싱된 LDS 템플릿 catalog가 있으면 매처 풀에 주입. UI에는 "ready" 수신 시 broadcast.
 initLdsTemplatePool().catch((err) => console.warn("[DesignReady] lds template init failed:", err));
@@ -622,24 +644,28 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
 
   if (msg.type === "lds-template:extract") {
     const catalog = await extractLdsTemplateCatalog();
-    await saveLdsTemplateCatalog(catalog);
-    setExtraFigmaPool(catalog.components);
-    figma.ui.postMessage({ type: "lds-template:extracted", catalog });
-    figma.notify(`LDS 템플릿 ${catalog.components.length}개 컴포넌트 캐싱 완료`);
+    await saveLdsOverrideCatalog(catalog);
+    const bundled = getBundledLdsCatalog();
+    setExtraFigmaPool(mergeCatalogPool(bundled, catalog));
+    // download=true 플래그로 UI에서 JSON 파일 저장 트리거 (메인테이너가 src/data/ldsCatalog.bundled.json에 커밋)
+    figma.ui.postMessage({ type: "lds-template:extracted", catalog, download: true });
+    figma.notify(`LDS 템플릿 ${catalog.components.length}개 추출 — JSON 다운로드됩니다`);
     return;
   }
 
   if (msg.type === "lds-template:get") {
-    const catalog = await loadLdsTemplateCatalog();
-    figma.ui.postMessage({ type: "lds-template:loaded", catalog });
+    const bundledCatalog = getBundledLdsCatalog();
+    const overrideCatalog = await loadLdsOverrideCatalog();
+    figma.ui.postMessage({ type: "lds-template:loaded", bundledCatalog, overrideCatalog });
     return;
   }
 
   if (msg.type === "lds-template:clear") {
-    await clearLdsTemplateCatalog();
-    setExtraFigmaPool([]);
+    await clearLdsOverrideCatalog();
+    const bundled = getBundledLdsCatalog();
+    setExtraFigmaPool(mergeCatalogPool(bundled, null));
     figma.ui.postMessage({ type: "lds-template:cleared" });
-    figma.notify("LDS 템플릿 카탈로그 삭제됨");
+    figma.notify("로컬 override 삭제됨 (번들 카탈로그는 유지)");
     return;
   }
 

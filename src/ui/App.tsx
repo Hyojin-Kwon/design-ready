@@ -20,12 +20,19 @@ import { DiagnoseTab } from "./tabs/DiagnoseTab";
 import { FixTab } from "./tabs/FixTab";
 import { ConversionTab } from "./tabs/ConversionTab";
 import { SettingsTab } from "./tabs/SettingsTab";
+import { AboutTab } from "./tabs/AboutTab";
 
+const PLUGIN_VERSION = "0.1.0";
+
+// __DEV__: 빌드 타임 플래그 (DESIGN_READY_DEV=true npm run build).
+// PROD 빌드 = 일반 사용자용, Settings 탭 대신 About 탭만 노출.
 const TABS = [
   { id: "diagnose", label: "진단" },
   { id: "fix", label: "수정" },
   { id: "convert", label: "Export Pack" },
-  { id: "settings", label: "설정" }
+  __DEV__
+    ? { id: "settings", label: "설정" }
+    : { id: "about", label: "About" }
 ];
 
 const DEFAULT_SETTINGS: PluginSettings = {
@@ -37,6 +44,26 @@ const DEFAULT_SETTINGS: PluginSettings = {
 
 function post(msg: PluginMessage) {
   parent.postMessage({ pluginMessage: msg }, "*");
+}
+
+// 번들 + override 카탈로그 병합 (key 기준 dedupe, override 우선).
+function mergeCatalogs(
+  bundled: LdsTemplateCatalog | null,
+  override: LdsTemplateCatalog | null
+): LdsTemplateCatalog | null {
+  if (!bundled && !override) return null;
+  const byKey = new Map<string, LdsTemplateCatalog["components"][number]>();
+  if (bundled) for (const c of bundled.components) byKey.set(c.key, c);
+  if (override) for (const c of override.components) byKey.set(c.key, c);
+  const components = Array.from(byKey.values()).sort((a, b) => a.name.localeCompare(b.name));
+  const source = override ?? bundled!;
+  return {
+    components,
+    sourceFileName: override
+      ? `${override.sourceFileName} (+ bundled)`
+      : source.sourceFileName,
+    extractedAt: source.extractedAt
+  };
 }
 
 export function App() {
@@ -72,7 +99,8 @@ export function App() {
     componentCount: number;
   } | null>(null);
   const [extracting, setExtracting] = useState(false);
-  const [ldsTemplateCatalog, setLdsTemplateCatalog] = useState<LdsTemplateCatalog | null>(null);
+  const [bundledLdsCatalog, setBundledLdsCatalog] = useState<LdsTemplateCatalog | null>(null);
+  const [overrideLdsCatalog, setOverrideLdsCatalog] = useState<LdsTemplateCatalog | null>(null);
   const [ldsTemplateExtracting, setLdsTemplateExtracting] = useState(false);
   const [nameOverrides, setNameOverrides] = useState<Map<string, NameOverride>>(new Map());
   const [exportRunning, setExportRunning] = useState(false);
@@ -166,12 +194,27 @@ export function App() {
         setExtractedLibrary(msg.payload);
         setExtracting(false);
       } else if (msg.type === "lds-template:loaded") {
-        setLdsTemplateCatalog(msg.catalog);
+        setBundledLdsCatalog(msg.bundledCatalog);
+        setOverrideLdsCatalog(msg.overrideCatalog);
       } else if (msg.type === "lds-template:extracted") {
-        setLdsTemplateCatalog(msg.catalog);
+        setOverrideLdsCatalog(msg.catalog);
         setLdsTemplateExtracting(false);
+        if (msg.download) {
+          // 메인테이너가 src/data/ldsCatalog.bundled.json에 커밋할 수 있게 JSON 파일 다운로드
+          const blob = new Blob([JSON.stringify(msg.catalog, null, 2)], {
+            type: "application/json"
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "ldsCatalog.bundled.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 0);
+        }
       } else if (msg.type === "lds-template:cleared") {
-        setLdsTemplateCatalog(null);
+        setOverrideLdsCatalog(null);
       } else if (msg.type === "export:prepared") {
         runExport(msg.payload);
       } else if (msg.type === "export:error") {
@@ -272,11 +315,12 @@ export function App() {
         healthReport: s.healthReport,
         semanticMap: s.semanticMap
       }));
+      const mergedCatalog = mergeCatalogs(bundledLdsCatalog, overrideLdsCatalog);
       const { blob, filename } = await buildExportPack({
         projectName: payload.projectName,
         screens,
         libraryComponents: payload.libraryComponents,
-        ldsTemplateCatalog,
+        ldsTemplateCatalog: mergedCatalog,
         ldsReference: current.ldsReference ?? "",
         systemPrompt: current.systemPrompt?.trim() || DEFAULT_SYSTEM_PROMPT,
         flow: payload.flow,
@@ -498,7 +542,7 @@ export function App() {
             onExport={onExport}
           />
         )}
-        {active === "settings" && (
+        {__DEV__ && active === "settings" && (
           <SettingsTab
             settings={settings}
             onSave={onSaveSettings}
@@ -506,11 +550,15 @@ export function App() {
             extractedLibrary={extractedLibrary}
             onExtract={onExtractLibrary}
             extracting={extracting}
-            ldsTemplateCatalog={ldsTemplateCatalog}
+            bundledLdsCatalog={bundledLdsCatalog}
+            overrideLdsCatalog={overrideLdsCatalog}
             onExtractLdsTemplate={onExtractLdsTemplate}
             onClearLdsTemplate={onClearLdsTemplate}
             ldsTemplateExtracting={ldsTemplateExtracting}
           />
+        )}
+        {!__DEV__ && active === "about" && (
+          <AboutTab version={PLUGIN_VERSION} bundledLdsCatalog={bundledLdsCatalog} />
         )}
       </main>
     </div>

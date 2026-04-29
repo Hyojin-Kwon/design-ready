@@ -1,0 +1,626 @@
+{
+  "components": [
+    {
+      "name": "Dev guide - Commnet",
+      "key": "0d840cc9609d37b5910fdf0f6b44bc5ab77ab3ab"
+    },
+    {
+      "name": "Dev guide - bg dark",
+      "key": "dcda2e4239e8ad91c1fd01724e393434fe5b8f55"
+    },
+    {
+      "name": "Dev guide - bg light",
+      "key": "e6c9fc97e7b0b73f927de4ee93388507480c3895"
+    },
+    {
+      "name": "Dev guide - bg overlay",
+      "key": "15945809d1143b22b2b47e26a3aafed384bfe9ad"
+    },
+    {
+      "name": "Dev guide - color mode num",
+      "key": "f64c2e8aaf66f24687d3509837cd858752843662"
+    },
+    {
+      "name": "Dev guide - colormode list",
+      "key": "02f9e9418220e961f6706ca6bca6bfc9b9813278"
+    },
+    {
+      "name": "Dev guide - colormode title",
+      "key": "8c5087d7a5e34e121b3cb36d88ad76e2a63e998b"
+    },
+    {
+      "name": "Dev guide - info",
+      "key": "53cf7e44ca5fcad3a688b9bec877f829e2f129c0"
+    },
+    {
+      "name": "Dev guide - sub title 4",
+      "key": "ac1f27a25bee76c25e08b87aca8b24f8e3393459"
+    },
+    {
+      "name": "Dev guide - sub title 6",
+      "key": "af805f23be0831d9ffce4c155f1d53fea0171531"
+    },
+    {
+      "name": "Dev guide - title",
+      "key": "d63f3a83e9426e7bf6e40132fb31a5464ef8e493"
+    },
+    {
+      "name": "Group 8400",
+      "key": "f9590871c8cc5f607ecf298b462f922767a271e7"
+    },
+    {
+      "name": "Rectangle 495",
+      "key": "91069a2275531a7be0776f7f1d34a9f6f28a6edf"
+    },
+    {
+      "name": "Rectangle 496",
+      "key": "6e26b73b6c687125a9acfaefe982cd9d271d6fa5"
+    },
+    {
+      "name": "X[Android] Bottom Navigation",
+      "key": "8aac604e2088d22d2a71c0140957bf1f2a7f381b"
+    },
+    {
+      "name": "X[Android] Bottom Navigation_Dark",
+      "key": "5c5977e4b7f0fe48971382cad222a622da931653"
+    },
+    {
+      "name": "X[Android] Bottom Sheet",
+      "key": "bf2a8a76d783ebc4c11c702353f862b8e70ddd6d"
+    },
+    {
+      "name": "X[Android] Button-Box",
+      "key": "f9d83be7e1ea7f6cdbd2613fdbbc7f0ca2c682e4"
+    },
+    {
+      "name": "X[Android] Button-Capsule",
+      "key": "1b77dd63cb656be256f7afc07c7171c17d40614c"
+    },
+    {
+      "name": "X[Android] Button-Floating Action Button",
+      "key": "56d8ef216d2bd2129845e3e6ec7646bbc5761761"
+    },
+    {
+      "name": "X[Android] Button-Icon",
+      "key": "03ab43d5ca6d8a415a1c9293e1f19db330a0d28a"
+    },
+    {
+      "name": "X[Android] Button-Text",
+      "key": "3292109c727a364a070da33f371da3b460071489"
+    },
+    {
+      "name": "X[Android] Chatroom-Top Navigation",
+      "key": "658920b3f2c556877be4bfe8e341f523729b110f"
+    },
+    {
+      "name": "X[Android] Chips",
+      "key": "494fcc5d2a5b6d6018829e9004255bdc59aa75fe"
+    },
+    {
+      "name": "X[Android] Controls",
+      "key": "e48b9f04c4feffa234067b10cad53bc8a10cd6d5"
+    },
+    {
+      "name": "X[Android] Dialog-Snackbar Bottom",
+      "key": "ba5e61627794e71a616263440092241d2b999214"
+    },
+    {
+      "name": "X[Android] Dialog-Snackbar Top",
+      "key": "561d08c17032b965fa939b64412b5b8293029af3"
+    },
+    {
+      "name": "X[Android] Dialog-Toast Overlay",
+      "key": "8b0b83bfd30d1702588e7a5c3e52004757e5d9a0"
+    },
+    {
+      "name": "X[Android] Dialog-Tooltip",
+      "key": "04975dba615c0f93546327259b4d049fc78960f8"
+    },
+    {
+      "name": "X[Android] Empty-Large",
+      "key": "25520323725364b01ebb4b2c9c5741b38760db48"
+    },
+    {
+      "name": "X[Android] Empty-Small",
+      "key": "eb3e566490fdd1992d98c0d7bcf04b91fbd9a5ae"
+    },
+    {
+      "name": "X[Android] Friends Picker",
+      "key": "0043789e7e8e93aab4c19fce2c3015d8aaf2c350"
+    },
+    {
+      "name": "X[Android] Guide & Notice Banner",
+      "key": "b539fdc06bf2ed4d6886cdcb8df2d5627505e4a6"
+    },
+    {
+      "name": "X[Android] LAN Banner",
+      "key": "632a2be38d9fa02578a393ad21bdff1d7868f9e3"
+    },
+    {
+      "name": "X[Android] List",
+      "key": "522b545bf73f614b20e723c8ccc29df06896a910"
+    },
+    {
+      "name": "X[Android] List header",
+      "key": "6ac11414cfecd45aa1b729eaaba6f3f97a831e3f"
+    },
+    {
+      "name": "X[Android] Popup",
+      "key": "3ea30c76a0fbf954e07612aabde8e0d9ea743866"
+    },
+    {
+      "name": "X[Android] Profile",
+      "key": "daff2b9969e6f74e65ee89ab9da3c34abfd5921a"
+    },
+    {
+      "name": "X[Android] Progress Indicator",
+      "key": "2cb1880f0d79d20fce5f1fa1a336ab411e9f6ca1"
+    },
+    {
+      "name": "X[Android] Promotion Banner",
+      "key": "8b31934acb2c5e92c5fbb43d58b3b311bb1016a5"
+    },
+    {
+      "name": "X[Android] Refresh Indicator",
+      "key": "19298c4da3902b9b533bf1fc98628d39418ec03b"
+    },
+    {
+      "name": "X[Android] Search Bar",
+      "key": "cea8d18b6490419d6f2977c498641815425e7ecc"
+    },
+    {
+      "name": "X[Android] Slider",
+      "key": "88f7411d675220ef0a16956191bb3b36d8a82fc5"
+    },
+    {
+      "name": "X[Android] SmartCH Banner",
+      "key": "dd7de67ffa9a7bec2d6c8c603616e702840a62cf"
+    },
+    {
+      "name": "X[Android] Tag",
+      "key": "da8f523857b1ce5259e86d1d31e365b95dc1e3f7"
+    },
+    {
+      "name": "X[Android] Text Inputs",
+      "key": "e2b191b54e543c42fdf1b177c998c99abeb68260"
+    },
+    {
+      "name": "X[Android] Toolbar",
+      "key": "8f85d9f80e11efcc34b2e795a26b6741fe8602f8"
+    },
+    {
+      "name": "X[Android] Top Navigation",
+      "key": "ceffa8857f69cbad9a0350b3484cbc573fc32aec"
+    },
+    {
+      "name": "X[Android] Video Player",
+      "key": "b6cc4a5753bd5ba4a86eef535db12d0ef007ca6d"
+    },
+    {
+      "name": "X[Android][Contents] Card",
+      "key": "3dd3e1e2ab93fe3723462f93edd00c11c63327b2"
+    },
+    {
+      "name": "X[Android][Contents] Image Grid",
+      "key": "0620531387cad72ed783c59460f995fb7dfb0475"
+    },
+    {
+      "name": "[Android] Bottom Navigation",
+      "key": "bb2a5d88570d227c48d26b138fb0b92457e9b36b"
+    },
+    {
+      "name": "[Android] Bottom Sheet",
+      "key": "318235d9b7965d5fce17a3a8dc7e433fc15338f6"
+    },
+    {
+      "name": "[Android] Button-Box",
+      "key": "0dd5c0dfdb5f5914c7195ea2424aec0a1e499b8d"
+    },
+    {
+      "name": "[Android] Button-Capsule",
+      "key": "84116f22192827423f40ef074e3064fd006c919b"
+    },
+    {
+      "name": "[Android] Button-Floating Action Button",
+      "key": "781af9b8c3f01f02c855a617bd607692b6b6b181"
+    },
+    {
+      "name": "[Android] Button-Icon",
+      "key": "0f0725891ae727b0ee4ae4fa980acf39605fc174"
+    },
+    {
+      "name": "[Android] Button-Text",
+      "key": "f874c6c5fbcf70ecc3d3ee2352c4775664b7a9b1"
+    },
+    {
+      "name": "[Android] Button-Toggle",
+      "key": "4fd5a69b940ad70ecd8cc60b4942d6b68754a694"
+    },
+    {
+      "name": "[Android] Chatroom-Background",
+      "key": "c27de997c67c75fabb9cbf2044b070c5cf34c930"
+    },
+    {
+      "name": "[Android] Chatroom-Card",
+      "key": "d58787744543c54c2ee31f2193072f912b3cc5d9"
+    },
+    {
+      "name": "[Android] Chatroom-Flex message",
+      "key": "cf97182811160378135d5578ef7b1fe81720d27d"
+    },
+    {
+      "name": "[Android] Chatroom-Header Layer",
+      "key": "99289f2150bcf5fcd8228eb6689cf81b105a6a21"
+    },
+    {
+      "name": "[Android] Chatroom-Input",
+      "key": "60ed46f7307468e4143eff4592efe35783d79817"
+    },
+    {
+      "name": "[Android] Chatroom-Keypad",
+      "key": "7d65b4943550b45d211bc33c4746ea4c85dbf2bd"
+    },
+    {
+      "name": "[Android] Chatroom-Message",
+      "key": "37dfca26066d62d36262ccdfb455f8cfde90c610"
+    },
+    {
+      "name": "[Android] Chatroom-Top Navigation",
+      "key": "026648208b8bc1e75b4bfad98b4bc7bd4a5725d3"
+    },
+    {
+      "name": "[Android] Chips",
+      "key": "587e73bc99757b1d07099b03eb1509de36f135e1"
+    },
+    {
+      "name": "[Android] Controls",
+      "key": "0e691e387de3173b3a4b8f14b9613bba9d2b8e17"
+    },
+    {
+      "name": "[Android] Dialog-Snackbar Bottom",
+      "key": "1809e91fa57641c107a7f04a1e7303e63a1023f8"
+    },
+    {
+      "name": "[Android] Dialog-Snackbar Top",
+      "key": "f668363725dfbbdcc5bb8cf64f98594f9b789ad5"
+    },
+    {
+      "name": "[Android] Dialog-Toast Overlay",
+      "key": "e25cdb4e4d06bd103e0eabca9076f9ece0bcb60e"
+    },
+    {
+      "name": "[Android] Dialog-Tooltip",
+      "key": "d94d2d6774fef23cb3b5cbeb7d00d3cbb6059db9"
+    },
+    {
+      "name": "[Android] Empty-Large",
+      "key": "d4cb6ec43426c5d74a46fb270ab370b8632d4369"
+    },
+    {
+      "name": "[Android] Empty-Small",
+      "key": "2d316b707b29260e8e064b00cd8e5f19151b0a30"
+    },
+    {
+      "name": "[Android] Friends Picker",
+      "key": "65443f6faef5ef3e1a554e6f57c730bcfdd92e08"
+    },
+    {
+      "name": "[Android] Guide & Notice Banner",
+      "key": "23c62acf742e7627e29c4d5c66f32646554ccbde"
+    },
+    {
+      "name": "[Android] LAN Banner",
+      "key": "f3b3d2dbbb1b14e9046e50b8bd43cc3133d86686"
+    },
+    {
+      "name": "[Android] List",
+      "key": "f1d8d3d9602289378b8f460a08a505e4e579b014"
+    },
+    {
+      "name": "[Android] List header",
+      "key": "02d9b666fd663d51142196c13cc07cfeab1c83c1"
+    },
+    {
+      "name": "[Android] New Search Bar",
+      "key": "32f8958dc73590c129d4a8ffce1d1b809e9411de"
+    },
+    {
+      "name": "[Android] New Tab",
+      "key": "25395b81ca868742b2e513258622fb56a6ffd2c8"
+    },
+    {
+      "name": "[Android] Popup",
+      "key": "c3866d36396170c0d58095942b3a609441dc23e9"
+    },
+    {
+      "name": "[Android] Profile",
+      "key": "c0a49580cb42bca38a565621ee67e546aa37f2bb"
+    },
+    {
+      "name": "[Android] Progress Indicator",
+      "key": "a6a25b137cb87b9492c0c8d5634313249a058202"
+    },
+    {
+      "name": "[Android] Promotion Banner",
+      "key": "c22e3aa0bb7577030912f54c5b92867cceec4d82"
+    },
+    {
+      "name": "[Android] Refresh Indicator",
+      "key": "5765856f4b55edf04b4f91208c721a78159e7fc9"
+    },
+    {
+      "name": "[Android] Search Bar",
+      "key": "13c76b47dd46e7be91c684f8a83ceb04be386d27"
+    },
+    {
+      "name": "[Android] Skeleton",
+      "key": "bd969744768dcf32e7a0be04de3c1b4975444b9c"
+    },
+    {
+      "name": "[Android] Slider",
+      "key": "f2c81726d67de1bc4307673500a6a05164aab9b8"
+    },
+    {
+      "name": "[Android] SmartCH Banner",
+      "key": "63581969e68e0913bf007cc8282e4238b9af6d39"
+    },
+    {
+      "name": "[Android] Spinner",
+      "key": "626c880c61b9cb4eb185539b7adb55de3c1593e3"
+    },
+    {
+      "name": "[Android] Tab",
+      "key": "854901f96eca55f5c3c2fe64d8511b0165619d19"
+    },
+    {
+      "name": "[Android] Tag",
+      "key": "23639b9d63acb2cae9c82ed1290dddeb4eaa0e4e"
+    },
+    {
+      "name": "[Android] Text Inputs",
+      "key": "3eb8907205bf7085e9af00c108f647430e969cb8"
+    },
+    {
+      "name": "[Android] Toolbar",
+      "key": "7831336cbcf80d876250fb3e3b55d00fdfb4ffa3"
+    },
+    {
+      "name": "[Android] Top Navigation",
+      "key": "cbb766e03b4b7d3be31a2fef935987c358466ef8"
+    },
+    {
+      "name": "[Android] Video Player",
+      "key": "e87fe0b7e85240e54fd69e8b46d717eee19be7da"
+    },
+    {
+      "name": "[Android][Contents] Card",
+      "key": "623f7486a08e54d5efbfeb1a99dbc28357f791e0"
+    },
+    {
+      "name": "[Android][Contents] Image Grid",
+      "key": "928a0cccb8cc472f2f25dea057d32715945f5c21"
+    },
+    {
+      "name": "[Common] Input-Search Bar",
+      "key": "072f6dfd4ccbf479381fb1ba09cd6873eb84b428"
+    },
+    {
+      "name": "[IOS] Bottom Navigation Bar",
+      "key": "6c5089984f40e3d04c83b271b33e7724e2d02864"
+    },
+    {
+      "name": "[IOS] Bottom Sheet",
+      "key": "1a011085dec7bf104a9573f18dc449de1b534fd0"
+    },
+    {
+      "name": "[IOS] Button-Box",
+      "key": "182fca45e8fdeb6a7dd09c092ee1cb76be014f8f"
+    },
+    {
+      "name": "[IOS] Button-Capsule",
+      "key": "12aef4e63f78dce2ee3318119bc059f291f289bd"
+    },
+    {
+      "name": "[IOS] Button-Floating",
+      "key": "0c6e5ab605312680afa4c19a3af7db5105812f36"
+    },
+    {
+      "name": "[IOS] Button-Icon",
+      "key": "1ed7107553d457d77f5ee7f33caff56c02180221"
+    },
+    {
+      "name": "[IOS] Button-Text",
+      "key": "cf35d74ef72fbba5692306d059063a20e61fd895"
+    },
+    {
+      "name": "[IOS] Controls",
+      "key": "2d9190f800be2397ef52cf2aaf618d40723143d4"
+    },
+    {
+      "name": "[IOS] Dialog-Snackbar Bottom",
+      "key": "ba5cad97fccf656b3dfd1a425946c4cb5b7d36c5"
+    },
+    {
+      "name": "[IOS] Dialog-Snackbar Top",
+      "key": "66f80d0f5fb51c5a736d9917ff5e7cd35b56ef74"
+    },
+    {
+      "name": "[IOS] Dialog-Toast Overlay",
+      "key": "7e9475f96407995c22aefe8282f0223b6e49ff4b"
+    },
+    {
+      "name": "[IOS] Dialog-Tooltip",
+      "key": "5c6b36a4f67fd6fd6eecfbdd187f875d6c074f01"
+    },
+    {
+      "name": "[IOS] Guide & Notice Banner",
+      "key": "7d2931f029bccca8b60e638a14f774a76cc80907"
+    },
+    {
+      "name": "[IOS] Input",
+      "key": "0f91e8d9dcbe440ebb96bd3eca9c5f86f008baf3"
+    },
+    {
+      "name": "[IOS] LAN Banner",
+      "key": "add1cfd087ffa084101088c3f6ba0246d4a018ee"
+    },
+    {
+      "name": "[IOS] List",
+      "key": "f1ea82df492913159a0fc06c9d34e7d36858def2"
+    },
+    {
+      "name": "[IOS] List header",
+      "key": "f093cb8e703509cd9319620a1d22b4e1dc974c9c"
+    },
+    {
+      "name": "[IOS] Navigation",
+      "key": "e9ebc1bc54d6efde78ae869afb8f838d34f606c5"
+    },
+    {
+      "name": "[IOS] Popup",
+      "key": "78d7926af9c9b44005a5860ee02a5d56d6985ce3"
+    },
+    {
+      "name": "[IOS] Profile",
+      "key": "86bbaf29ec1dd609153889a9db5f0953762c53d3"
+    },
+    {
+      "name": "[IOS] Progress Indicator",
+      "key": "cd70da2d3375c72fbdbf173b015a18ad77ce79ef"
+    },
+    {
+      "name": "[IOS] Promotion Banner",
+      "key": "2b00635188b0239f905a85a12ea2923c025936bf"
+    },
+    {
+      "name": "[IOS] SmartCH Banner",
+      "key": "dad9f9fbab1ee04d11729d9367a69b146182d0f2"
+    },
+    {
+      "name": "[IOS] Spinner",
+      "key": "97babdffd8a894b380a019d72f113a360da2a9b3"
+    },
+    {
+      "name": "[IOS] Toolbar",
+      "key": "865aa235c718a80c3b6b897cdf58df13b606366e"
+    },
+    {
+      "name": "[IOS][Contents] Card",
+      "key": "a071728d64f1d0e4ef6974704e598a2a88b33ea5"
+    },
+    {
+      "name": "[iOS] Chatroom-Background",
+      "key": "535b580a5f4c24f0560540f3b8b03822d802bb00"
+    },
+    {
+      "name": "[iOS] Chatroom-Card",
+      "key": "853064154c6eb8b48e1101362370108fb2136b84"
+    },
+    {
+      "name": "[iOS] Chatroom-Flex message",
+      "key": "aa97e422ecb5563d6b353380b3b91fed8f2a88fe"
+    },
+    {
+      "name": "[iOS] Chatroom-Header Layer",
+      "key": "2160e5d2f3ed20958a9708d2683e4b46c50a44f9"
+    },
+    {
+      "name": "[iOS] Chatroom-Input",
+      "key": "7ac396dda9186f678849e7cf4e96108a00d079cf"
+    },
+    {
+      "name": "[iOS] Chatroom-Keypad",
+      "key": "afdac4696498c4f50880b6ea5d6ecd42f6d510f0"
+    },
+    {
+      "name": "[iOS] Chatroom-Message",
+      "key": "8e361c371f5e57c311158bc51b918f597079e76a"
+    },
+    {
+      "name": "[iOS] Chatroom-Top Navigation",
+      "key": "5c0ec7173dee0917cbf0e41a4d081a602027bfe4"
+    },
+    {
+      "name": "[iOS] Chips",
+      "key": "0ff49338d4fc6196b4d541106699c9b9b5030046"
+    },
+    {
+      "name": "[iOS] Empty - Large",
+      "key": "2bccfa4eb91aaae9fa50f98cde739538385100e8"
+    },
+    {
+      "name": "[iOS] Empty - Small",
+      "key": "46031f870e72d80d44b9e090bd82b1f3d1178804"
+    },
+    {
+      "name": "[iOS] New Search Bar",
+      "key": "ef9a21e6a401c18d24fccdc7e6b5640dbeb37687"
+    },
+    {
+      "name": "[iOS] New Tab",
+      "key": "1d843b764763c965f08b2c43c6587abf68bb5ee4"
+    },
+    {
+      "name": "[iOS] Refresh Indicator",
+      "key": "b741c4e731b9e027337faf9fffafe2f4caac5442"
+    },
+    {
+      "name": "[iOS] Slider",
+      "key": "7e2eb834d3da1aa22ada5c3e490607d4a7b900f4"
+    },
+    {
+      "name": "[iOS] Tab",
+      "key": "cdb83f6720a7470eb2d04ed2a55055808a391648"
+    },
+    {
+      "name": "[iOS] Tag",
+      "key": "da0f758175cf9295e9385c3a52ad39761305867d"
+    },
+    {
+      "name": "[iOS] Video Player",
+      "key": "b1a1f19c44536175883ddebdad9dbff617e2a3e9"
+    },
+    {
+      "name": "[iOS][Contents] Image Grid",
+      "key": "18f6d345a295f54ca14e3f3d488b537df4959e91"
+    },
+    {
+      "name": "android view port",
+      "key": "6469aaafc1a838ccaa7cfc3b89cc14d4bbd04a33"
+    },
+    {
+      "name": "iOS view port",
+      "key": "d744351bc1378c7b8d48c1381625a464fdebec5e"
+    },
+    {
+      "name": "margin h",
+      "key": "a507c5de42f3d04d162fd25bf3ae28f33860d761"
+    },
+    {
+      "name": "margin h",
+      "key": "5dca9974017964e085f9138f04cf912fa4f183dc"
+    },
+    {
+      "name": "margin w",
+      "key": "d229959307813758fdf583067b16ba5fdee15b4f"
+    },
+    {
+      "name": "margin w",
+      "key": "c5e61facad3ee02c7ea236827b2641409c10a045"
+    },
+    {
+      "name": "message/img/charoom_bubble_receive",
+      "key": "dd2acb5f58474dbe0ae0502697d865e4a6e532bb"
+    },
+    {
+      "name": "progress_linear_image_check",
+      "key": "8aa99edf43fc540b493eecc99e895d8477daee54"
+    },
+    {
+      "name": "progress_linear_image_checkbox",
+      "key": "f6b6a5c43a36774006ef12292059f56aab91a19d"
+    }
+  ],
+  "sourceFileName": "LINE Messenger Template (Copy)",
+  "extractedAt": "2026-04-28T01:11:15.734Z"
+}

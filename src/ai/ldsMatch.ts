@@ -40,13 +40,10 @@ const STOPWORDS = new Set([
   "mode",
   "state",
   "variant",
-  "style",
-  // 의미 없는 variant 기본값
-  "off",
-  "on",
-  "default",
-  "common",
-  "none"
+  "style"
+  // 주의: "off", "on", "default", "common", "none"은 STOPWORDS가 아님.
+  // LDS 네이밍에서 이들은 실제 variant 값이라 형제 컴포넌트(예: Notification - OFF vs OFF2)를
+  // 구분하는 핵심 신호. 드롭하면 terminal 비교에서 둘이 같아 보여 오탐 발생.
 ]);
 
 // "Property=Value" 또는 "Property = Value" 형태에서 Property 이름 제거.
@@ -171,44 +168,92 @@ function scorePair(
   const queryRecall = intersection / queryTokens.size;
   let score = Math.max(jaccard, queryRecall * 0.95);
 
-  // 2-단어 구(句) 매칭 보너스. "image grid", "message bubble" 같은 명사구가
-  // 양쪽에 동시 등장하면 강한 신호.
-  if (queryBigrams.size > 0) {
-    const candBigrams = bigrams(candList);
-    let shared = 0;
-    for (const b of queryBigrams) if (candBigrams.has(b)) shared += 1;
-    if (shared > 0) {
-      // 구당 0.25씩, 최대 +0.4 가산
-      score += Math.min(0.4, shared * 0.25);
-    }
-  }
-
-  if (exclusiveDisagreement(queryTokens, candTokens, PLATFORM_TOKENS)) score -= 0.6;
-  if (exclusiveDisagreement(queryTokens, candTokens, THEME_TOKENS)) score -= 0.35;
-
-  // 마지막 세그먼트(실제 컴포넌트명) 일치 체크.
-  // 경로 prefix만 같고 실제 이름이 다르면 "형제 컴포넌트 오탐"이라 강하게 감점.
-  // 예: "... / Icons / Notification - OFF1" vs "... / Icons / Add" 는 prefix 전부 같아도
-  // 실제 아이콘은 전혀 다름. terminal 토큰 교집합 0이면 확신 있는 매칭 불가.
+  // 마지막 세그먼트(실제 컴포넌트명) 일치 분석.
+  // 경로 prefix만 같고 실제 variant가 다른 형제 컴포넌트 오탐을 막는 핵심 로직.
+  // 예: "... / Notification - OFF2" vs "... / Notification - OFF" — path는 거의 같지만
+  // 실제 variant는 다른 컴포넌트.
+  // 3가지 케이스로 분기:
+  //   - no overlap: 완전 다른 컴포넌트 (큰 페널티, bigram 보너스 무력화)
+  //   - 양쪽 모두 unique 토큰 보유: variant divergence (큰 페널티, bigram 스케일 다운)
+  //   - 한쪽이 다른 쪽의 부분집합: 정당한 매칭 (보너스 작게, bigram 그대로)
+  let terminalAgreement = 1; // 1=정당 매칭, 0.25=variant divergence, 0=완전 다름
+  let termPenalty = 0;
+  let termBonus = 0;
   if (queryTerminal.size > 0) {
     const candTerminal = terminalTokens(candidate);
     if (candTerminal.size > 0) {
       let termOverlap = 0;
       for (const t of queryTerminal) if (candTerminal.has(t)) termOverlap += 1;
       if (termOverlap === 0) {
-        score -= 0.5; // 형제 오탐 방지. 100% 매칭 → ~50%로.
+        terminalAgreement = 0;
+        termPenalty = 0.5;
       } else {
-        // terminal 일치 비율 보너스 (작게).
-        const termRecall = termOverlap / queryTerminal.size;
-        score += Math.min(0.15, termRecall * 0.15);
+        const queryUnique = queryTerminal.size - termOverlap;
+        const candUnique = candTerminal.size - termOverlap;
+        if (queryUnique > 0 && candUnique > 0) {
+          // 양쪽에 고유 토큰 → 같은 path여도 다른 variant.
+          // 예: {title, body3} vs {title, bold} — title 겹쳐도 body3 vs bold가 핵심 차이.
+          terminalAgreement = 0.25;
+          termPenalty = 0.45;
+        } else {
+          // 부분집합 (한쪽이 다른쪽 포함) — 정당한 매칭.
+          const termRecall = termOverlap / queryTerminal.size;
+          termBonus = Math.min(0.15, termRecall * 0.15);
+        }
       }
     }
   }
+
+  // 2-단어 구(句) 매칭 보너스. "image grid", "message bubble" 같은 명사구가
+  // 양쪽에 동시 등장하면 강한 신호. 단, terminal divergence 케이스에선 path 유사성이
+  // 같은 variant를 의미하지 않으므로 보너스를 스케일 다운.
+  if (queryBigrams.size > 0) {
+    const candBigrams = bigrams(candList);
+    let shared = 0;
+    for (const b of queryBigrams) if (candBigrams.has(b)) shared += 1;
+    if (shared > 0) {
+      score += Math.min(0.4, shared * 0.25) * terminalAgreement;
+    }
+  }
+
+  if (exclusiveDisagreement(queryTokens, candTokens, PLATFORM_TOKENS)) score -= 0.6;
+  if (exclusiveDisagreement(queryTokens, candTokens, THEME_TOKENS)) score -= 0.35;
+
+  score += termBonus;
+  score -= termPenalty;
 
   // 내부 점수는 clamp하지 않음 — 후보 간 비교 시 bonus 적층이 clamp에 가려져
   // 테마/플랫폼 페널티가 동점에 묻히는 버그를 피한다. 최종 반환 시에만 clamp.
   if (score < 0) score = 0;
   return { score, jaccard };
+}
+
+// 100% exact match (대소문자/주변 공백 무시)만 반환. 시스템 카테고리(디태치 LDS 후보) 전용.
+// fuzzy 매처는 형제 컴포넌트 오탐 위험이 있어 디태치 교체같은 파괴적 액션엔 부적합.
+export function findExactLdsMatch(nodeName: string): LdsMatch | null {
+  const norm = (s: string) => s.trim().toLowerCase();
+  const target = norm(nodeName);
+  if (!target) return null;
+
+  for (const candidate of BUILTIN_LDS.components) {
+    if (norm(candidate) === target) {
+      return { match: candidate, key: null, score: 1, jaccard: 1, source: "components" };
+    }
+  }
+  for (const entry of EXTRA_FIGMA_POOL) {
+    const name = entry.name;
+    if (norm(name) === target) {
+      return { match: name, key: entry.key ?? null, score: 1, jaccard: 1, source: "figmaComponents" };
+    }
+  }
+  for (const entry of BUILTIN_LDS.figmaComponents ?? []) {
+    const name = getFigmaComponentName(entry);
+    const key = getFigmaComponentKey(entry);
+    if (norm(name) === target) {
+      return { match: name, key, score: 1, jaccard: 1, source: "figmaComponents" };
+    }
+  }
+  return null;
 }
 
 export function findLdsMatch(

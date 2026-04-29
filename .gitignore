@@ -6,3 +6,5 @@ dist/
 .claude/worktrees/
 # esbuild이 foundation/*.css에서 빌드 타임에 재생성
 src/data/foundationTokens.generated.ts
+# esbuild이 src/data/ldsCatalog.bundled.json에서 빌드 타임에 재생성
+src/data/ldsCatalog.generated.ts

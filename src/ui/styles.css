@@ -54,7 +54,7 @@ html, body, #root {
   background: transparent;
   border: none;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   border-bottom: 2px solid transparent;
 }
@@ -68,6 +68,11 @@ html, body, #root {
   flex: 1;
   overflow-y: auto;
   padding: 12px;
+}
+
+/* About 탭은 좌우 20px 적용 (tab-body 12px + 8px) */
+.about-pane {
+  padding: 0 8px;
 }
 
 .toolbar {
@@ -87,10 +92,15 @@ html, body, #root {
   position: sticky;
   bottom: -12px;
   margin: auto -12px -12px -12px;
-  padding: 12px 12px 24px 12px;
+  padding: 16px;
   background: var(--bg);
   border-top: 1px solid var(--border);
   z-index: 10;
+}
+
+.toolbar-sticky .btn {
+  padding-top: 11px;
+  padding-bottom: 11px;
 }
 
 .btn.full { width: 100%; }
@@ -137,8 +147,8 @@ html, body, #root {
   background: var(--bg);
   color: var(--fg);
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .btn.primary {
@@ -209,9 +219,9 @@ html, body, #root {
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--muted);
+  color: #777777;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 10px 0 6px;
@@ -295,23 +305,28 @@ html, body, #root {
 
 .filter-chips {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin-top: 14px;
+  margin-bottom: 16px;
 }
 
 .chip {
-  padding: 4px 8px;
-  border-radius: 12px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 6px;
+  border-radius: 999px;
   background: var(--chip-bg);
   color: var(--muted);
   border: 1px solid transparent;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .chip:disabled {
@@ -326,7 +341,7 @@ html, body, #root {
 }
 
 .chip-count {
-  font-size: 9px;
+  font-size: 11px;
   opacity: 0.8;
   font-variant-numeric: tabular-nums;
 }
@@ -471,33 +486,44 @@ html, body, #root {
 
 .issue-title {
   font-weight: 600;
-  font-size: 11px;
+  font-size: 13px;
+  color: #111111;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .issue-node {
-  color: var(--muted);
-  font-size: 10px;
-  margin-top: 2px;
+  color: #777777;
+  font-size: 12px;
+  margin-top: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .issue-desc {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
-  margin-top: 4px;
-  line-height: 1.4;
+  margin-top: 6px;
+  line-height: 1.5;
 }
 
 .empty {
-  padding: 24px 12px;
+  padding: 24px 16px;
   text-align: center;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 1.6;
+  word-break: keep-all; /* 한국어 단어 중간 줄바꿈 방지 */
+}
+
+/* tab-with-sticky 안에서 단독 안내 영역이면 가용 공간 전체 차지 + 세로 중앙 */
+.tab-with-sticky > .empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .badge {
@@ -546,6 +572,7 @@ html, body, #root {
 .suggestion-row .issue-title {
   font-size: 13px;
   font-weight: 700;
+  color: #111111;
 }
 .suggestion-row .issue-node {
   font-size: 12px;
@@ -627,28 +654,30 @@ html, body, #root {
 
 .readiness-header {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-  padding: 12px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 12px;
+  padding: 30px 12px 20px;
+  margin-bottom: 4px;
 }
 
 .readiness-copy { flex: 1; min-width: 0; }
 
+.readiness-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.01em;
+}
+
 .readiness-desc {
   margin: 6px 0 0;
-  font-size: 11px;
-  color: var(--muted);
+  font-size: 12px;
+  color: #777777;
   line-height: 1.5;
 }
 
 .gauge {
   position: relative;
-  width: 96px;
-  height: 96px;
   flex-shrink: 0;
 }
 
@@ -664,15 +693,17 @@ html, body, #root {
 .gauge-value {
   font-size: 22px;
   font-weight: 700;
+  color: #111111;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .gauge-label {
   font-size: 9px;
-  color: var(--muted);
+  color: #777777;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .metric-list {
@@ -682,10 +713,20 @@ html, body, #root {
 }
 
 .metric-row {
-  padding: 10px;
+  padding: 16px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
+  text-align: left;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.metric-row:hover {
+  background: var(--card-bg);
 }
 
 .metric-head {
@@ -697,11 +738,11 @@ html, body, #root {
 
 .metric-label {
   font-weight: 600;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .metric-weight {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
 }
 
@@ -720,23 +761,27 @@ html, body, #root {
 .metric-foot {
   display: flex;
   justify-content: space-between;
-  margin-top: 6px;
-  font-size: 10px;
+  margin-top: 8px;
+  font-size: 11px;
 }
 
 .metric-score { font-weight: 600; }
 .metric-sample { color: var(--muted); }
 
 .metric-hint {
-  margin-top: 6px;
-  font-size: 10px;
+  margin-top: 8px;
+  font-size: 12px;
   color: var(--muted);
   line-height: 1.5;
 }
 
 .metric-uplift {
-  margin-top: 4px;
-  font-size: 10px;
+  display: block;
+  margin: 12px -16px -16px -16px;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--accent);
-  font-weight: 600;
 }

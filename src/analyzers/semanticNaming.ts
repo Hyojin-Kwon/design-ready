@@ -1,5 +1,5 @@
 import type { NamingSuggestion } from "../types";
-import { findLdsMatch, tokenListOrdered } from "../ai/ldsMatch";
+import { findExactLdsMatch } from "../ai/ldsMatch";
 import {
   hasComponentNamedAncestor,
   isDefaultName,
@@ -337,24 +337,18 @@ export async function proposeSemanticNames(root: BaseNode): Promise<NamingSugges
     }
 
     if (isDetachedSuspect(node)) {
-      const match = findLdsMatch(node.name);
+      // 시스템 카테고리(디태치 LDS 후보)는 100% exact match만 추천.
+      // fuzzy 매처는 형제 컴포넌트 오탐 위험이 있어 파괴적 액션(LDS 교체)에 부적합.
+      // 이름이 LDS 카탈로그와 정확히 일치하지 않으면 제안 자체를 만들지 않음.
+      const match = findExactLdsMatch(node.name);
       if (match) {
-        const percent = Math.round(match.score * 100);
-        // 교체는 파괴적이라 "양쪽 토큰 집합이 실제로 비슷한 경우"에만 자동 교체 허용.
-        // - Jaccard ≥ 0.6: 대칭 유사도. 짧은 쿼리가 긴 후보에 우연히 포함되는 케이스 차단.
-        // - 쿼리 토큰 ≥ 3: 1~2 토큰 제네릭 이름("Primary", "Card" 등)의 오탐 차단.
-        // score(비대칭 recall 포함)는 UI 표시용으로만 쓰고, 교체 신뢰 판단엔 jaccard 사용.
-        const queryTokenCount = tokenListOrdered(node.name).length;
-        const trustworthy = match.jaccard >= 0.6 && queryTokenCount >= 3;
         suggestions.push({
           nodeId: node.id,
           nodeType: node.type,
           currentName: node.name,
           suggestedName: match.match,
-          reason: trustworthy
-            ? `디태치 의심 → LDS 매칭 "${match.match}" (유사도 ${percent}%)`
-            : `디태치 의심 → LDS 후보 "${match.match}" (유사도 ${percent}%, 대칭 유사도 ${Math.round(match.jaccard * 100)}%로 낮아 자동 교체는 불가)`,
-          ldsComponentKey: trustworthy ? (match.key ?? undefined) : undefined
+          reason: `디태치 의심 → LDS 정확 일치 "${match.match}"`,
+          ldsComponentKey: match.key ?? undefined
         });
       }
     }

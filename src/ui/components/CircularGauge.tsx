@@ -4,8 +4,8 @@ interface Props {
   label?: string;
 }
 
-export function CircularGauge({ value, size = 96, label }: Props) {
-  const strokeWidth = 10;
+export function CircularGauge({ value, size = 80, label }: Props) {
+  const strokeWidth = 8;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const clamped = Math.max(0, Math.min(100, value));

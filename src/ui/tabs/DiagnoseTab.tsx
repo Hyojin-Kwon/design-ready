@@ -70,8 +70,6 @@ export function DiagnoseTab({
 }: Props) {
   return (
     <div class="tab-with-sticky">
-      {scanTarget && <div class="scan-target-line">{scanTarget}</div>}
-
       {error && <div class="error">{error}</div>}
 
       {!result && !loading && !error && (
@@ -84,11 +82,9 @@ export function DiagnoseTab({
       {result && (
         <>
           <div class="readiness-header">
-            <CircularGauge value={result.readiness.score} label="준비도" />
+            <CircularGauge value={result.readiness.score} size={80} />
             <div class="readiness-copy">
-              <div class="section-title" style={{ margin: 0 }}>
-                코드 준비도
-              </div>
+              <div class="readiness-title">코드 준비도</div>
               <p class="readiness-desc">
                 MCP → 코드 변환 정확도 예상치. 항목을 클릭하면 관련 이슈를 볼 수 있는 수정 탭으로
                 이동합니다.
@@ -96,7 +92,6 @@ export function DiagnoseTab({
             </div>
           </div>
 
-          <div class="section-title">항목별 점수</div>
           <div class="metric-list">
             {[...result.readiness.metrics]
               .sort((a, b) => b.upliftIfFixed - a.upliftIfFixed)

@@ -231,9 +231,13 @@ export type PluginMessage =
       };
     }
   | { type: "lds-template:extract" }
-  | { type: "lds-template:extracted"; catalog: LdsTemplateCatalog }
+  | { type: "lds-template:extracted"; catalog: LdsTemplateCatalog; download?: boolean }
   | { type: "lds-template:get" }
-  | { type: "lds-template:loaded"; catalog: LdsTemplateCatalog | null }
+  | {
+      type: "lds-template:loaded";
+      bundledCatalog: LdsTemplateCatalog | null;
+      overrideCatalog: LdsTemplateCatalog | null;
+    }
   | { type: "lds-template:clear" }
   | { type: "lds-template:cleared" }
   | { type: "replace:lds"; items: Array<{ nodeId: string; componentKey: string }> }

@@ -23,7 +23,8 @@ interface Props {
   extractedLibrary: ExtractedLibrary | null;
   onExtract: () => void;
   extracting: boolean;
-  ldsTemplateCatalog: LdsTemplateCatalog | null;
+  bundledLdsCatalog: LdsTemplateCatalog | null;
+  overrideLdsCatalog: LdsTemplateCatalog | null;
   onExtractLdsTemplate: () => void;
   onClearLdsTemplate: () => void;
   ldsTemplateExtracting: boolean;
@@ -122,7 +123,8 @@ export function SettingsTab({
   extractedLibrary,
   onExtract,
   extracting,
-  ldsTemplateCatalog,
+  bundledLdsCatalog,
+  overrideLdsCatalog,
   onExtractLdsTemplate,
   onClearLdsTemplate,
   ldsTemplateExtracting
@@ -285,41 +287,49 @@ export function SettingsTab({
         LDS 템플릿 카탈로그
       </div>
       <p class="settings-desc">
-        Published된 LDS 템플릿 파일에서 플러그인을 실행 → COMPONENT/COMPONENT_SET 전체 스캔 →
-        이 기기에 캐싱됩니다. 이후 모든 작업 파일에서 매처가 자동으로 이 어휘를 활용합니다.
+        번들 카탈로그는 플러그인 빌드 시점에 인라인되어 모든 사용자에게 자동 적용됩니다.
+        로컬 override는 빌드 없이 시험할 때만 사용 (이 기기에만 저장).
       </p>
-      {ldsTemplateCatalog ? (
-        <>
-          <p class="settings-desc" style={{ marginTop: 4 }}>
-            <strong>{ldsTemplateCatalog.sourceFileName}</strong> ·{" "}
-            <strong>{ldsTemplateCatalog.components.length}개</strong> 컴포넌트 ·{" "}
-            {formatRelativeTime(ldsTemplateCatalog.extractedAt)} 추출
-          </p>
-          <div class="settings-actions">
-            <button class="btn" onClick={onExtractLdsTemplate} disabled={ldsTemplateExtracting}>
-              {ldsTemplateExtracting ? "추출 중..." : "다시 추출 (현재 파일)"}
-            </button>
-            <button class="btn" onClick={onClearLdsTemplate} disabled={ldsTemplateExtracting}>
-              캐시 삭제
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <p class="settings-desc" style={{ marginTop: 4 }}>
-            아직 캐싱된 템플릿이 없습니다. LDS 템플릿 파일에서 실행해주세요.
-          </p>
-          <div class="settings-actions">
-            <button
-              class="btn primary"
-              onClick={onExtractLdsTemplate}
-              disabled={ldsTemplateExtracting}
-            >
-              {ldsTemplateExtracting ? "추출 중..." : "현재 파일에서 템플릿 추출"}
-            </button>
-          </div>
-        </>
-      )}
+      <p class="settings-desc" style={{ marginTop: 6 }}>
+        <strong>번들:</strong>{" "}
+        {bundledLdsCatalog ? (
+          <>
+            {bundledLdsCatalog.sourceFileName} ·{" "}
+            <strong>{bundledLdsCatalog.components.length}개</strong> 컴포넌트 ·{" "}
+            {formatRelativeTime(bundledLdsCatalog.extractedAt)} 추출
+          </>
+        ) : (
+          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>없음 (메인테이너 추출 필요)</span>
+        )}
+      </p>
+      <p class="settings-desc" style={{ marginTop: 2 }}>
+        <strong>로컬 override:</strong>{" "}
+        {overrideLdsCatalog ? (
+          <>
+            {overrideLdsCatalog.sourceFileName} ·{" "}
+            <strong>{overrideLdsCatalog.components.length}개</strong> ·{" "}
+            {formatRelativeTime(overrideLdsCatalog.extractedAt)} 추출
+          </>
+        ) : (
+          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>없음</span>
+        )}
+      </p>
+      <div class="settings-actions">
+        <button class="btn" onClick={onExtractLdsTemplate} disabled={ldsTemplateExtracting}>
+          {ldsTemplateExtracting ? "추출 중..." : "현재 파일에서 추출 → JSON 다운로드"}
+        </button>
+        <button
+          class="btn"
+          onClick={onClearLdsTemplate}
+          disabled={ldsTemplateExtracting || !overrideLdsCatalog}
+        >
+          로컬 override 삭제
+        </button>
+      </div>
+      <p class="settings-desc" style={{ marginTop: 4 }}>
+        메인테이너: 추출된 JSON을 <code>src/data/ldsCatalog.bundled.json</code>에
+        커밋하고 빌드 → 다음 릴리즈에 번들로 반영됩니다.
+      </p>
 
       <div class="section-title" style={{ marginTop: 20 }}>
         개발자 모드: LDS Figma 추출

@@ -326,8 +326,6 @@ export function FixTab({
 
   return (
     <div class="tab-with-sticky">
-      {scanTarget && <div class="scan-target-line">{scanTarget}</div>}
-
       {error && <div class="error">{error}</div>}
       {fixFailures.size > 0 && (
         <div class="error">
@@ -376,10 +374,6 @@ export function FixTab({
             </>
           )}
 
-          <div class="section-title">
-            이슈 <span class="badge">{otherIssues.length}</span>
-          </div>
-
           {otherIssues.length === 0 ? (
             <div class="empty">
               {cleanupIssues.length > 0
@@ -408,8 +402,26 @@ export function FixTab({
                 <div class="autofix-bar">
                   <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
                     네이밍 제안 {combinedSuggestions.length}개 ·{" "}
-                    {appliedIds.size + replacedIds.size}개 처리됨 · 개별 "네이밍만 변경" 버튼 사용
+                    {appliedIds.size + replacedIds.size}개 처리됨 · 디태치 LDS 후보는 제외
                   </div>
+                  <button
+                    class="btn primary"
+                    disabled={anyApplying || pendingNamingSuggestions.length === 0}
+                    onClick={() =>
+                      onApplyNaming(
+                        pendingNamingSuggestions.map((s) => ({
+                          nodeId: s.nodeId,
+                          suggestedName: s.suggestedName
+                        })),
+                        "rename"
+                      )
+                    }
+                    title="디태치 LDS 후보를 제외한 나머지 네이밍 제안을 일괄 적용"
+                  >
+                    {anyApplying
+                      ? "변경 중..."
+                      : `네이밍 전체 변경 (${pendingNamingSuggestions.length})`}
+                  </button>
                 </div>
               )}
 
@@ -455,14 +467,16 @@ export function FixTab({
                         {anyReplacing ? "교체 중..." : `전체 LDS로 교체 (${ldsReplaceable.length})`}
                       </button>
                     )}
-                    <button
-                      class="btn primary"
-                      disabled={!hasAny || anyFixing}
-                      onClick={() => onAutofix(autofixableInFilter.map(toAutofixItem))}
-                      title={hasAny ? "" : "이 카테고리는 자동 수정 규칙이 없습니다"}
-                    >
-                      {anyFixing ? "수정 중..." : "일괄 자동 수정"}
-                    </button>
+                    {filter !== "style" && filter !== "system" && (
+                      <button
+                        class="btn primary"
+                        disabled={!hasAny || anyFixing}
+                        onClick={() => onAutofix(autofixableInFilter.map(toAutofixItem))}
+                        title={hasAny ? "" : "이 카테고리는 자동 수정 규칙이 없습니다"}
+                      >
+                        {anyFixing ? "수정 중..." : "일괄 자동 수정"}
+                      </button>
+                    )}
                   </div>
                 );
               })()}
