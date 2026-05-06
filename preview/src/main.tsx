@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Generated from "./FriendTab";
+import Generated from "./Setting";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
