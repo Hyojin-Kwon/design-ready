@@ -105,6 +105,7 @@ export function App() {
   const [nameOverrides, setNameOverrides] = useState<Map<string, NameOverride>>(new Map());
   const [exportRunning, setExportRunning] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [exportBlob, setExportBlob] = useState<{ blob: Blob; filename: string } | null>(null);
   const [exportSummary, setExportSummary] = useState<{
     filename: string;
     screens: number;
@@ -327,6 +328,7 @@ export function App() {
         includeTreeJson: true
       });
       triggerDownload(blob, filename);
+      setExportBlob({ blob, filename });
       const iconTotal = payload.screens.reduce(
         (acc, s) => acc + Object.keys(s.iconMap).length,
         0
@@ -350,13 +352,21 @@ export function App() {
     setExportRunning(true);
     setExportError(null);
     setExportSummary(null);
+    setExportBlob(null);
     const overrides = Array.from(nameOverrides.values());
     post({ type: "export:start", overrides: overrides.length > 0 ? overrides : undefined });
+  };
+
+  const onDownload = () => {
+    if (exportBlob) triggerDownload(exportBlob.blob, exportBlob.filename);
   };
 
   const onScan = () => {
     setLoading(true);
     setError(null);
+    setExportSummary(null);
+    setExportBlob(null);
+    setExportError(null);
     post({ type: "scan:start" });
   };
 
@@ -540,6 +550,7 @@ export function App() {
             error={exportError}
             summary={exportSummary}
             onExport={onExport}
+            onDownload={onDownload}
           />
         )}
         {__DEV__ && active === "settings" && (

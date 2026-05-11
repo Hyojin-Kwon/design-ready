@@ -1,10 +1,14 @@
 import * as esbuild from "esbuild";
-import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir, copyFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const watch = process.argv.includes("--watch");
+
+// 워크트리에서 실행 중이면 메인 프로젝트 dist/로 자동 sync
+const worktreeMatch = __dirname.match(/^(.+)\/.claude\/worktrees\/[^/]+$/);
+const mainDistDir = worktreeMatch ? resolve(worktreeMatch[1], "dist") : null;
 
 const outDir = resolve(__dirname, "dist");
 await mkdir(outDir, { recursive: true });
@@ -142,8 +146,18 @@ async function emitUiHtml() {
   const html = htmlTemplate
     .replace("<!-- INLINE_CSS -->", `<style>${css}</style>`)
     .replace("<!-- INLINE_JS -->", `<script>${js}</script>`);
-  await writeFile(resolve(outDir, "ui.html"), html, "utf8");
+  const uiHtmlPath = resolve(outDir, "ui.html");
+  await writeFile(uiHtmlPath, html, "utf8");
   console.log("[ui] wrote dist/ui.html");
+
+  if (mainDistDir) {
+    try {
+      await copyFile(uiHtmlPath, resolve(mainDistDir, "ui.html"));
+      console.log(`[ui] synced → ${mainDistDir}/ui.html`);
+    } catch {
+      // 메인 dist/ 없으면 조용히 skip
+    }
+  }
 }
 
 if (watch) {

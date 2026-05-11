@@ -785,3 +785,142 @@ html, body, #root {
   font-weight: 700;
   color: var(--accent);
 }
+
+/* Export Pack 결과 */
+.export-result {
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.export-result-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(13, 153, 255, 0.06);
+  border: 1px solid rgba(13, 153, 255, 0.25);
+  border-radius: 8px;
+}
+
+.export-success-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.export-result-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1.2;
+}
+
+.export-result-file {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.export-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.export-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.export-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.export-stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.export-opt-section {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.export-opt-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.export-opt-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.export-opt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 9px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.export-opt-row:last-child {
+  border-bottom: none;
+}
+
+.export-opt-label {
+  color: var(--muted);
+}
+
+.export-opt-val {
+  font-weight: 600;
+  color: var(--fg);
+  text-align: right;
+}
+
+.export-opt-delta {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.export-btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.export-btn-row .btn {
+  flex: 1;
+}
