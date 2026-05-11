@@ -40,9 +40,10 @@ const ICONS: Record<string, string> = {
   navWallet: `<svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 0C17.1046 0 18 0.89543 18 2V14.1191C17.9997 15.2235 17.1044 16.1191 16 16.1191H2C0.895593 16.1191 0.00026384 15.2235 0 14.1191V2C0 0.89543 0.89543 0 2 0H16ZM2 4.61914C1.75454 4.61914 1.55015 4.79605 1.50781 5.0293L1.5 5.11914V14.1191C1.50023 14.3644 1.67706 14.569 1.91016 14.6113L2 14.6191H16C16.2453 14.6191 16.4497 14.442 16.4922 14.209L16.5 14.1191V5.11914C16.5 4.87371 16.323 4.66932 16.0898 4.62695L16 4.61914H2ZM2 1.5C1.75454 1.5 1.55015 1.67691 1.50781 1.91016L1.5 2V3.18359C1.64697 3.14412 1.82048 3.11914 2 3.11914H16C16.1792 3.11914 16.3523 3.14428 16.5176 3.18848C16.5117 3.18691 16.5059 3.18511 16.5 3.18359V2C16.5 1.75454 16.3231 1.55015 16.0898 1.50781L16 1.5H2Z" fill="#111"/><circle cx="13.0106" cy="9.11865" r="1.2652" fill="#111"/></svg>`,
   // SMC_01_01 ico_0 — AD info "i" icon
   adInfo: `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.125 7.5625C2.125 10.5607 4.56366 13 7.56187 13C10.5601 13 13 10.5607 13 7.5625C13 4.56429 10.5601 2.125 7.56187 2.125C4.56366 2.125 2.125 4.56429 2.125 7.5625" stroke="#555" stroke-width="1.03"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.60642 6.62476C6.60642 6.54256 6.67281 6.47681 6.755 6.47681L7.91838 6.47807C8.17381 6.49261 8.37677 6.70569 8.37677 6.96428L8.36349 7.07303L7.94746 8.63967L7.59782 10.0609L7.5877 10.1437C7.5877 10.3031 7.69139 10.439 7.83555 10.4858L7.94746 10.5041H8.17128C8.25411 10.5041 8.31987 10.5711 8.31987 10.6533C8.31987 10.7349 8.25411 10.8 8.17128 10.8H7.00854C6.75311 10.7848 6.55078 10.5718 6.55078 10.3132L6.56406 10.2044L6.94721 8.63967L7.32973 7.21719L7.33922 7.13373C7.33922 6.9744 7.23553 6.8391 7.09137 6.79231L6.97883 6.77334H6.755C6.67281 6.77334 6.60642 6.70695 6.60642 6.62476Z" fill="#555"/><circle cx="8.118" cy="5.038" r="0.628" fill="#555"/></svg>`,
-  // SMC_01_01 ico_2 + ico_3 — block icon
-  bannerOval: `<svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5.2" cy="5.2" r="4.7" stroke="#B7B7B7"/></svg>`,
-  bannerSlash: `<svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.353516 6.83627L6.83627 0.353516" stroke="#B7B7B7"/></svg>`,
+  // SMC_01_01 ico_7 — banner_ch_mute: 9×9 icon inside 17×17 touch target (offset 4,4)
+  bannerMute: `<svg width="9" height="9" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="4.66667" cy="4.66667" r="4.66667" transform="matrix(-1 0 0 1 9.83331 0.5)" stroke="#B7B7B7" stroke-linejoin="round"/><path d="M1.95833 1.95825L8.375 8.37492" stroke="#B7B7B7" stroke-linejoin="round"/></svg>`,
+  // SMC_01_01 ico_8 — banner_ch_more: 3×11 icon inside 17×17 touch target (offset 8,4)
+  bannerMore: `<svg width="3" height="11" viewBox="0 0 3 11" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="1.044" cy="1.044" r="1.044" fill="#B7B7B7"/><circle cx="1.044" cy="5.38189" r="1.044" fill="#B7B7B7"/><circle cx="1.044" cy="9.72003" r="1.044" fill="#B7B7B7"/></svg>`,
   // arrow chevron right
   arrowRight: `<svg width="8" height="16" viewBox="0 0 8 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 4L5.5 8L2 12" stroke="#616161" stroke-width="1.2"/></svg>`,
 };
@@ -55,7 +56,7 @@ const Icon: React.FC<{ name: string; style?: React.CSSProperties }> = ({ name, s
 const Avatar: React.FC<{ size?: number; img?: string; online?: boolean }> = ({ size = 48, img, online }) => (
   <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
     <div style={{ width: size, height: size, borderRadius: "50%", background: img ? `#E5E5E5 url(${img}) center/cover no-repeat` : "#E5E5E5" }} />
-    {online && <span style={{ position: "absolute", right: 1, bottom: 1, width: 11, height: 11, background: "#06C755", borderRadius: "50%", border: "2px solid #fff", boxSizing: "border-box" }} />}
+    {online && <span style={{ position: "absolute", left: 44, top: -1, width: 5, height: 5, background: "#06C755", borderRadius: "50%" }} />}
   </div>
 );
 
@@ -95,53 +96,60 @@ const FriendTab: React.FC = () => (
     </div>
 
     {/* Searchbar */}
-    <div style={{ position: "absolute", left: 0, top: 88, width: 375, height: 50, background: "#fff", display: "flex", alignItems: "center", paddingLeft: 11 }}>
-      <div style={{ width: 341, height: 39, background: "#F7F7F7", borderRadius: 100, display: "flex", flexDirection: "row", alignItems: "center", padding: "10px 16px 10px 12px", gap: 12, boxSizing: "border-box" }}>
+    <div style={{ position: "absolute", left: 0, top: 88, width: 375, height: 50, background: "#fff", display: "flex", alignItems: "center", paddingLeft: 16, paddingRight: 16, boxSizing: "border-box" }}>
+      <div style={{ flex: 1, height: 39, background: "#F7F7F7", borderRadius: 100, display: "flex", flexDirection: "row", alignItems: "center", padding: "10px 16px 10px 12px", gap: 12, boxSizing: "border-box" }}>
         <Icon name="searchSm" style={{ width: 19, height: 19 }} />
         <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>Enter search keyword</span>
         <Icon name="qr" style={{ width: 19, height: 19 }} />
       </div>
     </div>
 
-    {/* SMC_01_01 banner — same as chattab */}
-    <div style={{ position: "absolute", left: 0, top: 138, width: 375, height: 110, background: "#fff" }}>
-      <div style={{ position: "absolute", left: 16, top: 12, width: 326, height: 86, display: "flex", flexDirection: "row", gap: 18 }}>
-        <div style={{ width: 222, height: 86, display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
-          <div style={{ width: 222, height: 54, fontSize: 14, fontWeight: fw.Semibold, color: "#2A2A2A", lineHeight: "18px", overflow: "hidden", wordBreak: "break-all", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"] }}>
+    {/* Scrollable content: banner + filter tabs (sticky) + sections */}
+    <div className="hide-scroll" style={{ position: "absolute", left: 0, top: 138, width: 375, height: 590, overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column" }}>
+
+      {/* SMC_01_01 banner — 121px */}
+      <div style={{ position: "relative", width: 375, height: 121, background: "#fff", flexShrink: 0 }}>
+        {/* image: 86×86 at (256, 18) */}
+        <div style={{ position: "absolute", left: 256, top: 18, width: 86, height: 86, borderRadius: 5, background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat` }} />
+        {/* text type 2: (18, 32) 218×58 */}
+        <div style={{ position: "absolute", left: 18, top: 32, width: 218, height: 58 }}>
+          {/* main text: 2 lines × 18px */}
+          <div style={{ width: 218, height: 36, fontSize: 14, fontWeight: fw.Semibold, color: "#2A2A2A", lineHeight: "18px", overflow: "hidden", wordBreak: "break-all", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"] }}>
             WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
           </div>
-          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 3, height: 18 }}>
-            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2, height: 15 }}>
+          {/* sub text: AD · brand — at offset (0, 44) */}
+          <div style={{ position: "absolute", top: 44, left: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: 3, height: 14 }}>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
               <Icon name="adInfo" style={{ width: 15, height: 15 }} />
-              <span style={{ width: 17, height: 14, fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}>AD</span>
+              <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}>AD</span>
             </div>
-            <span style={{ width: 4, height: 4, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ width: 2, height: 2, background: "#C8C8C8", borderRadius: "50%" }} />
-            </span>
-            <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#909090", lineHeight: "18px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>LUSH Cosmetics</span>
+            <span style={{ width: 2, height: 2, background: "#C8C8C8", borderRadius: "50%", flexShrink: 0 }} />
+            <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#909090", lineHeight: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>LUSH Cosmetics</span>
           </div>
         </div>
-        <div style={{ width: 86, height: 86, borderRadius: 5, background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat`, flexShrink: 0 }} />
-      </div>
-      <div style={{ position: "absolute", left: 345, top: 10, width: 17, height: 17 }}>
-        <Icon name="bannerOval" style={{ position: "absolute", left: 4, top: 4, width: 9, height: 9 }} />
-        <Icon name="bannerSlash" style={{ position: "absolute", left: 5, top: 5, width: 6, height: 6 }} />
-      </div>
-    </div>
-
-    {/* friends+album scrollable content at top:265 (vertical scroll, hidden scrollbar) */}
-    <div className="hide-scroll" style={{ position: "absolute", left: 0, top: 265, width: 375, bottom: 84, overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column", gap: 50 }}>
-      {/* Friends section */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {/* Filter tabs: Friends (selected) / Favorites / Groups / OpenChats / Official */}
-        <div className="hide-scroll" style={{ width: 375, height: 49, display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: "7px 17px", boxSizing: "border-box", overflowX: "auto" }}>
-          <div style={{ height: 35, padding: "0 13px", borderRadius: 100, background: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#fff", flexShrink: 0, boxSizing: "border-box" }}>Friends</div>
-          {["Favorites", "Groups", "OpenChats", "Official"].map((label) => (
-            <div key={label} style={{ height: 35, padding: "0 13px", borderRadius: 100, border: "1px solid #EFEFEF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#111", whiteSpace: "nowrap", flexShrink: 0, boxSizing: "border-box" }}>{label}</div>
-          ))}
+        {/* banner_ch_mute — 17×17 at (345, 10), icon 9×9 at offset (4, 4) */}
+        <div style={{ position: "absolute", left: 345, top: 10, width: 17, height: 17 }}>
+          <Icon name="bannerMute" style={{ position: "absolute", left: 4, top: 4 }} />
         </div>
-        {/* Friends list */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* banner_ch_more — 17×17 at (345, 93), icon 3×11 at offset (8, 4) */}
+        <div style={{ position: "absolute", left: 345, top: 93, width: 17, height: 17 }}>
+          <Icon name="bannerMore" style={{ position: "absolute", left: 8, top: 4 }} />
+        </div>
+      </div>
+
+      {/* Filter tabs — sticky below search bar */}
+      <div className="hide-scroll" style={{ width: 375, height: 49, position: "sticky", top: 0, zIndex: 10, background: "#fff", flexShrink: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: "7px 17px", boxSizing: "border-box", overflowX: "auto" }}>
+        <div style={{ height: 35, padding: "0 13px", borderRadius: 100, background: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#fff", flexShrink: 0, boxSizing: "border-box" }}>Friends</div>
+        {["Favorites", "Groups", "OpenChats", "Official"].map((label) => (
+          <div key={label} style={{ height: 35, padding: "0 13px", borderRadius: 100, border: "1px solid #EFEFEF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#111", whiteSpace: "nowrap", flexShrink: 0, boxSizing: "border-box" }}>{label}</div>
+        ))}
+      </div>
+
+      {/* Content sections */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 50, paddingBottom: 100 }}>
+
+      {/* Friends list */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingTop: 6 }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {[
               { name: "Adela", body: "on a business trip in paris", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format" },
@@ -157,12 +165,13 @@ const FriendTab: React.FC = () => (
               </div>
             ))}
           </div>
-          {/* See more button */}
-          <div style={{ display: "flex", justifyContent: "center", padding: "10px 18px" }}>
-            <div style={{ width: 339, height: 22, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Regular, color: "#616161" }}>See more friends</div>
+          {/* See more button — 339×42, border radius 50, stroke #EFEFEF */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 42, padding: "0 18px" }}>
+            <div style={{ width: 339, height: 42, border: "1px solid #EFEFEF", borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
+              <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161" }}>See more friends</span>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* My schedule section */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -252,7 +261,7 @@ const FriendTab: React.FC = () => (
         <div style={{ padding: "0 18px" }}>
           <span style={{ fontSize: 15, fontWeight: fw.Semibold, color: "#111", lineHeight: "19px" }}>Recommended For you</span>
         </div>
-        <div className="hide-scroll" style={{ display: "flex", flexDirection: "row", gap: 16, padding: "0 18px", overflowX: "auto" }}>
+        <div className="hide-scroll" style={{ display: "flex", flexDirection: "row", gap: 8, paddingLeft: 14, paddingRight: 14, overflowX: "auto" }}>
           {[
             { name: "Alison Lee", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format" },
             { name: "Suzumi", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&auto=format" },
@@ -267,7 +276,8 @@ const FriendTab: React.FC = () => (
           ))}
         </div>
       </div>
-    </div>
+      </div>{/* end content sections */}
+    </div>{/* end scroll container */}
 
     {/* Bottom navigation — Chats not selected here either */}
     <div style={{ position: "absolute", left: 0, top: 728, width: 375, height: 84, background: "#fff", boxShadow: "0 -3px 5px rgba(0,0,0,0.05)", display: "flex", flexDirection: "row", justifyContent: "space-around", paddingTop: 8, boxSizing: "border-box" }}>

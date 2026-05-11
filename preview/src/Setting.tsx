@@ -6,26 +6,28 @@ const fw = { Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700 };
 const ICONS: Record<string, string> = {
   // X close (14×14)
   ico_0: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M0.530273 14.583L14.583 0.530273" stroke="black" stroke-width="1.5" stroke-linejoin="round"/><path d="M0.530273 0.530273L14.583 14.583" stroke="black" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
-  // multi-profile user circle (16×16)
-  ico_1: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.36032 10.2152C6.14931 9.88133 5.9158 9.49908 5.57592 8.86429C5.48771 8.81413 5.15042 8.60138 5.04664 7.89654C4.99908 7.56444 5.13485 7.33007 5.21355 7.22456C5.21269 5.44387 6.42346 4.22272 8.00005 4.22272C9.57578 4.22272 10.7865 5.44387 10.7865 7.20035C10.7857 7.21591 10.7857 7.22456C10.8644 7.33007 11.0002 7.56444 10.9526 7.89654C10.8488 8.60138 10.5115 8.81413 10.4233 8.86429C10.0834 9.49908 9.84993 9.88133 9.63891 10.2152C9.39157 10.6061 9.34573 11.2971 9.80236 11.6179C10.0895 11.8186 11.3478 12.6843 12.3121 13.3485C11.1316 14.3024 9.63199 14.8766 8.00005 14.8766C6.36724 14.8766 4.86762 14.3024 3.68712 13.3485C4.4698 12.8097 5.94866 11.7909 6.19687 11.6179C6.6535 11.2971 6.60767 10.6061 6.36032 10.2152ZM8.00032 0C3.58847 0 0 3.58934 0 8.00032C0 12.4122 3.58847 16.0006 8.00032 16.0006C12.4113 16.0006 16.0006 12.4122 16.0006 8.00032C16.0006 3.58934 12.4113 0 8.00032 0Z" fill="#B7B7B7"/></svg>`,
+  // profile circle — gray filled circle with white head+shoulders cutout
+  ico_1: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 15.5C12.142 15.5 15.5 12.142 15.5 8C15.5 3.858 12.142 0.5 8 0.5C3.858 0.5 0.5 3.858 0.5 8C0.5 12.142 3.858 15.5 8 15.5ZM8 9.5C9.657 9.5 11 8.157 11 6.5C11 4.843 9.657 3.5 8 3.5C6.343 3.5 5 4.843 5 6.5C5 8.157 6.343 9.5 8 9.5ZM12.5 14C12.5 11.515 10.485 10 8 10C5.515 10 3.5 11.515 3.5 14Z" fill="#B7B7B7"/></svg>`,
   // small arrow right (8×8)
   ico_2: `<svg width="8" height="10" viewBox="0 0 9 10" fill="none"><path d="M4 0.866699L8 4.8667L4 8.8667" stroke="#B7B7B7" stroke-width="1.22565" stroke-linecap="square"/></svg>`,
   // search (16×16)
   ico_4: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7.6363" cy="7.34089" r="4.31818" stroke="#B7B7B7" stroke-width="1.35"/><path d="M11.5226 11.2272L13.2499 12.9545" stroke="#B7B7B7" stroke-width="1.35" stroke-linecap="square"/></svg>`,
+  // search icon matching ChatTab searchSm — rendered 19×19
+  SEARCH_SM: `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11.8504 11.85L8.85586 8.85549" stroke="#B7B7B7" stroke-width="1.7"/><circle cx="5.61884" cy="5.61884" r="4.76884" stroke="#B7B7B7" stroke-width="1.7"/></svg>`,
   // chevron right / list arrow (7×11)
   ico_5: `<svg width="7" height="11" viewBox="0 0 7 11" fill="none"><path d="M0.919225 0.919225L5.16187 5.16187L0.919225 9.40451" stroke="#B7B7B7" stroke-width="1.3" stroke-linecap="square"/></svg>`,
   // QR code (22×22)
   ico_6: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.5195 3.77051H17.3846C17.7886 3.77051 18.1161 4.09794 18.1161 4.50182V6.86334V8.06399H16.9154H16.7196V9.56467H15.2209V11.0654H16.7196V12.4502H15.2209V13.9509H16.7196V15.1515H15.2188V17.0437H12.5195V15.1515H13.7181V13.9509H12.5195V12.4502H15.2188V11.0654H12.5195V9.56467H15.2188V8.06399H15.023H14.6173H13.8224V4.97116H12.5195V3.77051ZM15.0231 4.97116V6.86334H16.9155V4.97116H15.0231Z" fill="black"/><path d="M18.1161 15.1515H16.9154V17.0437H15.2209V18.2442H17.3847C17.7886 18.2442 18.1161 17.9168 18.1161 17.5128V15.1515H18.1161Z" fill="black"/><path d="M12.5195 17.0436H11.0188V18.2442H12.5195V17.0436V17.0436Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.3174 12.4501H11.0187H11.0189V13.9509H12.5197V15.1515H11.0189V17.0436H9.81826V13.9509H8.31749V15.1515V17.0436V18.2442H6.81673H4.61544C4.21147 18.2442 3.88403 17.9168 3.88403 17.5128V13.9509H4.81876H5.08459H6.81663H8.3174V12.4501ZM5.08459 15.1515V17.0436H6.81663V15.1515H5.08459Z" fill="black"/><path d="M12.5195 4.97113H11.0188V6.86331H9.81812V8.06396H11.0188V9.56464H12.5195V4.97113V4.97113Z" fill="black"/><path d="M12.5195 11.0654H11.0188V12.4501H12.5195V11.0654V11.0654Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.3174 3.77051H6.81663H4.61544C4.21156 3.77051 3.88403 4.09794 3.88403 4.50192V8.06408H4.81876H5.08459H6.81663H8.3174V9.56467V11.0654H11.0187V9.56467H9.81817V8.06399H8.3174V6.86343V4.97125V3.77051ZM5.08468 6.86334V4.97116H6.81673V6.86334H5.08468Z" fill="black"/><path d="M18.1159 9.56464H16.7195V11.0654H18.1159V9.56464V9.56464Z" fill="black"/><path d="M18.1159 12.4501H16.7195V13.9509H18.1159V12.4501V12.4501Z" fill="black"/><path d="M6.81663 9.56464H5.08477H3.88422H3.88403V11.0654H3.88422V12.4501H5.08477V11.0654H6.81663V9.56464V9.56464Z" fill="black"/><path d="M8.31742 11.0654H6.81665V12.4501H8.31742V11.0654V11.0654Z" fill="black"/><path d="M11.0188 3.77051H9.81812V4.97116H11.0188V3.77051V3.77051Z" fill="black"/></svg>`,
   // shield + checkmark (21×21)
   ico_7: `<svg width="21" height="21" viewBox="0 0 21 21" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5171 18.3101C7.27874 16.7053 3.81812 14.1066 3.81812 11.6251V3.91458C4.78149 3.6337 7.31637 3.0632 10.5355 3.0632C13.7537 3.0632 16.2886 3.6337 17.2301 3.8787L17.252 11.6251C17.252 14.1066 13.7914 16.7053 10.553 18.3101L10.5355 18.3153C10.5311 18.3153 10.5241 18.3136 10.5171 18.3101Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.1891 8.35266L9.96555 11.5762L7.91455 9.52516" stroke="black" stroke-width="1.8"/></svg>`,
-  // folder + backup arrows (27×22)
-  ico_8: `<svg width="27" height="22" viewBox="0 0 27 22" fill="none"><g clip-path="url(#cp8)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.48534 18.5626C6.2184 18.5626 6 18.3442 6 18.0772V4.92278C6 4.65584 6.2184 4.43744 6.48534 4.43744H11.3022L13.3735 6.51392H20.5147C20.7816 6.51392 21 6.73232 21 6.99925V18.0772C21 18.3442 20.7816 18.5626 20.5147 18.5626H6.48534Z" stroke="black" stroke-width="1.8"/><mask style="mask-type:alpha" maskUnits="userSpaceOnUse" x="8" y="7" width="11" height="11"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2779 7.91557L8.88843 9.89557L10.8679 17.2832L18.2574 15.3032L16.2779 7.91557ZM9.5686 10.8205L16.827 15.5329L17.577 14.3782L10.3186 9.66583L9.5686 10.8205Z" fill="#D9D9D9"/></mask><g mask="url(#m8)"><ellipse cx="13.5758" cy="12.6007" rx="2.67755" ry="2.67688" transform="rotate(-15 13.5758 12.6007)" stroke="black" stroke-width="1.6" stroke-linecap="square"/></g><path d="M16.3968 14.2583C16.3568 14.3122 16.2761 14.3122 16.2361 14.2583L14.905 12.4613C14.8561 12.3953 14.9033 12.3018 14.9854 12.3018L17.6478 12.3016C17.7299 12.3016 17.777 12.3952 17.7281 12.4612L16.3968 14.2583Z" fill="black" stroke="black" stroke-width="0.2"/><path d="M10.5889 11.025C10.6289 10.971 10.7097 10.971 10.7496 11.025L12.0808 12.822C12.1297 12.888 12.0826 12.9815 12.0004 12.9815L9.33809 12.9815C9.25595 12.9815 9.20884 12.888 9.25773 12.822L10.5889 11.025Z" fill="black" stroke="black" stroke-width="0.2"/></g><defs><clipPath id="cp8"><rect width="27" height="22" fill="white"/></clipPath></defs></svg>`,
+  // folder + backup arrows — talkbackup.svg
+  ico_8: `<svg width="27" height="22" viewBox="0 0 27 22" fill="none"><g clip-path="url(#clip0_70_6427)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.48534 18.5626C6.2184 18.5626 6 18.3442 6 18.0772V4.92278C6 4.65584 6.2184 4.43744 6.48534 4.43744H11.3022L13.3735 6.51392H20.5147C20.7816 6.51392 21 6.73232 21 6.99925V18.0772C21 18.3442 20.7816 18.5626 20.5147 18.5626H6.48534Z" stroke="black" stroke-width="1.8"/><mask id="mask0_70_6427" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="8" y="7" width="11" height="11"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2779 7.91557L8.88843 9.89557L10.8679 17.2832L18.2574 15.3032L16.2779 7.91557ZM9.5686 10.8205L16.827 15.5329L17.577 14.3782L10.3186 9.66583L9.5686 10.8205Z" fill="#D9D9D9"/></mask><g mask="url(#mask0_70_6427)"><ellipse cx="13.5758" cy="12.6007" rx="2.67755" ry="2.67688" transform="rotate(-15 13.5758 12.6007)" stroke="black" stroke-width="1.6" stroke-linecap="square"/></g><path d="M16.3968 14.2583C16.3568 14.3122 16.2761 14.3122 16.2361 14.2583L14.905 12.4613C14.8561 12.3953 14.9033 12.3018 14.9854 12.3018L17.6478 12.3016C17.7299 12.3016 17.777 12.3952 17.7281 12.4612L16.3968 14.2583Z" fill="black" stroke="black" stroke-width="0.2"/><path d="M10.5889 11.025C10.6289 10.971 10.7097 10.971 10.7496 11.025L12.0808 12.822C12.1297 12.888 12.0826 12.9815 12.0004 12.9815L9.33809 12.9815C9.25595 12.9815 9.20884 12.888 9.25773 12.822L10.5889 11.025Z" fill="black" stroke="black" stroke-width="0.2"/></g><defs><clipPath id="clip0_70_6427"><rect width="27" height="22" fill="white"/></clipPath></defs></svg>`,
   // card / receipt icon (17×15) — アカウント
   ico_9: `<svg width="17" height="15" viewBox="0 0 17 15" fill="none"><path d="M8.85107 6.16174H12.8655" stroke="black" stroke-width="1.8"/><path d="M8.85107 8.5719H12.8655" stroke="black" stroke-width="1.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0.899902 13.0968V1.33752C0.899902 1.09594 1.09581 0.900024 1.3374 0.900024H15.1624C15.404 0.900024 15.5999 1.09594 15.5999 1.33752V13.0968C15.5999 13.3384 15.404 13.5343 15.1624 13.5343H1.3374C1.09581 13.5343 0.899902 13.3384 0.899902 13.0968Z" stroke="black" stroke-width="1.8"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.72412 6.11096L6.72412 8.62886H4.2071L4.2071 6.11096L6.72412 6.11096Z" stroke="black" stroke-width="1.8"/></svg>`,
   // padlock (15×18) — プライバシー管理
   ico_10: `<svg width="15" height="18" viewBox="0 0 15 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.1499 16.153H1.7749C1.29164 16.153 0.899902 15.7613 0.899902 15.278V6.77502C0.899902 6.29176 1.29164 5.90002 1.7749 5.90002H13.1499C13.6332 5.90002 14.0249 6.29176 14.0249 6.77502V15.278C14.0249 15.7613 13.6332 16.153 13.1499 16.153Z" stroke="black" stroke-width="1.8"/><path d="M10.702 5.89776V4.17891C10.702 2.36801 9.23392 0.900024 7.42302 0.900024C5.61212 0.900024 4.14404 2.36801 4.14404 4.17891V5.89776" stroke="black" stroke-width="1.8"/><path d="M7.46234 9.09143C6.8928 9.09143 6.43115 9.55308 6.43115 10.1226C6.43115 10.6922 6.8928 11.1538 7.46234 11.1538C8.03188 11.1538 8.49353 10.6922 8.49353 10.1226C8.49353 9.55308 8.03188 9.09143 7.46234 9.09143Z" fill="black" stroke="black" stroke-width="0.5"/><path d="M7.4624 10.775V12.9189" stroke="black" stroke-width="1.8"/></svg>`,
   // shield + person (16×18) — 年齢確認
-  ico_11: `<svg width="16" height="18" viewBox="0 0 16 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.9179 16.8729C4.52532 15.1918 0.899902 12.4693 0.899902 9.86961V1.79194C1.90915 1.49769 4.56474 0.900024 7.93715 0.900024C11.3087 0.900024 13.9642 1.49769 14.9497 1.75436L14.9735 9.86961C14.9735 12.4693 11.3481 15.1918 7.95549 16.8729L7.93715 16.8784C7.93165 16.8784 7.92524 16.8766 7.9179 16.8729Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><path d="M12.7184 13.4355C11.7578 12.7746 10.0711 11.6141 9.73376 11.3776C9.2791 11.0576 9.32401 10.3692 9.56968 9.97965C9.78143 9.6469 10.0133 9.26648 10.3525 8.6349C10.4396 8.58357 10.776 8.37273 10.8787 7.67057C10.9273 7.33873 10.7916 7.10498 10.7128 7.00048C10.7137 6.97573 10.7137 6.97573 5.16051 6.97573C5.16143 6.99223 5.16143 7.00048 5.0826 7.10498C4.94693 7.33873 4.99551 7.67057C5.09818 8.37273 5.43551 8.58357 5.52168 8.6349C5.86176 9.26648 6.09276 9.6469 6.30451 9.97965C6.55018 10.3692 6.59509 11.0576 6.14043 11.3776C5.80309 11.6141 4.11643 12.7746 3.15576 13.4355" stroke="black" stroke-width="1.8"/></svg>`,
+  ico_11: `<svg width="16" height="18" viewBox="0 0 16 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.9179 16.8729C4.52532 15.1918 0.899902 12.4693 0.899902 9.86961V1.79194C1.90915 1.49769 4.56474 0.900024 7.93715 0.900024C11.3087 0.900024 13.9642 1.49769 14.9497 1.75436L14.9735 9.86961C14.9735 12.4693 11.3481 15.1918 7.95549 16.8729L7.93715 16.8784C7.93165 16.8784 7.92524 16.8766 7.9179 16.8729Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><path d="M12.7184 13.4355C11.7578 12.7746 10.0711 11.6141 9.73376 11.3776C9.2791 11.0576 9.32401 10.3692 9.56968 9.97965C9.78143 9.6469 10.0133 9.26648 10.3525 8.6349C10.4396 8.58357 10.776 8.37273 10.8787 7.67057C10.9273 7.33873 10.7916 7.10498 10.7128 7.00048C10.7128 6.99223 10.7137 6.9849 10.7137 6.97573C10.7137 5.22673 9.50735 4.0094 7.9371 4.0094C6.36685 4.0094 5.16051 5.22673 5.16051 6.97573C5.16051 6.9849 5.16143 6.99223 5.16143 7.00048C5.0826 7.10498 4.94693 7.33873 4.99551 7.67057C5.09818 8.37273 5.43551 8.58357 5.52168 8.6349C5.86176 9.26648 6.09276 9.6469 6.30451 9.97965C6.55018 10.3692 6.59509 11.0576 6.14043 11.3776C5.80309 11.6141 4.11643 12.7746 3.15576 13.4355" stroke="black" stroke-width="1.8"/></svg>`,
   // Apple Watch (15×20)
   ico_12: `<svg width="15" height="20" viewBox="0 0 15 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.01872 4.16956C1.84782 4.16956 0.899902 5.11747 0.899902 6.28837V13.5107C0.899902 14.6806 1.84782 15.6285 3.01775 15.6285H11.3521C12.522 15.6285 13.4699 14.6806 13.4699 13.5107V6.28741C13.4699 5.11747 12.522 4.16956 11.3521 4.16956H3.01872Z" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.4134 3.96965L10.5659 0.900024H3.80019L2.95459 3.96965" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.95459 15.8297L3.80115 18.8993H10.5679L11.4134 15.8297" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.58177 8.38831L6.62797 11.3411L4.74951 9.46171" stroke="black" stroke-width="1.7"/></svg>`,
   // battery (25×12)
@@ -38,20 +40,20 @@ const ICONS: Record<string, string> = {
   /* ── Handcrafted icons for ショップ section ───── */
   // スタンプ — smiley sticker circle
   STAMP: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="10.5" r="7.5" stroke="black" stroke-width="1.8"/><circle cx="8.8" cy="9.5" r="1.1" fill="black"/><circle cx="13.2" cy="9.5" r="1.1" fill="black"/><path d="M8.2 13Q11 15.5 13.8 13" stroke="black" stroke-width="1.8" stroke-linecap="round"/></svg>`,
-  // 着せかえ — sparkle / customize
-  THEME: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2v4M11 16v4M2 11h4M16 11h4M4.93 4.93l2.83 2.83M14.24 14.24l2.83 2.83M4.93 17.07l2.83-2.83M14.24 7.76l2.83-2.83" stroke="black" stroke-width="1.8" stroke-linecap="round"/></svg>`,
-  // 着信音・呼出音 — music note
-  RINGTONE: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M8.5 16.5V6.5L18.5 4.5V14.5" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6.5" cy="16.5" r="2.5" stroke="black" stroke-width="1.8"/><circle cx="16.5" cy="14.5" r="2.5" stroke="black" stroke-width="1.8"/></svg>`,
-  // フォント — letter A
-  FONT: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4.5 18L11 4L17.5 18" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 13.5H15.5" stroke="black" stroke-width="1.8" stroke-linecap="round"/></svg>`,
-  // アプリアイコン — phone outline
-  APPICON: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4.5" y="1.5" width="13" height="19" rx="2.5" stroke="black" stroke-width="1.8"/><circle cx="11" cy="17.5" r="1.2" fill="black"/><path d="M8.5 4.5h5" stroke="black" stroke-width="1.8" stroke-linecap="round"/></svg>`,
-  // コイン — coin circle
-  COIN: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="black" stroke-width="1.8"/><path d="M11 7.5V14.5" stroke="black" stroke-width="1.8" stroke-linecap="round"/><path d="M8.5 9.5C8.5 8.67 9.17 8 10 8h2c.83 0 1.5.67 1.5 1.5S12.83 11 12 11h-2" stroke="black" stroke-width="1.6" stroke-linecap="round"/></svg>`,
-  // bell — 通知
-  BELL: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2.5V1.5" stroke="black" stroke-width="1.8" stroke-linecap="round"/><path d="M11 2.5C7.96 2.5 5.5 4.96 5.5 8V13.5L3.5 15.5H18.5L16.5 13.5V8C16.5 4.96 14.04 2.5 11 2.5Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 16.5C9 17.6 9.9 18.5 11 18.5C12.1 18.5 13 17.6 13 16.5" stroke="black" stroke-width="1.8"/></svg>`,
-  // photo / image — 写真と動画
-  PHOTO: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="4.5" width="18" height="13" rx="2" stroke="black" stroke-width="1.8"/><circle cx="7.5" cy="9.5" r="1.5" stroke="black" stroke-width="1.5"/><path d="M2 15L7 10.5L10.5 14L13.5 11L20 15.5" stroke="black" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  // 着せかえ — theme.svg
+  THEME: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M17.6306 15.801H4.20337" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M3.61101 19.2243C3.53942 19.2243 3.50807 19.188 3.5 19.1768C3.73989 18.3653 4.03625 17.1568 4.03625 15.7966V13.7731C4.03625 13.434 4.22343 13.1225 4.52291 12.9635L9.15932 10.5012V4.82125C9.15932 3.79917 10.0002 2.97729 11.0219 3.00048L11.0795 3.00176C12.0292 3.0519 12.8018 3.92915 12.8018 4.9582V10.635L17.2159 12.9645C17.5166 13.1231 17.7048 13.4352 17.7048 13.7752V15.7967C17.7048 16.8781 17.4765 18.0324 17.3404 18.6246C17.2598 18.9782 16.9474 19.2248 16.5813 19.2248V19.2248L3.61101 19.2243Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+  // 着信音・呼出音 — redrawn as stroke-based ♫ to match other icons' stroke-width=1.8 style
+  RINGTONE: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="5" cy="16.5" r="2.5" stroke="black" stroke-width="1.8"/><circle cx="14.5" cy="14" r="2.5" stroke="black" stroke-width="1.8"/><path d="M7.5 16.5V6L17 3.5V14" stroke="black" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+  // フォント — setting_font.svg
+  FONT: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.75879 17.7833V4.21666C1.75879 3.96357 1.96403 3.75833 2.21712 3.75833H15.7829C16.036 3.75833 16.2412 3.96357 16.2412 4.21666V17.7833C16.2412 18.0364 16.036 18.2417 15.7829 18.2417H2.21712C1.96403 18.2417 1.75879 18.0364 1.75879 17.7833Z" stroke="black" stroke-width="1.8"/><path d="M6.11426 9.47154V8.05951H11.82V9.47154" stroke="black" stroke-width="1.8"/><path d="M8.96712 8.05951V14.2555" stroke="black" stroke-width="1.8"/><path d="M7.75244 14.2555H10.2073" stroke="black" stroke-width="1.8" stroke-linecap="square"/></svg>`,
+  // アプリアイコン — appicon.svg
+  APPICON: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4.75024" y="3.00005" width="12.5" height="16" rx="1.83333" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><circle cx="10.9999" cy="15.7" r="1.1" fill="black"/></svg>`,
+  // コイン — Line Coin.svg (stroke-width compensated for 24→22 viewBox scale)
+  COIN: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3.3999 12C3.3999 16.741 7.2579 20.599 12.0009 20.599C16.7429 20.599 20.5999 16.741 20.5999 12C20.5999 7.258 16.7429 3.401 12.0009 3.401C7.2579 3.401 3.3999 7.258 3.3999 12" stroke="black" stroke-width="1.97" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5439 7.9375V14.5765H14.8399" stroke="black" stroke-width="1.97"/></svg>`,
+  // bell — Bell.svg
+  BELL: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M17.6919 16.7989C17.0697 15.885 16.7061 14.7809 16.7061 13.5919V9.38678C16.7061 6.23556 14.1515 3.68099 11.0003 3.68099C7.84904 3.68099 5.29447 6.23556 5.29447 9.38678V13.5919C5.29447 14.7809 4.93074 15.8849 4.30859 16.7989H17.6919Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><path d="M11.0001 16.799V19.2358" stroke="black" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+  // photo / image — Image.svg
+  PHOTO: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.75879 17.7833V4.21667C3.75879 3.96357 3.96403 3.75833 4.21712 3.75833H17.7829C18.036 3.75833 18.2412 3.96357 18.2412 4.21667V17.7833C18.2412 18.0364 18.036 18.2417 17.7829 18.2417H4.21712C3.96403 18.2417 3.75879 18.0364 3.75879 17.7833Z" stroke="black" stroke-width="1.8"/><path d="M8.1394 13.6224L10.568 9.83629L12.9966 13.6224H8.1394Z" fill="black"/><path fill-rule="evenodd" clip-rule="evenodd" d="M7.04932 14.2184L10.5682 8.73299L14.0871 14.2184H7.04932ZM11.9069 13.0267L10.5682 10.9399L9.22961 13.0267H11.9069Z" fill="black"/><path d="M13.8737 7.74767C13.3282 7.74767 12.886 8.18877 12.886 8.7329C12.886 9.27703 13.3282 9.71813 13.8737 9.71813C14.4192 9.71813 14.8614 9.27694 14.8614 8.7329C14.8614 8.18877 14.4192 7.74767 13.8737 7.74767Z" fill="black"/></svg>`,
   // chat bubble with dots — トーク
   CHAT: `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 11C3 6.58 6.58 3 11 3C15.42 3 19 6.58 19 11C19 15.42 15.42 19 11 19C9.9 19 8.85 18.77 7.9 18.36L3.5 19.5L4.64 15.1C3.6 13.97 3 12.56 3 11Z" stroke="black" stroke-width="1.8" stroke-linejoin="round"/><circle cx="8" cy="11" r="1.1" fill="black"/><circle cx="11" cy="11" r="1.1" fill="black"/><circle cx="14" cy="11" r="1.1" fill="black"/></svg>`,
 };
@@ -65,17 +67,14 @@ const Ico = ({ id, style }: { id: string; style?: React.CSSProperties }) => (
 
 /* ── Reusable pieces ─────────────────────────────────────────────────── */
 
-const RowDivider = () => (
-  <div style={{ height: 1, background: "#F5F5F5", marginLeft: 55 }} />
-);
 
 const SectionHeader = ({ title }: { title: string }) => (
   <>
-    <div style={{ height: 8, background: "#F5F5F5" }} />
+    <div style={{ height: 8, background: "#FFFFFF" }} />
     <div
       style={{
         height: 38,
-        background: "#F5F5F5",
+        background: "#FFFFFF",
         display: "flex",
         alignItems: "flex-end",
         paddingLeft: 20,
@@ -132,7 +131,7 @@ const Row = ({
 
     {/* Label + optional "New" badge */}
     <div style={{ display: "flex", alignItems: "center", flex: 1, marginLeft: 13 }}>
-      <span style={{ fontSize: 14, fontWeight: fw.Bold, color: labelColor, lineHeight: "21px" }}>
+      <span style={{ fontSize: 14, fontWeight: fw.SemiBold, color: labelColor, lineHeight: "21px" }}>
         {label}
       </span>
       {isNew && (
@@ -157,7 +156,7 @@ const Row = ({
 
     {/* Optional status value */}
     {value && (
-      <span style={{ fontSize: 13, fontWeight: fw.Bold, color: "#B7B7B7", marginRight: 8 }}>
+      <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#B7B7B7", marginRight: 8 }}>
         {value}
       </span>
     )}
@@ -229,76 +228,70 @@ export default function Setting() {
         </div>
       </div>
 
-      {/* ── Scrollable content (starts below status bar) ────────────── */}
+      {/* ── Navigation header (設定) — fixed below status bar ──────── */}
       <div
-        className="s-scroll"
         style={{
           position: "absolute",
           top: 44,
           left: 0,
-          right: 0,
-          bottom: 0,
-          overflowY: "auto",
+          width: 375,
+          height: 44,
+          background: "#FFFFFF",
+          zIndex: 10,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {/* ── Navigation header (設定) ─────────────────────────────── */}
+        <span style={{ fontSize: 16, fontWeight: fw.SemiBold, color: "#000000" }}>設定</span>
         <div
           style={{
-            height: 44,
-            background: "#FFFFFF",
+            position: "absolute",
+            right: 16,
+            width: 24,
+            height: 24,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <span style={{ fontSize: 16, fontWeight: fw.SemiBold, color: "#000000" }}>設定</span>
-          <div
-            style={{
-              position: "absolute",
-              right: 16,
-              width: 24,
-              height: 24,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Ico id="ico_0" />
-          </div>
+          <Ico id="ico_0" />
         </div>
+      </div>
 
+      {/* ── Scrollable content (starts below title header) ───────────── */}
+      <div
+        className="s-scroll"
+        style={{
+          position: "absolute",
+          top: 88,
+          left: 0,
+          right: 0,
+          bottom: 34,
+          overflowY: "auto",
+        }}
+      >
         {/* 2 px gap */}
         <div style={{ height: 2, background: "#FFFFFF" }} />
 
-        {/* ── Search bar (y:90) ───────────────────────────────────── */}
-        <div style={{ height: 50, background: "#FFFFFF", position: "relative" }}>
+        {/* ── Search bar — ChatTab style ───────────────────────── */}
+        <div style={{ height: 50, background: "#FFFFFF", display: "flex", alignItems: "center", paddingLeft: 16, paddingRight: 16 }}>
           <div
             style={{
-              position: "absolute",
-              left: 16,
-              top: 6,
-              width: 343,
-              height: 38,
-              background: "#F5F5F5",
-              borderRadius: 5,
+              flex: 1,
+              height: 39,
+              background: "#F7F7F7",
+              borderRadius: 100,
+              display: "flex",
+              alignItems: "center",
+              paddingLeft: 12,
+              paddingRight: 16,
+              gap: 12,
+              boxSizing: "border-box",
             }}
           >
-            <div style={{ position: "absolute", left: 11, top: 11, lineHeight: 0 }}>
-              <Ico id="ico_4" />
-            </div>
-            <span
-              style={{
-                position: "absolute",
-                left: 30,
-                top: 11,
-                fontSize: 13,
-                fontWeight: fw.Medium,
-                color: "#B7B7B7",
-                lineHeight: "16px",
-              }}
-            >
-              Search
-            </span>
+            <Ico id="SEARCH_SM" />
+            <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>Search</span>
           </div>
         </div>
 
@@ -420,70 +413,73 @@ export default function Setting() {
         ════════════════════════════════════════════════════════════ */}
         <SectionHeader title="個人情報" />
         <Row iconId="ico_9" label="アカウント" />
-        <RowDivider />
+
         <Row iconId="ico_10" label="プライバシー管理" />
-        <RowDivider />
+
         <Row iconId="ico_11" label="年齢確認" />
-        <RowDivider />
+
         <Row iconId="ico_12" label="Apple Watch" labelColor="#000000" />
 
         {/* ════════════════════════════════════════════════════════════
             SECTION: バックアップ・引き継ぎ
         ════════════════════════════════════════════════════════════ */}
         <SectionHeader title="バックアップ・引き継ぎ" />
-        <Row iconId="ico_8" label="トークのバックアップ" />
-        <RowDivider />
-        <Row iconId="ico_6" label="かんたん引き継ぎQRコード" />
-        <RowDivider />
-        <Row iconId="ico_7" label="アカウント引き継ぎオプション" />
+        <Row iconId="ico_8" label="トークのバックアップ" labelColor="#111111" />
+
+        <Row iconId="ico_6" label="かんたん引き継ぎQRコード" labelColor="#111111" />
+
+        <Row iconId="ico_7" label="アカウント引き継ぎオプション" labelColor="#111111" />
 
         {/* ════════════════════════════════════════════════════════════
             SECTION: ショップ
         ════════════════════════════════════════════════════════════ */}
         <SectionHeader title="ショップ" />
-        <Row iconId="STAMP" label="スタンプ" isNew />
-        <RowDivider />
-        <Row iconId="THEME" label="着せかえ" />
-        <RowDivider />
-        <Row iconId="RINGTONE" label="着信音・呼出音" rowHeight={49} />
-        <RowDivider />
-        <Row iconId="FONT" label="フォント" />
-        <RowDivider />
-        <Row iconId="APPICON" label="アプリアイコン" />
-        <RowDivider />
-        <Row iconId="COIN" label="コイン" />
+        <Row iconId="STAMP" label="スタンプ" labelColor="#111111" isNew />
+
+        <Row iconId="THEME" label="着せかえ" labelColor="#111111" />
+
+        <Row iconId="RINGTONE" label="着信音・呼出音" labelColor="#111111" rowHeight={49} />
+
+        <Row iconId="FONT" label="フォント" labelColor="#111111" />
+
+        <Row iconId="APPICON" label="アプリアイコン" labelColor="#111111" />
+
+        <Row iconId="COIN" label="コイン" labelColor="#111111" />
 
         {/* ════════════════════════════════════════════════════════════
             SECTION: 一般
         ════════════════════════════════════════════════════════════ */}
         <SectionHeader title="一般" />
-        <Row iconId="BELL" label="通知" value="オン" />
-        <RowDivider />
-        <Row iconId="PHOTO" label="写真と動画" />
-        <RowDivider />
-        <Row iconId="CHAT" label="トーク" />
+        <Row iconId="BELL" label="通知" labelColor="#111111" value="オン" />
 
-        {/* ── Home indicator ─────────────────────────────────────── */}
-        <div style={{ height: 8, background: "#F5F5F5" }} />
+        <Row iconId="PHOTO" label="写真と動画" labelColor="#111111" />
+
+        <Row iconId="CHAT" label="トーク" labelColor="#111111" />
+
+      </div>
+
+      {/* ── Home Indicator (fixed at bottom) ───────────────────────── */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: 375,
+          height: 34,
+          background: "#FFFFFF",
+        }}
+      >
         <div
           style={{
-            height: 34,
-            background: "#FFFFFF",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            position: "absolute",
+            left: 121,
+            bottom: 8,
+            width: 134,
+            height: 5,
+            background: "#000000",
+            borderRadius: 100,
           }}
-        >
-          <div
-            style={{
-              width: 134,
-              height: 5,
-              background: "#000000",
-              borderRadius: 100,
-              opacity: 0.18,
-            }}
-          />
-        </div>
+        />
       </div>
     </div>
   );
