@@ -1,5 +1,7 @@
 node_modules/
 dist/
+!preview/dist
+!preview/dist/**
 .DS_Store
 *.log
 .claude/settings.local.json

@@ -1,0 +1,26 @@
+/* Object Styles (Figma Variables) */
+
+:root {
+  --radius-radius-10: 10px;
+  --radius-radius-12: 12px;
+  --radius-radius-3: 3px;
+  --radius-radius-5: 5px;
+  --radius-radius-7: 7px;
+  --radius-radius-8: 8;
+  --spacing-spacing-12: 12px;
+  --spacing-spacing-16: 16px;
+  --spacing-spacing-2: 2px;
+  --spacing-spacing-20: 20px;
+  --spacing-spacing-24: 24px;
+  --spacing-spacing-32: 32px;
+  --spacing-spacing-4: 4px;
+  --spacing-spacing-40: 40px;
+  --spacing-spacing-48: 48px;
+  --spacing-spacing-56: 56px;
+  --spacing-spacing-8: 8px;
+  --stroke-stroke-icon-1-4: 1.399999976158142px;
+  --stroke-stroke-icon-1-7: 1.7000000476837158px;
+  --stroke-stroke-ui-0-5: 0.5px;
+  --stroke-stroke-ui-1: 1px;
+  --stroke-stroke-ui-2: 2px;
+}
