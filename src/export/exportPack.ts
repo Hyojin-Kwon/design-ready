@@ -31,6 +31,7 @@ export interface ExportPackInput {
   systemPrompt: string;
   flow?: FlowLink[];
   includeTreeJson?: boolean;
+  libraryImportPath?: string;
 }
 
 export interface ExportPackOutput {
@@ -175,7 +176,11 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   );
   parts.push("- **아이콘**: `icons/` 폴더의 SVG 파일들. `icons/_manifest.json`에 `{screen, localId, file, path}` 매핑이 있습니다. 각 화면의 `tree.json`(포함된 경우) 또는 MCP 트리의 `iconId` 필드를 manifest로 역참조해서 필요한 SVG만 Read하세요.");
   if (input.includeTreeJson) {
-    parts.push("- **트리**: 각 화면의 `screens/<slug>/tree.json` (MCP 없는 환경용 스냅샷).");
+    parts.push(
+      "- **트리**: 각 화면의 `screens/<slug>/tree.json` (MCP 없는 환경용 스냅샷). " +
+        "`repeatCount: N` 필드가 있는 노드는 동일 구조가 N번 반복되는 리스트 아이템 — `.map()`으로 N개 렌더링하세요. " +
+        "텍스트가 `…`로 끝나면 400자 초과로 잘린 것이므로 Figma MCP로 원본을 확인하세요."
+    );
   }
   if (input.ldsReference.trim()) parts.push("- **디자인 시스템**: `lds.md` 참조.");
   if (hasHealthReport) {
@@ -189,7 +194,17 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   }
   parts.push("");
 
-  parts.push("## 라이브러리 컴포넌트 (컴포넌트 참조 시 이 이름을 verbatim 사용)");
+  parts.push("## 라이브러리 컴포넌트");
+  if (input.libraryImportPath?.trim()) {
+    parts.push(
+      `import 경로: \`import { ComponentName } from '${input.libraryImportPath.trim()}'\`` +
+        " — ComponentName 자리에 아래 이름을 그대로 사용."
+    );
+  } else {
+    parts.push(
+      "_⚠️ import 경로 미지정. 설정 탭 → 'React import 경로'를 입력하거나, 코드에 `// TODO: add import` 주석을 남기세요._"
+    );
+  }
   const cleanComponents = filterLibraryComponents(input.libraryComponents);
   // catalog가 있으면 variant property까지 같이 출력. 이름 → catalog entry 매핑.
   const variantByName = new Map<string, Record<string, string[]>>();

@@ -12,6 +12,7 @@ interface Props {
       flattenedGroups: number;
       flattenedFrames: number;
       inferredLayouts: number;
+      collapsedRepeats: number;
       totalIconNodes: number;
       uniqueIcons: number;
       iconBytes: number;
@@ -91,6 +92,15 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
                   <span class="export-opt-label">auto-layout 유추</span>
                   <span class="export-opt-val">{summary.optStats.inferredLayouts}개</span>
                 </div>
+                {summary.optStats.collapsedRepeats > 0 && (
+                  <div class="export-opt-row">
+                    <span class="export-opt-label">반복 노드 collapse</span>
+                    <span class="export-opt-val">
+                      {summary.optStats.collapsedRepeats}개 생략
+                      <span class="export-opt-delta"> (repeatCount)</span>
+                    </span>
+                  </div>
+                )}
                 <div class="export-opt-row">
                   <span class="export-opt-label">아이콘 중복 제거</span>
                   <span class="export-opt-val">

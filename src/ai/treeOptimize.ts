@@ -6,6 +6,7 @@ export interface OptimizeStats {
   flattenedGroups: number;
   flattenedFrames: number;
   inferredLayouts: number;
+  collapsedRepeats: number;
 }
 
 export interface InferredLayout {
@@ -284,15 +285,57 @@ function inferLayouts(n: SerializedNode, stats: OptimizeStats): void {
   }
 }
 
+function repeatSignature(n: SerializedNode): string | null {
+  if (n.componentRef?.name) return `c:${n.componentRef.name}`;
+  // Match siblings with numbered suffixes: "List Item 1", "List Item 2" → sig "List Item"
+  const stripped = n.name.replace(/[\s_-]*\d+$/, "");
+  if (stripped !== n.name && stripped.length > 0 && n.type !== "TEXT") {
+    return `p:${n.type}:${stripped}`;
+  }
+  return null;
+}
+
+function collapseRepeatingChildren(n: SerializedNode, stats: OptimizeStats): void {
+  if (!n.children) return;
+  for (const c of n.children) collapseRepeatingChildren(c, stats);
+  if (n.children.length < 3) return;
+
+  const next: SerializedNode[] = [];
+  let i = 0;
+  while (i < n.children.length) {
+    const sig = repeatSignature(n.children[i]);
+    if (sig !== null) {
+      let runEnd = i + 1;
+      while (runEnd < n.children.length && repeatSignature(n.children[runEnd]) === sig) {
+        runEnd++;
+      }
+      const runLen = runEnd - i;
+      if (runLen >= 3) {
+        const keepCount = Math.min(2, runLen);
+        for (let j = 0; j < keepCount; j++) next.push(n.children[i + j]);
+        next[next.length - 1].repeatCount = runLen;
+        stats.collapsedRepeats += runLen - keepCount;
+        i = runEnd;
+        continue;
+      }
+    }
+    next.push(n.children[i]);
+    i++;
+  }
+  n.children = next;
+}
+
 export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stats: OptimizeStats } {
   const stats: OptimizeStats = {
     beforeNodes: countNodes(root),
     afterNodes: 0,
     flattenedGroups: 0,
     flattenedFrames: 0,
-    inferredLayouts: 0
+    inferredLayouts: 0,
+    collapsedRepeats: 0
   };
   const flattened = flattenGroupWrappers(root, stats);
+  collapseRepeatingChildren(flattened, stats);
   inferLayouts(flattened, stats);
   stats.afterNodes = countNodes(flattened);
   return { tree: flattened, stats };

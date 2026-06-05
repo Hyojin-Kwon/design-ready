@@ -96,7 +96,7 @@ export function extractIcons(
 }
 
 const MAX_DEPTH = 10;
-const MAX_CHILDREN = 40;
+const MAX_CHILDREN = 80;
 const MAX_SVG_CHARS = 4000;
 const ICON_MAX_DIM = 64;
 
@@ -233,7 +233,7 @@ function describeEffects(node: SceneNode): string[] | undefined {
 
 function describeText(node: TextNode): SerializedNode["text"] {
   const chars = node.characters ?? "";
-  const capped = chars.length > 120 ? chars.slice(0, 120) + "…" : chars;
+  const capped = chars.length > 400 ? chars.slice(0, 400) + "…" : chars;
   const fontSize = typeof node.fontSize === "number" ? node.fontSize : 0;
   const fontName = node.fontName;
   const weight =

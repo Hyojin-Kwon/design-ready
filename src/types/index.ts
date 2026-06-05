@@ -125,6 +125,7 @@ export interface PluginSettings {
   aiEnabled: boolean;
   ldsReference: string;
   systemPrompt?: string;
+  libraryImportPath?: string;
 }
 
 export interface ExportScreenPayload {
@@ -168,6 +169,7 @@ export interface ExportOptStats {
   flattenedGroups: number;
   flattenedFrames: number;
   inferredLayouts: number;
+  collapsedRepeats: number;
   totalIconNodes: number;
   uniqueIcons: number;
   iconBytes: number;

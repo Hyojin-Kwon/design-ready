@@ -117,6 +117,7 @@ export function App() {
       flattenedGroups: number;
       flattenedFrames: number;
       inferredLayouts: number;
+      collapsedRepeats: number;
       totalIconNodes: number;
       uniqueIcons: number;
       iconBytes: number;
@@ -325,7 +326,8 @@ export function App() {
         ldsReference: current.ldsReference ?? "",
         systemPrompt: current.systemPrompt?.trim() || DEFAULT_SYSTEM_PROMPT,
         flow: payload.flow,
-        includeTreeJson: true
+        includeTreeJson: true,
+        libraryImportPath: current.libraryImportPath
       });
       triggerDownload(blob, filename);
       setExportBlob({ blob, filename });

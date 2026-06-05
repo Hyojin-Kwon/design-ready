@@ -726,6 +726,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         flattenedGroups: 0,
         flattenedFrames: 0,
         inferredLayouts: 0,
+        collapsedRepeats: 0,
         totalIconNodes: 0,
         uniqueIcons: 0,
         iconBytes: 0
@@ -739,6 +740,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         optStats.flattenedGroups += stats.flattenedGroups;
         optStats.flattenedFrames += stats.flattenedFrames;
         optStats.inferredLayouts += stats.inferredLayouts;
+        optStats.collapsedRepeats += stats.collapsedRepeats;
         const { iconMap, stats: iconStats } = extractIcons(tree);
         optStats.totalIconNodes += iconStats.totalIconNodes;
         optStats.uniqueIcons += iconStats.uniqueIcons;

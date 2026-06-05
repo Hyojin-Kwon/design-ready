@@ -134,6 +134,7 @@ export function SettingsTab({
   const [aiEnabled, setAiEnabled] = useState(settings.aiEnabled);
   const [ldsReference, setLdsReference] = useState(settings.ldsReference ?? "");
   const [systemPrompt, setSystemPrompt] = useState(settings.systemPrompt ?? "");
+  const [libraryImportPath, setLibraryImportPath] = useState(settings.libraryImportPath ?? "");
   const [copyMark, setCopyMark] = useState("");
   const jsonTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -171,7 +172,8 @@ export function SettingsTab({
       model,
       aiEnabled,
       ldsReference,
-      systemPrompt: systemPrompt.trim() ? systemPrompt : undefined
+      systemPrompt: systemPrompt.trim() ? systemPrompt : undefined,
+      libraryImportPath: libraryImportPath.trim() || undefined
     });
 
   const resetSystemPrompt = () => setSystemPrompt("");
@@ -241,6 +243,24 @@ export function SettingsTab({
           </label>
         </>
       )}
+
+      <div class="section-title" style={{ marginTop: 16 }}>
+        React 컴포넌트 import 경로
+      </div>
+      <p class="settings-desc">
+        라이브러리 컴포넌트의 React import 패키지 경로. 입력하면 <code>PROMPT.md</code>에
+        포함되어 Codex가 정확한 import 구문을 생성합니다.
+      </p>
+      <label class="settings-field">
+        <span class="settings-label">import 경로 (선택)</span>
+        <input
+          type="text"
+          class="settings-input"
+          placeholder="예: @company/design-system"
+          value={libraryImportPath}
+          onInput={(e) => setLibraryImportPath((e.target as HTMLInputElement).value)}
+        />
+      </label>
 
       <div class="section-title" style={{ marginTop: 16 }}>
         Export Pack 시스템 프롬프트
