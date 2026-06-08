@@ -7,7 +7,12 @@ export interface OptimizeStats {
   flattenedFrames: number;
   inferredLayouts: number;
   collapsedRepeats: number;
+  truncatedChildren: number;
 }
+
+// 사용자 대상 자식 수 상한. repeat-collapse 이후 최종 적용되어, 반복 리스트가
+// 압축으로 줄어든 경우에는 잘림이 발생하지 않는다.
+const MAX_CHILDREN = 80;
 
 export interface InferredLayout {
   mode: "HORIZONTAL" | "VERTICAL";
@@ -185,7 +190,8 @@ function inferLayoutFor(
     ? "MIN"
     : detectPrimaryAlign(typed, direction, parent);
 
-  const gap = uniformGap ? Math.max(0, Math.round(minGap)) : Math.max(0, Math.round(minGap));
+  // 균등 간격이면 그 값을, 비균등이면 최소 간격을 gap으로 사용 (나머지는 align으로 표현).
+  const gap = Math.max(0, Math.round(minGap));
 
   return {
     mode: direction,
@@ -325,6 +331,21 @@ function collapseRepeatingChildren(n: SerializedNode, stats: OptimizeStats): voi
   n.children = next;
 }
 
+function truncateBreadth(n: SerializedNode, stats: OptimizeStats): void {
+  if (!n.children) return;
+  for (const c of n.children) truncateBreadth(c, stats);
+  if (n.children.length > MAX_CHILDREN) {
+    const removed = n.children.length - MAX_CHILDREN;
+    n.children = n.children.slice(0, MAX_CHILDREN);
+    n.children.push({
+      id: "__truncated__",
+      type: "META",
+      name: `... ${removed}개 자식 생략`
+    });
+    stats.truncatedChildren += removed;
+  }
+}
+
 export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stats: OptimizeStats } {
   const stats: OptimizeStats = {
     beforeNodes: countNodes(root),
@@ -332,10 +353,13 @@ export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stat
     flattenedGroups: 0,
     flattenedFrames: 0,
     inferredLayouts: 0,
-    collapsedRepeats: 0
+    collapsedRepeats: 0,
+    truncatedChildren: 0
   };
   const flattened = flattenGroupWrappers(root, stats);
   collapseRepeatingChildren(flattened, stats);
+  // 잘림은 압축 이후 마지막에 — 반복 리스트는 이미 줄어든 상태이므로 잘릴 일이 없다.
+  truncateBreadth(flattened, stats);
   inferLayouts(flattened, stats);
   stats.afterNodes = countNodes(flattened);
   return { tree: flattened, stats };

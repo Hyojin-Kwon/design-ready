@@ -118,6 +118,7 @@ export function App() {
       flattenedFrames: number;
       inferredLayouts: number;
       collapsedRepeats: number;
+      truncatedChildren: number;
       totalIconNodes: number;
       uniqueIcons: number;
       iconBytes: number;

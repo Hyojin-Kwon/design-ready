@@ -35,6 +35,9 @@ export interface SerializedNode {
   svg?: string;
   iconId?: string;
   iconHint?: string;
+  // SVG export가 너무 크거나 실패해 모양 정보를 담지 못한 아이콘 노드 표식.
+  // downstream(Codex)이 누락을 인지하고 Figma MCP로 원본을 가져오게 한다.
+  svgOmitted?: boolean;
   children?: SerializedNode[];
   truncated?: boolean;
 }
@@ -96,8 +99,14 @@ export function extractIcons(
 }
 
 const MAX_DEPTH = 10;
-const MAX_CHILDREN = 80;
-const MAX_SVG_CHARS = 4000;
+// 직렬화 비용 폭주 방지용 하드 세이프티 캡. 사용자 대상 잘림(MAX_CHILDREN=80)은
+// repeat-collapse가 끝난 뒤 treeOptimize에서 최종 적용된다 — 반복 리스트가 먼저
+// 압축되어 불필요한 잘림이 생기지 않도록 하기 위함.
+const SERIALIZE_CHILD_SAFETY = 500;
+// 인라인 SVG 상한. extractIcons가 SVG를 트리 밖 별도 파일로 옮기므로(트리엔 iconId
+// 참조만 남음) tree.json 토큰 예산과 무관하다 → 복잡한 아이콘/일러스트도 파일로
+// 보존되도록 넉넉히 잡는다. 이를 넘는 극단적 케이스만 svgOmitted로 표식 후 생략.
+const MAX_SVG_CHARS = 40000;
 const ICON_MAX_DIM = 64;
 
 const VECTOR_PRIMITIVE_TYPES = new Set([
@@ -267,7 +276,9 @@ function describeCornerRadius(node: SceneNode): number | undefined {
   return undefined;
 }
 
-function describeBoundTokens(node: SceneNode): Record<string, string> | undefined {
+async function describeBoundTokens(
+  node: SceneNode
+): Promise<Record<string, string> | undefined> {
   const bound = (node as unknown as {
     boundVariables?: Record<string, { id: string } | { id: string }[]>;
   }).boundVariables;
@@ -277,7 +288,8 @@ function describeBoundTokens(node: SceneNode): Record<string, string> | undefine
     const first = Array.isArray(value) ? value[0] : value;
     if (!first) continue;
     try {
-      const variable = figma.variables.getVariableById(first.id);
+      // documentAccess: "dynamic-page" 모드에서는 동기 getVariableById가 throw됨 → async 필수.
+      const variable = await figma.variables.getVariableByIdAsync(first.id);
       if (variable) out[key] = variable.name;
     } catch {
       // ignore
@@ -365,7 +377,7 @@ export async function serializeNode(
   if (radius !== undefined) result.cornerRadius = radius;
   const effects = describeEffects(node);
   if (effects) result.effects = effects;
-  const tokens = describeBoundTokens(node);
+  const tokens = await describeBoundTokens(node);
   if (tokens) result.boundTokens = tokens;
 
   if (node.type === "TEXT") {
@@ -385,6 +397,17 @@ export async function serializeNode(
       result.svg = svg;
       return result;
     }
+    // SVG export 실패(과대/에러). 자식이 없으면 모양을 조각으로 복구할 수도 없으므로
+    // 조용히 빈 노드로 흘려보내지 말고, 아이콘이었음을 명시해 누락을 드러낸다.
+    const hasChildren =
+      "children" in node && (node as ChildrenMixin).children.length > 0;
+    if (!hasChildren) {
+      result.svgOmitted = true;
+      const dims = result.width && result.height ? `${result.width}x${result.height}` : "";
+      result.iconHint = [node.name, dims].filter(Boolean).join(" ");
+      return result;
+    }
+    // 자식이 있으면 아래로 흘려보내 자식 단위(개별 vector)로 export를 재시도한다.
   }
 
   if (depth >= MAX_DEPTH) {
@@ -399,14 +422,14 @@ export async function serializeNode(
       const ownLayoutMode =
         (node as unknown as { layoutMode?: string }).layoutMode ?? "NONE";
       const serialized: SerializedNode[] = [];
-      for (const c of visible.slice(0, MAX_CHILDREN)) {
+      for (const c of visible.slice(0, SERIALIZE_CHILD_SAFETY)) {
         serialized.push(await serializeNode(c, depth + 1, ownLayoutMode, node.name));
       }
-      if (visible.length > MAX_CHILDREN) {
+      if (visible.length > SERIALIZE_CHILD_SAFETY) {
         serialized.push({
           id: "__truncated__",
           type: "META",
-          name: `... ${visible.length - MAX_CHILDREN}개 자식 생략`
+          name: `... ${visible.length - SERIALIZE_CHILD_SAFETY}개 자식 생략`
         });
       }
       result.children = serialized;

@@ -170,6 +170,7 @@ export interface ExportOptStats {
   flattenedFrames: number;
   inferredLayouts: number;
   collapsedRepeats: number;
+  truncatedChildren: number;
   totalIconNodes: number;
   uniqueIcons: number;
   iconBytes: number;

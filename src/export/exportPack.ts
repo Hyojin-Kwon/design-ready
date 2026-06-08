@@ -174,7 +174,7 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   parts.push(
     "- **라이브 트리**: Figma MCP 서버가 연결되어 있으면 각 화면을 MCP로 직접 읽어옵니다. 각 `screens/<slug>/meta.json`의 `rootLabel`로 Figma 프레임을 찾으세요."
   );
-  parts.push("- **아이콘**: `icons/` 폴더의 SVG 파일들. `icons/_manifest.json`에 `{screen, localId, file, path}` 매핑이 있습니다. 각 화면의 `tree.json`(포함된 경우) 또는 MCP 트리의 `iconId` 필드를 manifest로 역참조해서 필요한 SVG만 Read하세요.");
+  parts.push("- **아이콘**: `icons/` 폴더의 SVG 파일들. `icons/_manifest.json`에 `{screen, localId, file, path}` 매핑이 있습니다. 각 화면의 `tree.json`(포함된 경우) 또는 MCP 트리의 `iconId` 필드를 manifest로 역참조해서 필요한 SVG만 Read하세요. `svgOmitted: true`인 노드는 SVG가 너무 커서 추출에서 제외된 아이콘이므로 `iconHint`(이름/크기)를 참고해 Figma MCP로 원본을 직접 가져오세요.");
   if (input.includeTreeJson) {
     parts.push(
       "- **트리**: 각 화면의 `screens/<slug>/tree.json` (MCP 없는 환경용 스냅샷). " +

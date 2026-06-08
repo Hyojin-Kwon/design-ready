@@ -13,6 +13,7 @@ interface Props {
       flattenedFrames: number;
       inferredLayouts: number;
       collapsedRepeats: number;
+      truncatedChildren: number;
       totalIconNodes: number;
       uniqueIcons: number;
       iconBytes: number;
@@ -98,6 +99,15 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
                     <span class="export-opt-val">
                       {summary.optStats.collapsedRepeats}개 생략
                       <span class="export-opt-delta"> (repeatCount)</span>
+                    </span>
+                  </div>
+                )}
+                {summary.optStats.truncatedChildren > 0 && (
+                  <div class="export-opt-row">
+                    <span class="export-opt-label">⚠️ 자식 노드 잘림</span>
+                    <span class="export-opt-val">
+                      {summary.optStats.truncatedChildren}개 생략
+                      <span class="export-opt-delta"> (80개 초과 — 그룹핑 권장)</span>
                     </span>
                   </div>
                 )}
