@@ -88,9 +88,9 @@ export function App() {
   const settingsRef = useRef<PluginSettings>(DEFAULT_SETTINGS);
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<NamingSuggestion[]>([]);
-  const [aiRunning, setAiRunning] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const [aiNotice, setAiNotice] = useState<string | null>(null);
+  const [, setAiRunning] = useState(false);
+  const [, setAiError] = useState<string | null>(null);
+  const [, setAiNotice] = useState<string | null>(null);
   const [extractedLibrary, setExtractedLibrary] = useState<{
     components: Array<{ name: string; key: string }>;
     extractedAt: string;
@@ -466,38 +466,6 @@ export function App() {
     post({ type: "lds-template:clear" });
   };
 
-  const onRunAi = () => {
-    if (!result) return;
-    if (!settings.aiEnabled || !settings.apiKey) {
-      setAiError("설정 탭에서 API 키 저장 및 활성화 후 다시 시도해주세요.");
-      return;
-    }
-    setAiRunning(true);
-    setAiError(null);
-    setAiNotice(null);
-    const existing = new Set([
-      ...result.suggestions.map((s) => s.nodeId),
-      ...aiSuggestions.map((s) => s.nodeId)
-    ]);
-    post({ type: "ai:collect", existingSuggestionIds: Array.from(existing) });
-  };
-
-  const onRunAiForNode = (nodeId: string) => {
-    if (!result) return;
-    if (!settings.aiEnabled || !settings.apiKey) {
-      setAiError("설정 탭에서 API 키 저장 및 활성화 후 다시 시도해주세요.");
-      return;
-    }
-    setAiRunning(true);
-    setAiError(null);
-    setAiNotice(null);
-    post({
-      type: "ai:collect",
-      existingSuggestionIds: [],
-      targetNodeIds: [nodeId]
-    });
-  };
-
   const combinedSuggestions = result
     ? mergeSuggestions(result.suggestions, aiSuggestions)
     : [];
@@ -511,7 +479,6 @@ export function App() {
             result={result}
             loading={loading}
             error={error}
-            scanTarget={result?.scanRoot ?? null}
             onScan={onScan}
             onGoToFix={(category) => {
               setFixInitialCategory(category ?? null);
@@ -524,7 +491,6 @@ export function App() {
             result={result}
             loading={loading}
             error={error}
-            scanTarget={result?.scanRoot ?? null}
             deletedIds={deletedIds}
             deletingIds={deletingIds}
             fixedIssueIds={fixedIssueIds}

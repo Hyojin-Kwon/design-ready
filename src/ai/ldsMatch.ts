@@ -113,10 +113,6 @@ function terminalTokens(name: string): Set<string> {
   return new Set(filterAndMergeTokens(raw));
 }
 
-function tokenize(name: string): Set<string> {
-  return new Set(tokenListOrdered(name));
-}
-
 // 연속한 2-단어 구(句)를 추출. 예: "image grid message" → ["image grid","grid message"]
 function bigrams(tokens: string[]): Set<string> {
   const out = new Set<string>();

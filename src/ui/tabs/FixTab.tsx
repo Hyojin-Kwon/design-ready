@@ -32,7 +32,6 @@ interface Props {
   result: ScanResult | null;
   loading: boolean;
   error: string | null;
-  scanTarget: string | null;
   deletedIds: Set<string>;
   deletingIds: Set<string>;
   fixedIssueIds: Set<string>;
@@ -84,7 +83,6 @@ export function FixTab({
   result,
   loading,
   error,
-  scanTarget,
   deletedIds,
   deletingIds,
   fixedIssueIds,

@@ -5,7 +5,6 @@ interface Props {
   result: ScanResult | null;
   onScan: () => void;
   loading: boolean;
-  scanTarget: string | null;
   error: string | null;
   onGoToFix: (category?: Category) => void;
 }
@@ -64,7 +63,6 @@ export function DiagnoseTab({
   result,
   onScan,
   loading,
-  scanTarget,
   error,
   onGoToFix
 }: Props) {
