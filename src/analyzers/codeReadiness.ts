@@ -141,31 +141,15 @@ interface MetricConfig {
   computeHint: (metric: ReturnType<typeof ratio>) => string;
 }
 
+// 가중치 기준(2026 모델 시대 잠정 v2): "모델이 추론으로 복구 가능한가, 영구 소실인가".
+// 디태치/토큰 해제는 비가역 손실이라 상향, 네이밍/깊이는 모델이 상당 부분 복구하므로 하향.
+// 항목별 실측 캘리브레이션(정제 전/후 동일 MCP 비교) 후 확정 예정.
+// 가중치 내림차순 = "먼저 고칠 것" 우선순위 순.
 const CONFIGS: MetricConfig[] = [
-  {
-    id: "semantic-naming",
-    label: "시맨틱 네이밍 비율",
-    weight: 30,
-    computeHint: (m) =>
-      m.sample - m.passing > 0
-        ? `디폴트 이름인 ${m.sample - m.passing}개 노드를 시맨틱하게 바꾸면 MCP 매핑이 좋아집니다.`
-        : "모든 노드가 시맨틱한 이름을 가지고 있습니다."
-  },
-  {
-    id: "auto-layout",
-    label: "오토레이아웃 적용률",
-    weight: 25,
-    computeHint: (m) =>
-      m.sample - m.passing > 0
-        ? `${m.sample - m.passing}개 프레임에 오토레이아웃을 적용하면 flexbox로 변환됩니다.`
-        : m.sample === 0
-          ? "범위 내 다자식 프레임이 없습니다."
-          : "모든 다자식 프레임이 오토레이아웃을 사용합니다."
-  },
   {
     id: "component-binding",
     label: "컴포넌트 인스턴스 유지율",
-    weight: 20,
+    weight: 30,
     computeHint: (m) =>
       m.sample - m.passing > 0
         ? `디태치된 ${m.sample - m.passing}개 노드를 LDS 컴포넌트에 다시 연결해주세요.`
@@ -176,7 +160,7 @@ const CONFIGS: MetricConfig[] = [
   {
     id: "token-linkage",
     label: "스타일 토큰 연결률",
-    weight: 15,
+    weight: 25,
     computeHint: (m) =>
       m.sample - m.passing > 0
         ? `${m.sample - m.passing}개 노드를 로컬 값 대신 LDS 컬러/텍스트 토큰에 연결해주세요.`
@@ -185,9 +169,29 @@ const CONFIGS: MetricConfig[] = [
           : "모든 스타일 노드가 토큰을 사용합니다."
   },
   {
+    id: "semantic-naming",
+    label: "시맨틱 네이밍 비율",
+    weight: 20,
+    computeHint: (m) =>
+      m.sample - m.passing > 0
+        ? `디폴트 이름인 ${m.sample - m.passing}개 노드를 시맨틱하게 바꾸면 MCP 매핑이 좋아집니다.`
+        : "모든 노드가 시맨틱한 이름을 가지고 있습니다."
+  },
+  {
+    id: "auto-layout",
+    label: "오토레이아웃 적용률",
+    weight: 20,
+    computeHint: (m) =>
+      m.sample - m.passing > 0
+        ? `${m.sample - m.passing}개 프레임에 오토레이아웃을 적용하면 flexbox로 변환됩니다.`
+        : m.sample === 0
+          ? "범위 내 다자식 프레임이 없습니다."
+          : "모든 다자식 프레임이 오토레이아웃을 사용합니다."
+  },
+  {
     id: "structure-depth",
     label: "구조 깊이 적정성",
-    weight: 10,
+    weight: 5,
     computeHint: (m) =>
       m.sample - m.passing > 0
         ? `깊게 중첩된 ${m.sample - m.passing}개 그룹을 평탄화해주세요.`
