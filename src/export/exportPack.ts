@@ -249,7 +249,10 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   if (tokenFiles.length > 0) {
     parts.push("## 사용 가능한 디자인 토큰");
     parts.push(
-      "아래 CSS 변수만 사용. 색상/타이포/간격은 **리터럴 값 금지** — 반드시 `var(--name)` 참조. " +
+      "아래 CSS 변수는 **디자인 의도 값에만** 사용: 색상·타이포·radius·stroke·gap/padding. " +
+        "이 값들은 정확히 일치하는 토큰이 있을 때만 `var(--name)` 참조. " +
+        "**width/height/위치(left/top 등 px 치수)는 토큰화하지 말고 raw px 유지.** " +
+        "토큰을 산술 조합(`calc(var(--a)+var(--b))`)하지 말 것 — 한 값에 토큰 하나, 정확히 안 맞으면 리터럴 유지. " +
         "원본 정의와 값은 `foundation/` 디렉토리의 CSS 파일 참고. 여기 없는 토큰을 지어내지 말 것."
     );
     parts.push("");
