@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type {
   ApplyNamingItem,
   AutofixItem,
@@ -9,24 +9,43 @@ import type {
 } from "../../types";
 import { AUTOFIX_RULE_IDS } from "../../types";
 import { IssueRow } from "../components/IssueRow";
+import { EmptyState } from "../components/EmptyState";
+import { useT } from "../LangContext";
 
-const CATEGORY_LABELS: Record<Category, string> = {
-  naming: "네이밍",
-  layout: "레이아웃",
-  system: "시스템",
-  style: "스타일",
-  hygiene: "청결도"
-};
+function FixIllust() {
+  return (
+    <svg width="180" height="160" viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="22" y="22" width="136" height="116" rx="8" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
+      <circle cx="42" cy="50" r="7" fill="#111111"/>
+      <path d="M38.5 50 L41 52.5 L46 47.5" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="58" y="46" width="78" height="6" rx="3" fill="#E5E7EB"/>
+      <rect x="58" y="56" width="50" height="4" rx="2" fill="#EFEFEF"/>
+      <circle cx="42" cy="82" r="7" fill="#111111"/>
+      <path d="M38.5 82 L41 84.5 L46 79.5" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="58" y="78" width="62" height="6" rx="3" fill="#E5E7EB"/>
+      <rect x="58" y="88" width="40" height="4" rx="2" fill="#EFEFEF"/>
+      <circle cx="42" cy="114" r="7" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
+      <rect x="58" y="110" width="70" height="6" rx="3" fill="#E5E7EB"/>
+      <rect x="58" y="120" width="46" height="4" rx="2" fill="#EFEFEF"/>
+    </svg>
+  );
+}
 
-type IssueFilter = "all" | Exclude<Category, "hygiene">;
+function AllClearIllust() {
+  return (
+    <svg width="180" height="160" viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="90" cy="80" r="48" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
+      <circle cx="90" cy="80" r="34" fill="#111111"/>
+      <path d="M76 80 L86 90 L106 70" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="34" cy="46" r="3" fill="#E5E7EB"/>
+      <circle cx="150" cy="50" r="2.5" fill="#E5E7EB"/>
+      <circle cx="146" cy="118" r="3" fill="#E5E7EB"/>
+      <circle cx="36" cy="118" r="2.5" fill="#E5E7EB"/>
+    </svg>
+  );
+}
 
-const FILTERS: Array<{ id: IssueFilter; label: string }> = [
-  { id: "all", label: "전체" },
-  { id: "naming", label: CATEGORY_LABELS.naming },
-  { id: "layout", label: CATEGORY_LABELS.layout },
-  { id: "system", label: CATEGORY_LABELS.system },
-  { id: "style", label: CATEGORY_LABELS.style }
-];
+type IssueFilter = "all" | Category;
 
 interface Props {
   result: ScanResult | null;
@@ -76,7 +95,7 @@ function isCleanup(issue: Issue): boolean {
 }
 
 function toFilter(c: Category | null): IssueFilter {
-  if (c === null || c === "hygiene") return "all";
+  if (c === null) return "all";
   return c;
 }
 
@@ -106,7 +125,62 @@ export function FixTab({
   onApplyNaming,
   onReplaceWithLds
 }: Props) {
+  const t = useT();
+
+  const CATEGORY_LABELS: Record<Category, string> = {
+    naming: t.fixNaming,
+    layout: t.fixLayout,
+    system: t.fixSystem,
+    style: t.fixStyle,
+    hygiene: t.fixStyle
+  };
+
+  const FILTERS: Array<{ id: IssueFilter; label: string }> = [
+    { id: "all", label: t.fixAll },
+    { id: "naming", label: t.fixNaming },
+    { id: "layout", label: t.fixLayout },
+    { id: "system", label: t.fixSystem },
+    { id: "style", label: t.fixStyle },
+    { id: "hygiene", label: t.fixCleanup },
+  ];
+
   const [filter, setFilter] = useState<IssueFilter>(toFilter(initialCategory));
+  const chipsRef = useRef<HTMLDivElement>(null);
+
+  // Drag-to-scroll for filter chips
+  useEffect(() => {
+    const el = chipsRef.current;
+    if (!el) return;
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    const onMouseDown = (e: MouseEvent) => {
+      isDown = true;
+      startX = e.pageX - el.getBoundingClientRect().left;
+      scrollLeft = el.scrollLeft;
+      el.style.cursor = "grabbing";
+      el.style.userSelect = "none";
+    };
+    const onMouseUp = () => {
+      isDown = false;
+      el.style.cursor = "";
+      el.style.userSelect = "";
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.getBoundingClientRect().left;
+      el.scrollLeft = scrollLeft - (x - startX);
+    };
+    el.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+    el.addEventListener("mousemove", onMouseMove);
+    return () => {
+      el.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+      el.removeEventListener("mousemove", onMouseMove);
+    };
+  }, [result]);
 
   // Sync filter when deep-link arrives.
   useEffect(() => {
@@ -127,15 +201,17 @@ export function FixTab({
   );
 
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: otherIssues.length };
+    const counts: Record<string, number> = { all: otherIssues.length, hygiene: cleanupIssues.length };
     for (const issue of otherIssues) {
       counts[issue.category] = (counts[issue.category] ?? 0) + 1;
     }
     return counts;
-  }, [otherIssues]);
+  }, [otherIssues, cleanupIssues]);
 
   const filteredIssues = filter === "all"
     ? otherIssues
+    : filter === "hygiene"
+    ? cleanupIssues
     : otherIssues.filter((i) => i.category === filter);
 
   const anyDeleting = deletingIds.size > 0;
@@ -193,11 +269,11 @@ export function FixTab({
             </>
           )}
           {hasSystemIssue && !done && (
-            <span class="badge" title="이 노드는 디태치 LDS 후보이기도 함 — LDS 교체를 먼저 하면 이름이 자동 반영됨">
-              LDS 교체 권장
+            <span class="badge" title="This node is also a detached LDS candidate — replacing with LDS first will inherit the name automatically">
+              LDS replace recommended
             </span>
           )}
-          {applied && <span class="badge success">적용됨</span>}
+          {applied && <span class="badge success">Applied</span>}
         </div>
         {failMsg && <div class="fix-fail">⚠ {failMsg}</div>}
         {!done && (
@@ -213,11 +289,11 @@ export function FixTab({
               }
               title={
                 hasSystemIssue
-                  ? "⚠ 이 노드는 디태치 LDS 후보입니다. 이름을 먼저 바꾸면 다음 스캔에서 LDS 매칭이 엉킬 수 있습니다. 시스템 탭에서 LDS 교체를 먼저 권장."
-                  : "Figma 레이어 이름 변경"
+                  ? "⚠ This node is a detached LDS candidate. Renaming first can confuse LDS matching on the next scan. We recommend replacing with LDS from the System tab first."
+                  : "Rename the Figma layer"
               }
             >
-              {applying ? "적용 중..." : "네이밍만 변경"}
+              {applying ? t.fixApplying : t.fixRenameOnly}
             </button>
           </div>
         )}
@@ -263,9 +339,9 @@ export function FixTab({
                   { nodeId: issue.nodeId, componentKey: s!.ldsComponentKey as string }
                 ])
               }
-              title="디태치 프레임을 LDS 인스턴스로 교체 (오버라이드는 사라짐)"
+              title="Replace the detached frame with an LDS instance (overrides will be lost)"
             >
-              {replacing ? "교체 중..." : "LDS로 교체"}
+              {replacing ? "Replacing..." : "Replace with LDS"}
             </button>
           </div>
         )}
@@ -274,26 +350,26 @@ export function FixTab({
             {keyInvalid && (
               <span
                 class="badge"
-                title="라이브러리 추출 시점 이후 원본 컴포넌트가 재발행/삭제되어 key가 달라졌을 수 있습니다. 설정 탭에서 라이브러리를 재추출하면 최신 key로 다시 스캔 가능합니다."
+                title="The original component may have been republished/deleted since extraction, so its key has changed. Re-extract the library from the Settings tab to scan with the latest keys."
                 style={{ background: "#fef3c7", color: "#92400e" }}
               >
-                ⚠ 라이브러리 재추출 필요
+                ⚠ Library re-extract needed
               </span>
             )}
             <button
               class="btn"
               onClick={() => {
-                // 저신뢰 매칭이 있으면 후보 이름을 힌트로 노출 (유저가 Assets에서 검색 가능).
+                // If we have a low-confidence match, expose the candidate name as a hint (user can search in Assets).
                 const hint = keyInvalid
-                  ? `이 컴포넌트 key가 라이브러리에 없습니다 (재발행/삭제 추정). "설정 탭 → 라이브러리 재추출" 후 다시 스캔하거나, Assets 패널(Shift+I)에서 "${s?.suggestedName ?? ""}"을 직접 찾아 덮어쓰세요.`
+                  ? `This component key is not in the library (likely republished/deleted). Re-extract the library from Settings and re-scan, or find "${s?.suggestedName ?? ""}" in the Assets panel (Shift+I) and replace manually.`
                   : s?.suggestedName
-                  ? `후보: "${s.suggestedName}" — Assets 패널(Shift+I)에서 이 이름으로 검색 후 드래그하거나, 기존 인스턴스 복사해 이 자리에 덮어쓰세요.`
-                  : `LDS 매칭 후보 없음. Assets 패널(Shift+I)에서 원본을 직접 찾아 드래그하거나, 기존 인스턴스 복사해 이 자리에 덮어쓰세요.`;
+                  ? `Candidate: "${s.suggestedName}" — search this name in the Assets panel (Shift+I) and drag it in, or copy an existing instance to overwrite this spot.`
+                  : `No LDS match candidate. Find the original in the Assets panel (Shift+I) and drag it in, or copy an existing instance to overwrite this spot.`;
                 onSelectNode(issue.nodeId, hint);
               }}
-              title="이 프레임을 Figma 뷰포트에서 선택 — Assets 패널에서 원본 컴포넌트를 찾아 수동 교체"
+              title="Select this frame in the Figma viewport — then find the original component in the Assets panel and replace manually"
             >
-              Figma에서 선택 · 수동 재연결
+              Select in Figma · Reconnect manually
             </button>
           </div>
         )}
@@ -316,7 +392,7 @@ export function FixTab({
               disabled={fixingIssueIds.has(issue.id) || anyFixing}
               onClick={() => onAutofix([toAutofixItem(issue)])}
             >
-              {fixingIssueIds.has(issue.id) ? "..." : "자동 수정"}
+              {fixingIssueIds.has(issue.id) ? "..." : "Auto-fix"}
             </button>
           </div>
         )}
@@ -329,60 +405,59 @@ export function FixTab({
       {error && <div class="error">{error}</div>}
       {fixFailures.size > 0 && (
         <div class="error">
-          {fixFailures.size}개 자동 수정 실패 — 아래 해당 이슈에서 상세 사유 확인
+          {fixFailures.size} auto-fix failure(s) — check details on the issue(s) below
         </div>
       )}
       {applyError && <div class="error">{applyError}</div>}
       {replaceError && <div class="error">{replaceError}</div>}
 
       {!result && !loading && !error && (
-        <div class="empty">프레임이나 페이지를 선택하고 "스캔"을 눌러주세요.</div>
+        <EmptyState
+          illustration={<FixIllust />}
+          title={t.fixEmptyTitle}
+          description={
+            t.fixScan === "Scan" ? (
+              <>
+                Run a scan first.
+                <br />
+                Found issues will be listed here with one-click fixes.
+              </>
+            ) : (
+              <>
+                먼저 스캔을 실행해 주세요.
+                <br />
+                발견된 이슈가 여기에 원클릭 수정 옵션과 함께 표시됩니다.
+              </>
+            )
+          }
+        />
       )}
 
       {result && (
         <>
-          {cleanupIssues.length > 0 && (
-            <>
-              <div class="section-header">
-                <div class="section-title" style={{ margin: 0 }}>
-                  삭제 후보 <span class="badge">{cleanupIssues.length}</span>
-                </div>
-                <button
-                  class="btn"
-                  disabled={anyDeleting}
-                  onClick={() => onDelete(cleanupIssues.map((i) => i.nodeId))}
-                >
-                  {anyDeleting ? "삭제 중..." : "전체 삭제"}
-                </button>
-              </div>
-              <div class="issue-list">
-                {cleanupIssues.map((issue) => (
-                  <div class="suggestion-row" key={issue.id}>
-                    <IssueRow issue={issue} onSelect={onSelectNode} />
-                    <div class="suggestion-actions">
-                      <button
-                        class="btn"
-                        disabled={deletingIds.has(issue.nodeId) || anyDeleting}
-                        onClick={() => onDelete([issue.nodeId])}
-                      >
-                        {deletingIds.has(issue.nodeId) ? "..." : "삭제"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          {otherIssues.length === 0 ? (
-            <div class="empty">
-              {cleanupIssues.length > 0
-                ? "삭제 후보 외에는 이슈가 없습니다."
-                : "이슈를 찾지 못했습니다. 깔끔하네요."}
-            </div>
+          {otherIssues.length === 0 && cleanupIssues.length === 0 ? (
+            <EmptyState
+              illustration={<AllClearIllust />}
+              title={t.fixAllClearTitle}
+              description={
+                t.fixScan === "Scan" ? (
+                  <>
+                    No issues found.
+                    <br />
+                    Your file is ready for code conversion.
+                  </>
+                ) : (
+                  <>
+                    이슈가 없습니다.
+                    <br />
+                    코드 변환 준비가 완료된 파일입니다.
+                  </>
+                )
+              }
+            />
           ) : (
             <>
-              <div class="filter-chips">
+              <div class="filter-chips" ref={chipsRef}>
                 {FILTERS.map((f) => {
                   const count = categoryCounts[f.id] ?? 0;
                   return (
@@ -401,8 +476,8 @@ export function FixTab({
               {filter === "naming" && namingIssuesCount > 0 && (
                 <div class="autofix-bar">
                   <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
-                    네이밍 제안 {combinedSuggestions.length}개 ·{" "}
-                    {appliedIds.size + replacedIds.size}개 처리됨 · 디태치 LDS 후보는 제외
+                    {combinedSuggestions.length} naming suggestion(s) ·{" "}
+                    {appliedIds.size + replacedIds.size} processed · detached LDS candidates excluded
                   </div>
                   <button
                     class="btn primary"
@@ -416,16 +491,31 @@ export function FixTab({
                         "rename"
                       )
                     }
-                    title="디태치 LDS 후보를 제외한 나머지 네이밍 제안을 일괄 적용"
+                    title="Apply all naming suggestions in bulk, excluding detached LDS candidates"
                   >
                     {anyApplying
-                      ? "변경 중..."
-                      : `네이밍 전체 변경 (${pendingNamingSuggestions.length})`}
+                      ? "Applying..."
+                      : `Rename all (${pendingNamingSuggestions.length})`}
                   </button>
                 </div>
               )}
 
-              {filter !== "all" && filter !== "naming" && (() => {
+              {filter === "hygiene" && (
+                <div class="autofix-bar">
+                  <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
+                    <strong>{cleanupIssues.length}</strong> hidden / empty layer{cleanupIssues.length !== 1 ? "s" : ""} — safe to delete
+                  </div>
+                  <button
+                    class="btn primary"
+                    disabled={anyDeleting}
+                    onClick={() => onDelete(cleanupIssues.map((i) => i.nodeId))}
+                  >
+                    {anyDeleting ? "Deleting..." : `Delete all (${cleanupIssues.length})`}
+                  </button>
+                </div>
+              )}
+
+              {filter !== "all" && filter !== "naming" && filter !== "hygiene" && (() => {
                 const autofixableInFilter = filteredIssues.filter(isAutofixable);
                 const hasAny = autofixableInFilter.length > 0;
                 // LDS 교체는 system 탭에서만 (디태치 인스턴스 전용)
@@ -445,10 +535,10 @@ export function FixTab({
                   <div class="autofix-bar">
                     <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
                       {hasAny
-                        ? <>이 카테고리에서 자동 수정 가능 <strong>{autofixableInFilter.length}</strong>개</>
+                        ? <><strong>{autofixableInFilter.length}</strong> auto-fixable in this category</>
                         : hasLds
-                          ? <>LDS 교체 가능 <strong>{ldsReplaceable.length}</strong>개 — 오버라이드 손실 주의</>
-                          : "이 카테고리는 자동 수정 규칙이 없습니다 — 수동 확인 필요"}
+                          ? <><strong>{ldsReplaceable.length}</strong> LDS replacement(s) available — overrides will be lost</>
+                          : "No auto-fix rules for this category — manual review required"}
                     </div>
                     {hasLds && (
                       <button
@@ -462,9 +552,9 @@ export function FixTab({
                             }))
                           )
                         }
-                        title="디태치 인스턴스를 LDS 컴포넌트로 일괄 교체 (오버라이드는 사라짐)"
+                        title="Replace all detached instances with LDS components in bulk (overrides will be lost)"
                       >
-                        {anyReplacing ? "교체 중..." : `전체 LDS로 교체 (${ldsReplaceable.length})`}
+                        {anyReplacing ? "Replacing..." : `Replace all with LDS (${ldsReplaceable.length})`}
                       </button>
                     )}
                     {filter !== "style" && filter !== "system" && (
@@ -472,9 +562,9 @@ export function FixTab({
                         class="btn primary"
                         disabled={!hasAny || anyFixing}
                         onClick={() => onAutofix(autofixableInFilter.map(toAutofixItem))}
-                        title={hasAny ? "" : "이 카테고리는 자동 수정 규칙이 없습니다"}
+                        title={hasAny ? "" : "No auto-fix rules for this category"}
                       >
-                        {anyFixing ? "수정 중..." : "일괄 자동 수정"}
+                        {anyFixing ? "Fixing..." : "Auto-fix all"}
                       </button>
                     )}
                   </div>
@@ -482,10 +572,26 @@ export function FixTab({
               })()}
 
               {filteredIssues.length === 0 ? (
-                <div class="empty">이 카테고리에는 이슈가 없습니다.</div>
+                <div class="empty">No issues in this category.</div>
               ) : (
                 <div class="issue-list">
                   {filteredIssues.map((issue) => {
+                    if (issue.category === "hygiene") {
+                      return (
+                        <div class="suggestion-row" key={issue.id}>
+                          <IssueRow issue={issue} onSelect={onSelectNode} />
+                          <div class="suggestion-actions">
+                            <button
+                              class="btn"
+                              disabled={deletingIds.has(issue.nodeId) || anyDeleting}
+                              onClick={() => onDelete([issue.nodeId])}
+                            >
+                              {deletingIds.has(issue.nodeId) ? "..." : "Delete"}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
                     if (issue.category === "naming") {
                       // 디태치 LDS 후보 노드는 네이밍 제안을 노출하지 않음.
                       // (이름을 먼저 바꾸면 LDS 매칭 오염 → system 탭에서 LDS 교체하면 이름 자동 승계됨)
@@ -510,7 +616,7 @@ export function FixTab({
       )}
       <div class="toolbar-sticky">
         <button class="btn primary full" onClick={onScan} disabled={loading}>
-          {loading ? "스캔 중..." : result ? "다시 스캔" : "스캔"}
+          {loading ? t.checkScanning : result ? t.checkRescan : t.fixScan}
         </button>
       </div>
     </div>
