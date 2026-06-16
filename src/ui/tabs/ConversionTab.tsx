@@ -1,3 +1,24 @@
+import { EmptyState } from "../components/EmptyState";
+import { useT } from "../LangContext";
+
+function ExportIllust() {
+  return (
+    <svg width="180" height="90" viewBox="8 38 168 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="42" width="48" height="64" rx="5" stroke="#E5E7EB" stroke-width="1.7" fill="#FFFFFF"/>
+      <rect x="22" y="50" width="48" height="64" rx="5" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
+      <rect x="30" y="58" width="48" height="64" rx="5" stroke="#111111" stroke-width="1.7" fill="#FFFFFF"/>
+      <rect x="38" y="68" width="24" height="4" rx="2" fill="#E5E7EB"/>
+      <rect x="38" y="76" width="18" height="4" rx="2" fill="#E5E7EB"/>
+      <rect x="38" y="92" width="32" height="20" rx="3" fill="#F3F3F3"/>
+      <path d="M92 80 L114 80 M108 74 L114 80 L108 86" stroke="#111111" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="124" y="48" width="48" height="64" rx="5" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
+      <path d="M124 64 L172 64" stroke="#D1D5DB" stroke-width="1.7"/>
+      <path d="M148 48 L148 64" stroke="#D1D5DB" stroke-width="1.7"/>
+      <text x="148" y="92" text-anchor="middle" font-family="Pretendard Variable, Pretendard, sans-serif" font-size="10" font-weight="700" fill="#9CA3AF">.zip</text>
+    </svg>
+  );
+}
+
 interface Props {
   running: boolean;
   error: string | null;
@@ -24,23 +45,33 @@ interface Props {
 }
 
 export function ConversionTab({ running, error, summary, onExport, onDownload }: Props) {
+  const t = useT();
   return (
     <div class="tab-with-sticky">
       {error && <div class="error">{error}</div>}
 
       {!summary && !error && !running && (
-        <div class="empty">
-          <div>
-            <p style={{ margin: 0 }}>
-              선택된 프레임들을 하나의 <code>.zip</code> 컨텍스트 팩으로 내보냅니다.
-              Claude Code + Figma MCP 환경에서 이 팩을 첨부해 변환을 수행하세요.
-              여러 프레임을 선택하면 프로토타입 링크가 자동으로 <code>flow.md</code>로 추출됩니다.
-            </p>
-            <p style={{ margin: "12px 0 0 0" }}>
-              Figma 캔버스에서 변환할 프레임을 1개 이상 선택한 뒤 아래 버튼을 누르세요.
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          illustration={<ExportIllust />}
+          title={t.exportEmptyTitle}
+          illustWidth={172}
+          illustHeight={92}
+          description={
+            t.exportDownload === "Download" ? (
+              <>
+                Bundle selected frames into a single <code>.zip</code> pack
+                <br />
+                and hand it to Claude Code to convert to React.
+              </>
+            ) : (
+              <>
+                선택한 프레임을 <code>.zip</code> 팩으로 묶어
+                <br />
+                Claude Code에 바로 넘겨 React로 변환합니다.
+              </>
+            )
+          }
+        />
       )}
 
       {summary && (
@@ -48,7 +79,7 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
           <div class="export-result-header">
             <span class="export-success-icon">✓</span>
             <div>
-              <div class="export-result-title">생성 완료</div>
+              <div class="export-result-title">{t.exportComplete}</div>
               <div class="export-result-file">{summary.filename}</div>
             </div>
           </div>
@@ -56,24 +87,24 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
           <div class="export-stat-grid">
             <div class="export-stat">
               <span class="export-stat-value">{summary.screens}</span>
-              <span class="export-stat-label">화면</span>
+              <span class="export-stat-label">{t.exportScreens}</span>
             </div>
             <div class="export-stat">
               <span class="export-stat-value">{summary.icons}</span>
-              <span class="export-stat-label">아이콘</span>
+              <span class="export-stat-label">{t.exportIcons}</span>
             </div>
             <div class="export-stat">
               <span class="export-stat-value">{summary.flowLinks}</span>
-              <span class="export-stat-label">프로토타입 링크</span>
+              <span class="export-stat-label">{t.exportProtoLinks}</span>
             </div>
           </div>
 
           {summary.optStats && (
             <div class="export-opt-section">
-              <div class="export-opt-title">트리 최적화</div>
+              <div class="export-opt-title">{t.exportTreeOpt}</div>
               <div class="export-opt-rows">
                 <div class="export-opt-row">
-                  <span class="export-opt-label">노드 수</span>
+                  <span class="export-opt-label">{t.exportNodes}</span>
                   <span class="export-opt-val">
                     {summary.optStats.beforeNodes} → {summary.optStats.afterNodes}
                     {summary.optStats.beforeNodes > 0 && (
@@ -84,14 +115,14 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
                   </span>
                 </div>
                 <div class="export-opt-row">
-                  <span class="export-opt-label">평탄화</span>
+                  <span class="export-opt-label">{t.exportFlattened}</span>
                   <span class="export-opt-val">
                     GROUP {summary.optStats.flattenedGroups} · FRAME {summary.optStats.flattenedFrames}
                   </span>
                 </div>
                 <div class="export-opt-row">
-                  <span class="export-opt-label">auto-layout 유추</span>
-                  <span class="export-opt-val">{summary.optStats.inferredLayouts}개</span>
+                  <span class="export-opt-label">{t.exportAutoLayout}</span>
+                  <span class="export-opt-val">{summary.optStats.inferredLayouts}</span>
                 </div>
                 {summary.optStats.collapsedRepeats > 0 && (
                   <div class="export-opt-row">
@@ -112,9 +143,9 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
                   </div>
                 )}
                 <div class="export-opt-row">
-                  <span class="export-opt-label">아이콘 중복 제거</span>
+                  <span class="export-opt-label">{t.exportIconDedup}</span>
                   <span class="export-opt-val">
-                    {summary.optStats.totalIconNodes}개 노드 → {summary.optStats.uniqueIcons}개 고유
+                    {summary.optStats.totalIconNodes} nodes → {summary.optStats.uniqueIcons} unique
                     <span class="export-opt-delta"> ({Math.round(summary.optStats.iconBytes / 1024)}KB)</span>
                   </span>
                 </div>
@@ -128,15 +159,15 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
         {summary ? (
           <div class="export-btn-row">
             <button class="btn primary" onClick={onDownload} disabled={running}>
-              다운로드
+              {t.exportDownload}
             </button>
             <button class="btn" onClick={onExport} disabled={running}>
-              재생성
+              {t.exportRegenerate}
             </button>
           </div>
         ) : (
           <button class="btn primary full" onClick={onExport} disabled={running}>
-            {running ? "생성 중…" : "선택 프레임 Export Pack 생성"}
+            {running ? t.exportGenerating : t.exportGenerate}
           </button>
         )}
       </div>
