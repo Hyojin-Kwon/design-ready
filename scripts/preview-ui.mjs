@@ -4,8 +4,11 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { resolve, extname } from "node:path";
 
-const ROOT = resolve(import.meta.dirname, "..", "dist");
-const PORT = Number(process.env.PORT) || 5180;
+// 선택 인자: argv[2]=서빙할 dist 디렉토리, argv[3]=포트. (다른 브랜치/워크트리 빌드 미리보기용)
+const ROOT = process.argv[2]
+  ? resolve(process.argv[2])
+  : resolve(import.meta.dirname, "..", "dist");
+const PORT = Number(process.argv[3] || process.env.PORT) || 5180;
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
