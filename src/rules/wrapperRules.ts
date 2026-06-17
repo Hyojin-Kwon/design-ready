@@ -54,7 +54,7 @@ export function checkSingleChildWrapper(node: SceneNode): Issue | null {
       title: "불필요한 단일 자식 그룹",
       description: `그룹 "${node.name}"에 자식이 1개뿐입니다. 그룹을 해제하면 코드 변환 시 불필요한 <div> 중첩이 줄어듭니다.`,
       severity: "info",
-      category: "layout"
+      category: "layout",
     };
   }
 
@@ -78,6 +78,6 @@ export function checkSingleChildWrapper(node: SceneNode): Issue | null {
     title: "불필요한 단일 자식 프레임",
     description: `프레임 "${node.name}"에 자식이 1개이고 배경/패딩/레이아웃이 없습니다. 자식만 남겨도 결과가 동일하며 코드 중첩이 줄어듭니다.`,
     severity: "info",
-    category: "layout"
+    category: "layout",
   };
 }

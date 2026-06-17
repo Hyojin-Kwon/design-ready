@@ -1,10 +1,7 @@
 import JSZip from "jszip";
 import type { SerializedNode } from "../ai/conversionSerialize";
 import type { LdsTemplateCatalog } from "../types";
-import {
-  FOUNDATION_CSS,
-  FOUNDATION_TOKEN_NAMES_BY_FILE
-} from "../data/foundationTokens.generated";
+import { FOUNDATION_CSS, FOUNDATION_TOKEN_NAMES_BY_FILE } from "../data/foundationTokens.generated";
 
 export interface ExportPackScreen {
   rootLabel: string;
@@ -126,11 +123,11 @@ function entryFor(
   tree: SerializedNode,
   iconId: string,
   screenSlug: string,
-  filename: string
+  filename: string,
 ): IconManifestEntry {
   let found: { name: string; hint?: string; path: string[] } = {
     name: iconId,
-    path: []
+    path: [],
   };
   const walk = (n: SerializedNode, path: string[]) => {
     if (n.iconId === iconId) {
@@ -145,7 +142,7 @@ function entryFor(
     file: `icons/${filename}`,
     name: found.name,
     hint: found.hint,
-    path: found.path
+    path: found.path,
   };
 }
 
@@ -154,7 +151,7 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   parts.push("# Figma → React 변환 지침\n");
   parts.push(
     "이 폴더는 `design-ready` Figma 플러그인이 생성한 변환 컨텍스트 팩입니다. " +
-      "Claude Code(또는 동급 에이전트)에 이 폴더 전체를 첨부한 뒤 아래 지침을 따라 변환을 요청하세요.\n"
+      "Claude Code(또는 동급 에이전트)에 이 폴더 전체를 첨부한 뒤 아래 지침을 따라 변환을 요청하세요.\n",
   );
 
   parts.push("## 대상 화면");
@@ -164,33 +161,39 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   parts.push("");
 
   const hasHealthReport = input.screens.some(
-    (s) => s.healthReport && s.healthReport.trim().length > 0
+    (s) => s.healthReport && s.healthReport.trim().length > 0,
   );
-  const hasSemanticMap = input.screens.some(
-    (s) => s.semanticMap && s.semanticMap.length > 0
-  );
+  const hasSemanticMap = input.screens.some((s) => s.semanticMap && s.semanticMap.length > 0);
 
   parts.push("## 입력 소스");
   parts.push(
-    "- **라이브 트리**: Figma MCP 서버가 연결되어 있으면 각 화면을 MCP로 직접 읽어옵니다. 각 `screens/<slug>/meta.json`의 `rootLabel`로 Figma 프레임을 찾으세요."
+    "- **라이브 트리**: Figma MCP 서버가 연결되어 있으면 각 화면을 MCP로 직접 읽어옵니다. 각 `screens/<slug>/meta.json`의 `rootLabel`로 Figma 프레임을 찾으세요.",
   );
-  parts.push("- **아이콘**: `icons/` 폴더의 SVG 파일들. `icons/_manifest.json`에 `{screen, localId, file, path}` 매핑이 있습니다. 각 화면의 `tree.json`(포함된 경우) 또는 MCP 트리의 `iconId` 필드를 manifest로 역참조해서 필요한 SVG만 Read하세요. `svgOmitted: true`인 노드는 SVG가 너무 커서 추출에서 제외된 아이콘이므로 `iconHint`(이름/크기)를 참고해 Figma MCP로 원본을 직접 가져오세요.");
+  parts.push(
+    "- **아이콘**: `icons/` 폴더의 SVG 파일들. `icons/_manifest.json`에 `{screen, localId, file, path}` 매핑이 있습니다. 각 화면의 `tree.json`(포함된 경우) 또는 MCP 트리의 `iconId` 필드를 manifest로 역참조해서 필요한 SVG만 Read하세요. `svgOmitted: true`인 노드는 SVG가 너무 커서 추출에서 제외된 아이콘이므로 `iconHint`(이름/크기)를 참고해 Figma MCP로 원본을 직접 가져오세요.",
+  );
   if (input.includeTreeJson) {
     parts.push(
       "- **트리**: 각 화면의 `screens/<slug>/tree.json` (MCP 없는 환경용 스냅샷). " +
         "`repeatCount: N` 필드가 있는 노드는 동일 구조가 N번 반복되는 리스트 아이템 — `.map()`으로 N개 렌더링하세요. " +
-        "텍스트가 `…`로 끝나면 400자 초과로 잘린 것이므로 Figma MCP로 원본을 확인하세요."
+        "텍스트가 `…`로 끝나면 400자 초과로 잘린 것이므로 Figma MCP로 원본을 확인하세요.",
     );
   }
   if (input.ldsReference.trim()) parts.push("- **디자인 시스템**: `lds.md` 참조.");
   if (hasHealthReport) {
-    parts.push("- **파일 품질 리포트**: `screens/<slug>/health-report.md` — 해당 화면의 알려진 약점. 변환 시 보정하세요.");
+    parts.push(
+      "- **파일 품질 리포트**: `screens/<slug>/health-report.md` — 해당 화면의 알려진 약점. 변환 시 보정하세요.",
+    );
   }
   if (input.flow && input.flow.length > 0) {
-    parts.push("- **프로토타입 플로우**: `flow.md` — 화면 간 네비게이션. 라우팅/핸들러를 이에 맞춰 연결하세요.");
+    parts.push(
+      "- **프로토타입 플로우**: `flow.md` — 화면 간 네비게이션. 라우팅/핸들러를 이에 맞춰 연결하세요.",
+    );
   }
   if (hasSemanticMap) {
-    parts.push("- **시맨틱 네이밍 맵**: `screens/<slug>/semantic-map.json` — 원본 레이어 이름 대신 이 매핑된 이름을 JSX 주석/식별자로 사용.");
+    parts.push(
+      "- **시맨틱 네이밍 맵**: `screens/<slug>/semantic-map.json` — 원본 레이어 이름 대신 이 매핑된 이름을 JSX 주석/식별자로 사용.",
+    );
   }
   parts.push("");
 
@@ -198,11 +201,11 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   if (input.libraryImportPath?.trim()) {
     parts.push(
       `import 경로: \`import { ComponentName } from '${input.libraryImportPath.trim()}'\`` +
-        " — ComponentName 자리에 아래 이름을 그대로 사용."
+        " — ComponentName 자리에 아래 이름을 그대로 사용.",
     );
   } else {
     parts.push(
-      "_⚠️ import 경로 미지정. 설정 탭 → 'React import 경로'를 입력하거나, 코드에 `// TODO: add import` 주석을 남기세요._"
+      "_⚠️ import 경로 미지정. 설정 탭 → 'React import 경로'를 입력하거나, 코드에 `// TODO: add import` 주석을 남기세요._",
     );
   }
   const cleanComponents = filterLibraryComponents(input.libraryComponents);
@@ -231,20 +234,18 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   if (input.libraryComponents.length > cleanComponents.length) {
     parts.push("");
     parts.push(
-      `_${input.libraryComponents.length - cleanComponents.length}개 항목이 deprecated/placeholder로 간주되어 제외됨._`
+      `_${input.libraryComponents.length - cleanComponents.length}개 항목이 deprecated/placeholder로 간주되어 제외됨._`,
     );
   }
   if (variantByName.size > 0) {
     parts.push("");
-    parts.push(
-      "_variant property 표기: 괄호 안 값만 유효한 조합. 다른 조합을 만들어내지 말 것._"
-    );
+    parts.push("_variant property 표기: 괄호 안 값만 유효한 조합. 다른 조합을 만들어내지 말 것._");
   }
   parts.push("");
 
   // 디자인 토큰 enumeration — AI가 리터럴 값 대신 이 변수명만 쓰게 강제.
   const tokenFiles = Object.entries(FOUNDATION_TOKEN_NAMES_BY_FILE).filter(
-    ([, names]) => names.length > 0
+    ([, names]) => names.length > 0,
   );
   if (tokenFiles.length > 0) {
     parts.push("## 사용 가능한 디자인 토큰");
@@ -253,7 +254,7 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
         "이 값들은 정확히 일치하는 토큰이 있을 때만 `var(--name)` 참조. " +
         "**width/height/위치(left/top 등 px 치수)는 토큰화하지 말고 raw px 유지.** " +
         "토큰을 산술 조합(`calc(var(--a)+var(--b))`)하지 말 것 — 한 값에 토큰 하나, 정확히 안 맞으면 리터럴 유지. " +
-        "원본 정의와 값은 `foundation/` 디렉토리의 CSS 파일 참고. 여기 없는 토큰을 지어내지 말 것."
+        "원본 정의와 값은 `foundation/` 디렉토리의 CSS 파일 참고. 여기 없는 토큰을 지어내지 말 것.",
     );
     parts.push("");
     for (const [filename, names] of tokenFiles) {
@@ -273,10 +274,7 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
 }
 
 function renderReadmeMd(input: ExportPackInput, slugs: string[]): string {
-  const totalIcons = input.screens.reduce(
-    (acc, s) => acc + Object.keys(s.iconMap).length,
-    0
-  );
+  const totalIcons = input.screens.reduce((acc, s) => acc + Object.keys(s.iconMap).length, 0);
   const lines: Array<string | null> = [
     "# Export Pack 사용법",
     "",
@@ -302,16 +300,12 @@ function renderReadmeMd(input: ExportPackInput, slugs: string[]): string {
     input.flow && input.flow.length > 0 ? "- `flow.md` — 프로토타입 네비게이션 그래프" : null,
     "",
     "## 화면 목록",
-    ...input.screens.map((s, i) => `- \`screens/${slugs[i]}/\` — ${s.rootLabel}`)
+    ...input.screens.map((s, i) => `- \`screens/${slugs[i]}/\` — ${s.rootLabel}`),
   ];
   return lines.filter((v): v is string => v !== null).join("\n");
 }
 
-function renderFlowMd(
-  links: FlowLink[],
-  screens: ExportPackScreen[],
-  slugs: string[]
-): string {
+function renderFlowMd(links: FlowLink[], screens: ExportPackScreen[], slugs: string[]): string {
   const labelToSlug = new Map<string, string>();
   screens.forEach((s, i) => labelToSlug.set(s.rootLabel, slugs[i]));
 
@@ -331,7 +325,7 @@ function renderFlowMd(
     for (const link of outgoing) {
       const toSlug = labelToSlug.get(link.to.screen) ?? slugify(link.to.screen);
       parts.push(
-        `- **${link.from.nodeName}** (${link.trigger}) → \`${link.action}\` → ${link.to.screen} (\`screens/${toSlug}/\`)`
+        `- **${link.from.nodeName}** (${link.trigger}) → \`${link.action}\` → ${link.to.screen} (\`screens/${toSlug}/\`)`,
       );
     }
     parts.push("");
@@ -357,7 +351,7 @@ function uniqueIconFilename(
   screenSlug: string,
   id: string,
   hint: string | undefined,
-  used: Set<string>
+  used: Set<string>,
 ): string {
   const hintSlug = slugify(hint ?? "");
   const base = hintSlug ? `${screenSlug}__${id}__${hintSlug}` : `${screenSlug}__${id}`;

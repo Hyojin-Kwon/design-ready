@@ -2,7 +2,7 @@ import {
   BUILTIN_LDS,
   getFigmaComponentKey,
   getFigmaComponentName,
-  type LdsFigmaComponentEntry
+  type LdsFigmaComponentEntry,
 } from "../data/ldsComponents";
 
 // 런타임에 주입되는 추가 풀. LDS 템플릿 파일에서 추출한 catalog가 들어감.
@@ -40,7 +40,7 @@ const STOPWORDS = new Set([
   "mode",
   "state",
   "variant",
-  "style"
+  "style",
   // 주의: "off", "on", "default", "common", "none"은 STOPWORDS가 아님.
   // LDS 네이밍에서 이들은 실제 variant 값이라 형제 컴포넌트(예: Notification - OFF vs OFF2)를
   // 구분하는 핵심 신호. 드롭하면 terminal 비교에서 둘이 같아 보여 오탐 발생.
@@ -55,11 +55,7 @@ function stripVariantPropertyNames(name: string): string {
 // 합성 컨테이너 패턴: 하위에 여러 LDS 컴포넌트를 조합하는 상위 래퍼.
 // 이름만으로 1:1 교체 대상이 아닌 명확한 케이스만 남긴다.
 // (Flex Message, Chatroom 등은 하위 variant 매칭 대상이므로 여기서 제외)
-const COMPOSITE_PATTERNS = [
-  /\btemplate\b/i,
-  /\bscreen\b/i,
-  /\bsection\b/i
-];
+const COMPOSITE_PATTERNS = [/\btemplate\b/i, /\bscreen\b/i, /\bsection\b/i];
 
 export function isCompositeContainer(name: string): boolean {
   return COMPOSITE_PATTERNS.some((p) => p.test(name));
@@ -103,7 +99,10 @@ export function tokenListOrdered(name: string): string[] {
 // 형제 컴포넌트들은 prefix가 같아서 bag-of-words 점수가 비슷해지는 문제를 보정하기 위함.
 function terminalTokens(name: string): Set<string> {
   const normalized = stripVariantPropertyNames(name);
-  const segments = normalized.split("/").map((s) => s.trim()).filter(Boolean);
+  const segments = normalized
+    .split("/")
+    .map((s) => s.trim())
+    .filter(Boolean);
   const last = segments.length > 0 ? segments[segments.length - 1] : normalized;
   const raw = last
     .toLowerCase()
@@ -127,11 +126,7 @@ function keepNumericPrefix(name: string): string | null {
   return match ? match[1] : null;
 }
 
-function exclusiveDisagreement(
-  a: Set<string>,
-  b: Set<string>,
-  group: Set<string>
-): boolean {
+function exclusiveDisagreement(a: Set<string>, b: Set<string>, group: Set<string>): boolean {
   const aHas = [...group].filter((t) => a.has(t));
   const bHas = [...group].filter((t) => b.has(t));
   if (aHas.length === 0 || bHas.length === 0) return false;
@@ -147,7 +142,7 @@ function scorePair(
   queryTokens: Set<string>,
   queryBigrams: Set<string>,
   queryTerminal: Set<string>,
-  candidate: string
+  candidate: string,
 ): ScoreResult {
   const candList = tokenListOrdered(candidate);
   const candTokens = new Set(candList);
@@ -239,7 +234,13 @@ export function findExactLdsMatch(nodeName: string): LdsMatch | null {
   for (const entry of EXTRA_FIGMA_POOL) {
     const name = entry.name;
     if (norm(name) === target) {
-      return { match: name, key: entry.key ?? null, score: 1, jaccard: 1, source: "figmaComponents" };
+      return {
+        match: name,
+        key: entry.key ?? null,
+        score: 1,
+        jaccard: 1,
+        source: "figmaComponents",
+      };
     }
   }
   for (const entry of BUILTIN_LDS.figmaComponents ?? []) {
@@ -254,7 +255,7 @@ export function findExactLdsMatch(nodeName: string): LdsMatch | null {
 
 export function findLdsMatch(
   nodeName: string,
-  options: { minScore?: number } = {}
+  options: { minScore?: number } = {},
 ): LdsMatch | null {
   const minScore = options.minScore ?? 0.5;
   // 합성 컨테이너는 1:1 교체 대상이 아님 — 자식이 개별 매칭되도록 상위는 스킵.
@@ -306,7 +307,7 @@ export function findLdsMatch(
         key: getFigmaComponentKey(entry),
         score,
         jaccard,
-        source: "figmaComponents"
+        source: "figmaComponents",
       };
     }
   }

@@ -34,7 +34,13 @@ const ICONS: Record<string, string> = {
 
 const Icon: React.FC<{ name: string; style?: React.CSSProperties }> = ({ name, style }) => (
   <span
-    style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, ...style }}
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      ...style,
+    }}
     dangerouslySetInnerHTML={{ __html: ICONS[name] ?? "" }}
   />
 );
@@ -49,97 +55,494 @@ const labelStyle: React.CSSProperties = {
   whiteSpace: "nowrap",
 };
 
-const AlbumCard: React.FC<{ left: number; title: string; titleW: number; count: string; countLeft: number; countW: number; img: string }> = ({ left, title, titleW, count, countLeft, countW, img }) => (
-  <div style={{ position: "absolute", left, top: 45, width: 171, height: 85, background: `#F5F5F5 url(${img}) center/cover no-repeat`, overflow: "hidden" }}>
-    <div style={{ position: "absolute", left: 0, top: 47, width: 171, height: 38, background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)" }} />
-    <span style={{ position: "absolute", left: 11, top: 61, width: titleW, height: 16, fontFamily: fontStack, fontSize: 13, fontWeight: fw.Bold, color: "#FFFFFF", lineHeight: "16px", textShadow: "0 0 1px rgba(0,0,0,0.2)" }}>{title}</span>
-    <span style={{ position: "absolute", left: countLeft, top: 61, width: countW, height: 16, fontFamily: fontStack, fontSize: 13, fontWeight: fw.Regular, color: "#FFFFFF", lineHeight: "16px", textShadow: "0 0 1px rgba(0,0,0,0.2)" }}>{count}</span>
+const AlbumCard: React.FC<{
+  left: number;
+  title: string;
+  titleW: number;
+  count: string;
+  countLeft: number;
+  countW: number;
+  img: string;
+}> = ({ left, title, titleW, count, countLeft, countW, img }) => (
+  <div
+    style={{
+      position: "absolute",
+      left,
+      top: 45,
+      width: 171,
+      height: 85,
+      background: `#F5F5F5 url(${img}) center/cover no-repeat`,
+      overflow: "hidden",
+    }}
+  >
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 47,
+        width: 171,
+        height: 38,
+        background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)",
+      }}
+    />
+    <span
+      style={{
+        position: "absolute",
+        left: 11,
+        top: 61,
+        width: titleW,
+        height: 16,
+        fontFamily: fontStack,
+        fontSize: 13,
+        fontWeight: fw.Bold,
+        color: "#FFFFFF",
+        lineHeight: "16px",
+        textShadow: "0 0 1px rgba(0,0,0,0.2)",
+      }}
+    >
+      {title}
+    </span>
+    <span
+      style={{
+        position: "absolute",
+        left: countLeft,
+        top: 61,
+        width: countW,
+        height: 16,
+        fontFamily: fontStack,
+        fontSize: 13,
+        fontWeight: fw.Regular,
+        color: "#FFFFFF",
+        lineHeight: "16px",
+        textShadow: "0 0 1px rgba(0,0,0,0.2)",
+      }}
+    >
+      {count}
+    </span>
   </div>
 );
 
-const SimpleRow: React.FC<{ label: string; labelW: number; icon: string; iconL: number; iconT: number; iconW: number; iconH: number }> = ({ label, labelW, icon, iconL, iconT, iconW, iconH }) => (
-  <div style={{ position: "relative", width: 375, height: 50, background: "#FFFFFF", flexShrink: 0 }}>
-    <Icon name={icon} style={{ position: "absolute", left: iconL, top: iconT, width: iconW, height: iconH }} />
-    <span style={{ position: "absolute", left: 45, top: 16, width: labelW, ...labelStyle }}>{label}</span>
-    <Icon name="chevronMore" style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }} />
+const SimpleRow: React.FC<{
+  label: string;
+  labelW: number;
+  icon: string;
+  iconL: number;
+  iconT: number;
+  iconW: number;
+  iconH: number;
+}> = ({ label, labelW, icon, iconL, iconT, iconW, iconH }) => (
+  <div
+    style={{ position: "relative", width: 375, height: 50, background: "#FFFFFF", flexShrink: 0 }}
+  >
+    <Icon
+      name={icon}
+      style={{ position: "absolute", left: iconL, top: iconT, width: iconW, height: iconH }}
+    />
+    <span style={{ position: "absolute", left: 45, top: 16, width: labelW, ...labelStyle }}>
+      {label}
+    </span>
+    <Icon
+      name="chevronMore"
+      style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }}
+    />
   </div>
 );
 
 const ChatMenu: React.FC = () => (
-  <div style={{ position: "relative", width: 375, height: 812, background: "#FFFFFF", overflow: "hidden", fontFamily: fontStack }}>
+  <div
+    style={{
+      position: "relative",
+      width: 375,
+      height: 812,
+      background: "#FFFFFF",
+      overflow: "hidden",
+      fontFamily: fontStack,
+    }}
+  >
     {/* Status Bar */}
     <div style={{ position: "absolute", left: 0, top: 0, width: 375, height: 44 }}>
-      <span style={{ position: "absolute", left: 20, top: 14, width: 54, height: 18, fontFamily: fontStack, fontSize: 15, fontWeight: fw.Semibold, color: "#000", textAlign: "center", lineHeight: 1 }}>9:41</span>
-      <Icon name="cellular" style={{ position: "absolute", left: 294, top: 18, width: 17, height: 11 }} />
-      <Icon name="wifi" style={{ position: "absolute", left: 316, top: 17, width: 15, height: 11 }} />
-      <Icon name="battery" style={{ position: "absolute", left: 336, top: 17, width: 24, height: 11 }} />
+      <span
+        style={{
+          position: "absolute",
+          left: 20,
+          top: 14,
+          width: 54,
+          height: 18,
+          fontFamily: fontStack,
+          fontSize: 15,
+          fontWeight: fw.Semibold,
+          color: "#000",
+          textAlign: "center",
+          lineHeight: 1,
+        }}
+      >
+        9:41
+      </span>
+      <Icon
+        name="cellular"
+        style={{ position: "absolute", left: 294, top: 18, width: 17, height: 11 }}
+      />
+      <Icon
+        name="wifi"
+        style={{ position: "absolute", left: 316, top: 17, width: 15, height: 11 }}
+      />
+      <Icon
+        name="battery"
+        style={{ position: "absolute", left: 336, top: 17, width: 24, height: 11 }}
+      />
     </div>
 
     {/* Subtab */}
-    <div style={{ position: "absolute", left: 0, top: 44, width: 375, height: 44, background: "#FFFFFF", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: "17px 19px 17px 16px", boxSizing: "border-box" }}>
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 44,
+        width: 375,
+        height: 44,
+        background: "#FFFFFF",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "17px 19px 17px 16px",
+        boxSizing: "border-box",
+      }}
+    >
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 20 }}>
         <Icon name="subtabBack" style={{ width: 24, height: 24 }} />
-        <span style={{ fontFamily: fontStack, fontSize: 17, fontWeight: fw.Semibold, color: "#000", lineHeight: "26px" }}>同期会 (5)</span>
+        <span
+          style={{
+            fontFamily: fontStack,
+            fontSize: 17,
+            fontWeight: fw.Semibold,
+            color: "#000",
+            lineHeight: "26px",
+          }}
+        >
+          同期会 (5)
+        </span>
       </div>
     </div>
 
     {/* Quick layout */}
-    <div style={{ position: "absolute", left: 0, top: 88, width: 375, height: 86, background: "#FFFFFF" }}>
-      <Icon name="divider" style={{ position: "absolute", left: 0, top: 85, width: 375, height: 1 }} />
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 88,
+        width: 375,
+        height: 86,
+        background: "#FFFFFF",
+      }}
+    >
+      <Icon
+        name="divider"
+        style={{ position: "absolute", left: 0, top: 85, width: 375, height: 1 }}
+      />
       {[
-        { label: "通知オフ", icon: "muteOffGroup", iw: 24, ih: 23, ix: 15, iy: 6, left: 0, w: 94, wrapL: 23 },
-        { label: "メンバー", icon: "membersGroup", iw: 27, ih: 23, ix: 12, iy: 5, left: 94, w: 93, wrapL: 22 },
-        { label: "招待", icon: "inviteGroup", iw: 27, ih: 23, ix: 13, iy: 5, left: 187, w: 94, wrapL: 23 },
-        { label: "退会", icon: "exitGroup", iw: 21, ih: 20, ix: 16, iy: 7, left: 281, w: 94, wrapL: 23 },
+        {
+          label: "通知オフ",
+          icon: "muteOffGroup",
+          iw: 24,
+          ih: 23,
+          ix: 15,
+          iy: 6,
+          left: 0,
+          w: 94,
+          wrapL: 23,
+        },
+        {
+          label: "メンバー",
+          icon: "membersGroup",
+          iw: 27,
+          ih: 23,
+          ix: 12,
+          iy: 5,
+          left: 94,
+          w: 93,
+          wrapL: 22,
+        },
+        {
+          label: "招待",
+          icon: "inviteGroup",
+          iw: 27,
+          ih: 23,
+          ix: 13,
+          iy: 5,
+          left: 187,
+          w: 94,
+          wrapL: 23,
+        },
+        {
+          label: "退会",
+          icon: "exitGroup",
+          iw: 21,
+          ih: 20,
+          ix: 16,
+          iy: 7,
+          left: 281,
+          w: 94,
+          wrapL: 23,
+        },
       ].map((b) => (
-        <div key={b.label} style={{ position: "absolute", left: b.left, top: 0, width: b.w, height: 86 }}>
+        <div
+          key={b.label}
+          style={{ position: "absolute", left: b.left, top: 0, width: b.w, height: 86 }}
+        >
           <div style={{ position: "absolute", left: b.wrapL, top: 11, width: 49, height: 34 }}>
-            <Icon name={b.icon} style={{ position: "absolute", left: b.ix, top: b.iy, width: b.iw, height: b.ih }} />
+            <Icon
+              name={b.icon}
+              style={{ position: "absolute", left: b.ix, top: b.iy, width: b.iw, height: b.ih }}
+            />
           </div>
-          <span style={{ position: "absolute", left: 10, top: 49, width: b.label === "メンバー" ? 73 : 74, height: 17, fontFamily: fontStack, fontSize: 11, fontWeight: fw.Semibold, color: "#111", textAlign: "center", lineHeight: "17px" }}>{b.label}</span>
+          <span
+            style={{
+              position: "absolute",
+              left: 10,
+              top: 49,
+              width: b.label === "メンバー" ? 73 : 74,
+              height: 17,
+              fontFamily: fontStack,
+              fontSize: 11,
+              fontWeight: fw.Semibold,
+              color: "#111",
+              textAlign: "center",
+              lineHeight: "17px",
+            }}
+          >
+            {b.label}
+          </span>
         </div>
       ))}
     </div>
 
     {/* Stack */}
-    <div style={{ position: "absolute", left: 0, top: 184, width: 375, height: 622, display: "flex", flexDirection: "column", paddingBottom: 21, boxSizing: "border-box" }}>
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 184,
+        width: 375,
+        height: 622,
+        display: "flex",
+        flexDirection: "column",
+        paddingBottom: 21,
+        boxSizing: "border-box",
+      }}
+    >
       {/* グループプロフィール */}
-      <div style={{ position: "relative", width: 375, height: 50, background: "#FFFFFF", flexShrink: 0 }}>
-        <Icon name="userCircle" style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }} />
-        <span style={{ position: "absolute", left: 45, top: 16, width: 124, ...labelStyle }}>グループプロフィール</span>
-        <Icon name="chevronMore" style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }} />
-        <div style={{ position: "absolute", left: 275, top: 16, width: 66, height: 23, display: "flex", flexDirection: "row", alignItems: "center", gap: 4 }}>
-          <span style={{ width: 17, height: 17, borderRadius: "50%", background: "#17C098", flexShrink: 0 }} />
-          <span style={{ fontFamily: fontStack, fontSize: 15, fontWeight: fw.Regular, color: "#949494", lineHeight: "23px" }}>同期会</span>
+      <div
+        style={{
+          position: "relative",
+          width: 375,
+          height: 50,
+          background: "#FFFFFF",
+          flexShrink: 0,
+        }}
+      >
+        <Icon
+          name="userCircle"
+          style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }}
+        />
+        <span style={{ position: "absolute", left: 45, top: 16, width: 124, ...labelStyle }}>
+          グループプロフィール
+        </span>
+        <Icon
+          name="chevronMore"
+          style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 275,
+            top: 16,
+            width: 66,
+            height: 23,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <span
+            style={{
+              width: 17,
+              height: 17,
+              borderRadius: "50%",
+              background: "#17C098",
+              flexShrink: 0,
+            }}
+          />
+          <span
+            style={{
+              fontFamily: fontStack,
+              fontSize: 15,
+              fontWeight: fw.Regular,
+              color: "#949494",
+              lineHeight: "23px",
+            }}
+          >
+            同期会
+          </span>
         </div>
       </div>
 
       {/* BGM */}
-      <div style={{ position: "relative", width: 375, height: 50, background: "#FFFFFF", flexShrink: 0 }}>
-        <Icon name="musicNote" style={{ position: "absolute", left: 19, top: 17, width: 13, height: 15 }} />
-        <span style={{ position: "absolute", left: 45, top: 16, width: 34, height: 18, fontFamily: fontStack, fontSize: 15, fontWeight: fw.Regular, color: "#111", lineHeight: "18px" }}>BGM</span>
-        <Icon name="chevronMore" style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }} />
+      <div
+        style={{
+          position: "relative",
+          width: 375,
+          height: 50,
+          background: "#FFFFFF",
+          flexShrink: 0,
+        }}
+      >
+        <Icon
+          name="musicNote"
+          style={{ position: "absolute", left: 19, top: 17, width: 13, height: 15 }}
+        />
+        <span
+          style={{
+            position: "absolute",
+            left: 45,
+            top: 16,
+            width: 34,
+            height: 18,
+            fontFamily: fontStack,
+            fontSize: 15,
+            fontWeight: fw.Regular,
+            color: "#111",
+            lineHeight: "18px",
+          }}
+        >
+          BGM
+        </span>
+        <Icon
+          name="chevronMore"
+          style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }}
+        />
         <div style={{ position: "absolute", left: 248, top: 16, width: 94, height: 18 }}>
-          <span style={{ position: "absolute", left: 0, top: 0, width: 97, height: 18, fontFamily: fontStack, fontSize: 15, fontWeight: fw.Regular, color: "#949494", lineHeight: "18px", whiteSpace: "nowrap" }}>Put some mus</span>
+          <span
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: 97,
+              height: 18,
+              fontFamily: fontStack,
+              fontSize: 15,
+              fontWeight: fw.Regular,
+              color: "#949494",
+              lineHeight: "18px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Put some mus
+          </span>
         </div>
       </div>
 
       {/* 写真・動画 */}
-      <div style={{ position: "relative", width: 375, height: 136, background: "#FFFFFF", flexShrink: 0 }}>
-        <Icon name="photoVideo" style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }} />
-        <span style={{ position: "absolute", left: 45, top: 16, width: 64, ...labelStyle }}>写真・動画</span>
-        <Icon name="chevronMore" style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }} />
+      <div
+        style={{
+          position: "relative",
+          width: 375,
+          height: 136,
+          background: "#FFFFFF",
+          flexShrink: 0,
+        }}
+      >
+        <Icon
+          name="photoVideo"
+          style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }}
+        />
+        <span style={{ position: "absolute", left: 45, top: 16, width: 64, ...labelStyle }}>
+          写真・動画
+        </span>
+        <Icon
+          name="chevronMore"
+          style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }}
+        />
         {[
-          { left: 16, dim: true, vr: true, duration: undefined as string | undefined, img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=170&h=170&fit=crop&auto=format" },
-          { left: 102, dim: true, vr: false, duration: undefined as string | undefined, img: "https://images.unsplash.com/photo-1543269664-7eef42226a21?w=170&h=170&fit=crop&auto=format" },
-          { left: 188, dim: false, vr: false, duration: undefined as string | undefined, img: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=170&h=170&fit=crop&auto=format" },
-          { left: 274, dim: true, vr: false, duration: "0:32", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=170&h=170&fit=crop&auto=format" },
+          {
+            left: 16,
+            dim: true,
+            vr: true,
+            duration: undefined as string | undefined,
+            img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=170&h=170&fit=crop&auto=format",
+          },
+          {
+            left: 102,
+            dim: true,
+            vr: false,
+            duration: undefined as string | undefined,
+            img: "https://images.unsplash.com/photo-1543269664-7eef42226a21?w=170&h=170&fit=crop&auto=format",
+          },
+          {
+            left: 188,
+            dim: false,
+            vr: false,
+            duration: undefined as string | undefined,
+            img: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=170&h=170&fit=crop&auto=format",
+          },
+          {
+            left: 274,
+            dim: true,
+            vr: false,
+            duration: "0:32",
+            img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=170&h=170&fit=crop&auto=format",
+          },
         ].map((tile) => (
-          <div key={tile.left} style={{ position: "absolute", left: tile.left, top: 45, width: 85, height: 85, background: `#F5F5F5 url(${tile.img}) center/cover no-repeat`, overflow: "hidden" }}>
-            {tile.dim && <div style={{ position: "absolute", left: 0, top: 47, width: 85, height: 38, background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)" }} />}
-            {tile.vr && <Icon name="vrPlay" style={{ position: "absolute", left: 6, top: 69, width: 11, height: 11 }} />}
+          <div
+            key={tile.left}
+            style={{
+              position: "absolute",
+              left: tile.left,
+              top: 45,
+              width: 85,
+              height: 85,
+              background: `#F5F5F5 url(${tile.img}) center/cover no-repeat`,
+              overflow: "hidden",
+            }}
+          >
+            {tile.dim && (
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 47,
+                  width: 85,
+                  height: 38,
+                  background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)",
+                }}
+              />
+            )}
+            {tile.vr && (
+              <Icon
+                name="vrPlay"
+                style={{ position: "absolute", left: 6, top: 69, width: 11, height: 11 }}
+              />
+            )}
             {tile.duration && (
-              <span style={{ position: "absolute", left: 28, top: 67, width: 50, height: 13, fontFamily: fontStack, fontSize: 11, fontWeight: fw.Regular, color: "#FFFFFF", textAlign: "center", lineHeight: "13px", textShadow: "0 0 1px rgba(0,0,0,0.2)" }}>{tile.duration}</span>
+              <span
+                style={{
+                  position: "absolute",
+                  left: 28,
+                  top: 67,
+                  width: 50,
+                  height: 13,
+                  fontFamily: fontStack,
+                  fontSize: 11,
+                  fontWeight: fw.Regular,
+                  color: "#FFFFFF",
+                  textAlign: "center",
+                  lineHeight: "13px",
+                  textShadow: "0 0 1px rgba(0,0,0,0.2)",
+                }}
+              >
+                {tile.duration}
+              </span>
             )}
           </div>
         ))}
@@ -147,52 +550,274 @@ const ChatMenu: React.FC = () => (
 
       {/* アルバム */}
       <div style={{ position: "relative", width: 375, height: 136, flexShrink: 0 }}>
-        <div style={{ position: "absolute", left: 0, top: 0, width: 375, height: 136, background: "#FFFFFF" }} />
-        <Icon name="album" style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }} />
-        <span style={{ position: "absolute", left: 45, top: 16, width: 50, ...labelStyle }}>アルバム</span>
-        <Icon name="chevronMore" style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }} />
-        <div style={{ position: "absolute", left: 16, top: 45, width: 343, height: 85, background: "#FFFFFF", border: "1px solid #EFEFEF", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
-          <span style={{ fontFamily: fontStack, fontSize: 12, fontWeight: fw.Semibold, color: "#000", lineHeight: 1 }}>アルバム作成</span>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: 375,
+            height: 136,
+            background: "#FFFFFF",
+          }}
+        />
+        <Icon
+          name="album"
+          style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }}
+        />
+        <span style={{ position: "absolute", left: 45, top: 16, width: 50, ...labelStyle }}>
+          アルバム
+        </span>
+        <Icon
+          name="chevronMore"
+          style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 16,
+            top: 45,
+            width: 343,
+            height: 85,
+            background: "#FFFFFF",
+            border: "1px solid #EFEFEF",
+            borderRadius: 7,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxSizing: "border-box",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: fontStack,
+              fontSize: 12,
+              fontWeight: fw.Semibold,
+              color: "#000",
+              lineHeight: 1,
+            }}
+          >
+            アルバム作成
+          </span>
         </div>
-        <AlbumCard left={16} title="Home Party" titleW={77} count="72" countLeft={92} countW={16} img="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=350&h=170&fit=crop&auto=format" />
-        <div style={{ position: "absolute", left: 188, top: 45, width: 171, height: 85, background: `#F5F5F5 url(https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=350&h=170&fit=crop&auto=format) center/cover no-repeat`, overflow: "hidden" }}>
-          <div style={{ position: "absolute", left: 0, top: 47, width: 171, height: 38, background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)" }} />
-          <div style={{ position: "absolute", left: 11, top: 61, height: 16, display: "flex", flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <span style={{ fontFamily: fontStack, fontSize: 13, fontWeight: fw.Bold, color: "#FFFFFF", lineHeight: "16px", textShadow: "0 0 1px rgba(0,0,0,0.2)" }}>Cafetour</span>
-            <span style={{ fontFamily: fontStack, fontSize: 13, fontWeight: fw.Regular, color: "#FFFFFF", lineHeight: "16px", textShadow: "0 0 1px rgba(0,0,0,0.22)" }}>131</span>
+        <AlbumCard
+          left={16}
+          title="Home Party"
+          titleW={77}
+          count="72"
+          countLeft={92}
+          countW={16}
+          img="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=350&h=170&fit=crop&auto=format"
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 188,
+            top: 45,
+            width: 171,
+            height: 85,
+            background: `#F5F5F5 url(https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=350&h=170&fit=crop&auto=format) center/cover no-repeat`,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 47,
+              width: 171,
+              height: 38,
+              background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              left: 11,
+              top: 61,
+              height: 16,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: fontStack,
+                fontSize: 13,
+                fontWeight: fw.Bold,
+                color: "#FFFFFF",
+                lineHeight: "16px",
+                textShadow: "0 0 1px rgba(0,0,0,0.2)",
+              }}
+            >
+              Cafetour
+            </span>
+            <span
+              style={{
+                fontFamily: fontStack,
+                fontSize: 13,
+                fontWeight: fw.Regular,
+                color: "#FFFFFF",
+                lineHeight: "16px",
+                textShadow: "0 0 1px rgba(0,0,0,0.22)",
+              }}
+            >
+              131
+            </span>
           </div>
         </div>
       </div>
 
       {/* description */}
-      <div style={{ position: "relative", width: 375, height: 29, padding: "6px 16px", boxSizing: "border-box", flexShrink: 0 }}>
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5, height: 17 }}>
-          <div style={{ width: 40, height: 15, background: "#06C755", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
-            <span style={{ fontFamily: fontStack, fontSize: 8.3, fontWeight: fw.Heavy, color: "#FFFFFF", lineHeight: 1 }}>CHECK</span>
+      <div
+        style={{
+          position: "relative",
+          width: 375,
+          height: 29,
+          padding: "6px 16px",
+          boxSizing: "border-box",
+          flexShrink: 0,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 5,
+            height: 17,
+          }}
+        >
+          <div
+            style={{
+              width: 40,
+              height: 15,
+              background: "#06C755",
+              borderRadius: 7,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxSizing: "border-box",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: fontStack,
+                fontSize: 8.3,
+                fontWeight: fw.Heavy,
+                color: "#FFFFFF",
+                lineHeight: 1,
+              }}
+            >
+              CHECK
+            </span>
           </div>
           <div style={{ position: "relative", width: 236, height: 17 }}>
-            <span style={{ position: "absolute", left: 0, top: 0, width: 227, height: 17, fontFamily: fontStack, fontSize: 11, fontWeight: fw.Regular, color: "#616161", lineHeight: "17px", whiteSpace: "nowrap" }}>動画やオリジナル画質の写真を追加するには？</span>
-            <Icon name="arrowRightSmall" style={{ position: "absolute", left: 229, top: 3, width: 7, height: 11 }} />
+            <span
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: 227,
+                height: 17,
+                fontFamily: fontStack,
+                fontSize: 11,
+                fontWeight: fw.Regular,
+                color: "#616161",
+                lineHeight: "17px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              動画やオリジナル画質の写真を追加するには？
+            </span>
+            <Icon
+              name="arrowRightSmall"
+              style={{ position: "absolute", left: 229, top: 3, width: 7, height: 11 }}
+            />
           </div>
         </div>
       </div>
 
-      <SimpleRow label="ノート" labelW={39} icon="note" iconL={16} iconT={15} iconW={20} iconH={20} />
-      <SimpleRow label="イベント" labelW={50} icon="event" iconL={19} iconT={17} iconW={14} iconH={15} />
-      <SimpleRow label="リンク" labelW={39} icon="link" iconL={16} iconT={15} iconW={20} iconH={20} />
-      <SimpleRow label="ファイル" labelW={51} icon="file" iconL={16} iconT={15} iconW={20} iconH={20} />
+      <SimpleRow
+        label="ノート"
+        labelW={39}
+        icon="note"
+        iconL={16}
+        iconT={15}
+        iconW={20}
+        iconH={20}
+      />
+      <SimpleRow
+        label="イベント"
+        labelW={50}
+        icon="event"
+        iconL={19}
+        iconT={17}
+        iconW={14}
+        iconH={15}
+      />
+      <SimpleRow
+        label="リンク"
+        labelW={39}
+        icon="link"
+        iconL={16}
+        iconT={15}
+        iconW={20}
+        iconH={20}
+      />
+      <SimpleRow
+        label="ファイル"
+        labelW={51}
+        icon="file"
+        iconL={16}
+        iconT={15}
+        iconW={20}
+        iconH={20}
+      />
       <div style={{ position: "absolute", left: 0, top: 601, width: 375 }}>
         <div style={{ position: "relative", width: 375, height: 50, background: "#FFFFFF" }}>
-          <Icon name="settings" style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }} />
-          <span style={{ position: "absolute", left: 45, top: 16, width: 30, height: 18, fontFamily: fontStack, fontSize: 15, fontWeight: fw.Regular, color: "#111", lineHeight: "18px" }}>設定</span>
-          <Icon name="chevronMore" style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }} />
+          <Icon
+            name="settings"
+            style={{ position: "absolute", left: 16, top: 15, width: 20, height: 20 }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              left: 45,
+              top: 16,
+              width: 30,
+              height: 18,
+              fontFamily: fontStack,
+              fontSize: 15,
+              fontWeight: fw.Regular,
+              color: "#111",
+              lineHeight: "18px",
+            }}
+          >
+            設定
+          </span>
+          <Icon
+            name="chevronMore"
+            style={{ position: "absolute", left: 351, top: 20, width: 6, height: 11 }}
+          />
         </div>
       </div>
     </div>
 
     {/* Home indicator */}
     <div style={{ position: "absolute", left: 0, top: 778, width: 375, height: 34 }}>
-      <div style={{ position: "absolute", left: 121, top: 21, width: 134, height: 5, background: "#000", borderRadius: 100 }} />
+      <div
+        style={{
+          position: "absolute",
+          left: 121,
+          top: 21,
+          width: 134,
+          height: 5,
+          background: "#000",
+          borderRadius: 100,
+        }}
+      />
     </div>
   </div>
 );

@@ -18,30 +18,103 @@ const ICONS: Record<string, string> = {
 
 const Icon: React.FC<{ name: string; style?: React.CSSProperties }> = ({ name, style }) => (
   <span
-    style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, ...style }}
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      ...style,
+    }}
     dangerouslySetInnerHTML={{ __html: ICONS[name] ?? "" }}
   />
 );
 
 export default function SmartCh() {
   return (
-    <div style={{ fontFamily: fontStack, position: "relative", width: 375, height: 121, background: "#fff" }}>
+    <div
+      style={{
+        fontFamily: fontStack,
+        position: "relative",
+        width: 375,
+        height: 121,
+        background: "#fff",
+      }}
+    >
       {/* image: 86×86 at (256, 18) */}
-      <div style={{ position: "absolute", left: 256, top: 18, width: 86, height: 86, borderRadius: 5, background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat` }} />
+      <div
+        style={{
+          position: "absolute",
+          left: 256,
+          top: 18,
+          width: 86,
+          height: 86,
+          borderRadius: 5,
+          background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat`,
+        }}
+      />
       {/* text type 2: (18, 32) 218×58 */}
       <div style={{ position: "absolute", left: 18, top: 32, width: 218, height: 58 }}>
         {/* main text: 2 lines × 18px */}
-        <div style={{ width: 218, height: 36, fontSize: 14, fontWeight: fw.Semibold, color: "#2A2A2A", lineHeight: "18px", overflow: "hidden", wordBreak: "break-all", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"] }}>
+        <div
+          style={{
+            width: 218,
+            height: 36,
+            fontSize: 14,
+            fontWeight: fw.Semibold,
+            color: "#2A2A2A",
+            lineHeight: "18px",
+            overflow: "hidden",
+            wordBreak: "break-all",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"],
+          }}
+        >
           WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
         </div>
         {/* sub text: AD · brand — at offset (0, 44) */}
-        <div style={{ position: "absolute", top: 44, left: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: 3, height: 14 }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 44,
+            left: 0,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 3,
+            height: 14,
+          }}
+        >
           <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
             <Icon name="adInfo" style={{ width: 15, height: 15 }} />
-            <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}>AD</span>
+            <span
+              style={{ fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}
+            >
+              AD
+            </span>
           </div>
-          <span style={{ width: 2, height: 2, background: "#C8C8C8", borderRadius: "50%", flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#909090", lineHeight: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>LUSH Cosmetics</span>
+          <span
+            style={{
+              width: 2,
+              height: 2,
+              background: "#C8C8C8",
+              borderRadius: "50%",
+              flexShrink: 0,
+            }}
+          />
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: fw.Regular,
+              color: "#909090",
+              lineHeight: "14px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            LUSH Cosmetics
+          </span>
         </div>
       </div>
       {/* banner_ch_mute — 17×17 at (345, 10), icon 9×9 at offset (4, 4) */}

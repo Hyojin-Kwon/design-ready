@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+preview/dist
+preview/node_modules
+*.min.js
+package-lock.json

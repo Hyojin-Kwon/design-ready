@@ -2,14 +2,14 @@ import type { CodeReadinessReport, ReadinessMetric, ReadinessMetricId } from "..
 import {
   hasComponentNamedAncestor,
   isDefaultName,
-  looksLikeComponentNaming
+  looksLikeComponentNaming,
 } from "../rules/namingRules";
 import {
   getGroupDepth,
   isComponentInternal,
   isInsideHidden,
   isInsideIcon,
-  walk
+  walk,
 } from "../utils/nodeTraversal";
 
 const ICON_SHAPE_TYPES: ReadonlyArray<SceneNode["type"]> = [
@@ -17,7 +17,7 @@ const ICON_SHAPE_TYPES: ReadonlyArray<SceneNode["type"]> = [
   "ELLIPSE",
   "STAR",
   "POLYGON",
-  "LINE"
+  "LINE",
 ];
 
 interface Counters {
@@ -44,7 +44,7 @@ function empty(): Counters {
     fillable: 0,
     fillableTokenBound: 0,
     groupsShallow: 0,
-    groupsTotal: 0
+    groupsTotal: 0,
   };
 }
 
@@ -125,12 +125,15 @@ function count(root: BaseNode): Counters {
   return c;
 }
 
-function ratio(numerator: number, denominator: number): { score: number; passing: number; sample: number } {
+function ratio(
+  numerator: number,
+  denominator: number,
+): { score: number; passing: number; sample: number } {
   if (denominator <= 0) return { score: 100, passing: 0, sample: 0 };
   return {
     score: Math.round((numerator / denominator) * 100),
     passing: numerator,
-    sample: denominator
+    sample: denominator,
   };
 }
 
@@ -155,7 +158,7 @@ const CONFIGS: MetricConfig[] = [
         ? `디태치된 ${m.sample - m.passing}개 노드를 LDS 컴포넌트에 다시 연결해주세요.`
         : m.sample === 0
           ? "컴포넌트 유형 노드가 감지되지 않았습니다."
-          : "모든 컴포넌트 인스턴스가 바인딩되어 있습니다."
+          : "모든 컴포넌트 인스턴스가 바인딩되어 있습니다.",
   },
   {
     id: "token-linkage",
@@ -166,7 +169,7 @@ const CONFIGS: MetricConfig[] = [
         ? `${m.sample - m.passing}개 노드를 로컬 값 대신 LDS 컬러/텍스트 토큰에 연결해주세요.`
         : m.sample === 0
           ? "범위 내 스타일 대상 노드가 없습니다."
-          : "모든 스타일 노드가 토큰을 사용합니다."
+          : "모든 스타일 노드가 토큰을 사용합니다.",
   },
   {
     id: "semantic-naming",
@@ -175,7 +178,7 @@ const CONFIGS: MetricConfig[] = [
     computeHint: (m) =>
       m.sample - m.passing > 0
         ? `디폴트 이름인 ${m.sample - m.passing}개 노드를 시맨틱하게 바꾸면 MCP 매핑이 좋아집니다.`
-        : "모든 노드가 시맨틱한 이름을 가지고 있습니다."
+        : "모든 노드가 시맨틱한 이름을 가지고 있습니다.",
   },
   {
     id: "auto-layout",
@@ -186,7 +189,7 @@ const CONFIGS: MetricConfig[] = [
         ? `${m.sample - m.passing}개 프레임에 오토레이아웃을 적용하면 flexbox로 변환됩니다.`
         : m.sample === 0
           ? "범위 내 다자식 프레임이 없습니다."
-          : "모든 다자식 프레임이 오토레이아웃을 사용합니다."
+          : "모든 다자식 프레임이 오토레이아웃을 사용합니다.",
   },
   {
     id: "structure-depth",
@@ -195,8 +198,8 @@ const CONFIGS: MetricConfig[] = [
     computeHint: (m) =>
       m.sample - m.passing > 0
         ? `깊게 중첩된 ${m.sample - m.passing}개 그룹을 평탄화해주세요.`
-        : "과도하게 중첩된 그룹이 없습니다."
-  }
+        : "과도하게 중첩된 그룹이 없습니다.",
+  },
 ];
 
 export function computeCodeReadiness(root: BaseNode): CodeReadinessReport {
@@ -207,8 +210,7 @@ export function computeCodeReadiness(root: BaseNode): CodeReadinessReport {
     "auto-layout": ratio(c.framesWithAutoLayout, c.frameCandidates),
     "component-binding": ratio(c.componentLikeBound, c.componentLikeTotal),
     "token-linkage": ratio(c.fillableTokenBound, c.fillable),
-    "structure-depth":
-      c.groupsTotal === 0 ? ratio(1, 1) : ratio(c.groupsShallow, c.groupsTotal)
+    "structure-depth": c.groupsTotal === 0 ? ratio(1, 1) : ratio(c.groupsShallow, c.groupsTotal),
   };
 
   const metrics: ReadinessMetric[] = CONFIGS.map((config) => {
@@ -222,7 +224,7 @@ export function computeCodeReadiness(root: BaseNode): CodeReadinessReport {
       sampleSize: r.sample,
       passing: r.passing,
       hint: config.computeHint(r),
-      upliftIfFixed: uplift
+      upliftIfFixed: uplift,
     };
   });
 

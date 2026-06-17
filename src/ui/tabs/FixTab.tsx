@@ -5,7 +5,7 @@ import type {
   Category,
   Issue,
   NamingSuggestion,
-  ScanResult
+  ScanResult,
 } from "../../types";
 import { AUTOFIX_RULE_IDS } from "../../types";
 import { IssueRow } from "../components/IssueRow";
@@ -14,33 +14,75 @@ import { useT } from "../LangContext";
 
 function FixIllust() {
   return (
-    <svg width="180" height="160" viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="22" y="22" width="136" height="116" rx="8" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
-      <circle cx="42" cy="50" r="7" fill="#111111"/>
-      <path d="M38.5 50 L41 52.5 L46 47.5" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <rect x="58" y="46" width="78" height="6" rx="3" fill="#E5E7EB"/>
-      <rect x="58" y="56" width="50" height="4" rx="2" fill="#EFEFEF"/>
-      <circle cx="42" cy="82" r="7" fill="#111111"/>
-      <path d="M38.5 82 L41 84.5 L46 79.5" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <rect x="58" y="78" width="62" height="6" rx="3" fill="#E5E7EB"/>
-      <rect x="58" y="88" width="40" height="4" rx="2" fill="#EFEFEF"/>
-      <circle cx="42" cy="114" r="7" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
-      <rect x="58" y="110" width="70" height="6" rx="3" fill="#E5E7EB"/>
-      <rect x="58" y="120" width="46" height="4" rx="2" fill="#EFEFEF"/>
+    <svg
+      width="180"
+      height="160"
+      viewBox="0 0 180 160"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        x="22"
+        y="22"
+        width="136"
+        height="116"
+        rx="8"
+        stroke="#D1D5DB"
+        stroke-width="1.7"
+        fill="#FFFFFF"
+      />
+      <circle cx="42" cy="50" r="7" fill="#111111" />
+      <path
+        d="M38.5 50 L41 52.5 L46 47.5"
+        stroke="#FFFFFF"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+      />
+      <rect x="58" y="46" width="78" height="6" rx="3" fill="#E5E7EB" />
+      <rect x="58" y="56" width="50" height="4" rx="2" fill="#EFEFEF" />
+      <circle cx="42" cy="82" r="7" fill="#111111" />
+      <path
+        d="M38.5 82 L41 84.5 L46 79.5"
+        stroke="#FFFFFF"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+      />
+      <rect x="58" y="78" width="62" height="6" rx="3" fill="#E5E7EB" />
+      <rect x="58" y="88" width="40" height="4" rx="2" fill="#EFEFEF" />
+      <circle cx="42" cy="114" r="7" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF" />
+      <rect x="58" y="110" width="70" height="6" rx="3" fill="#E5E7EB" />
+      <rect x="58" y="120" width="46" height="4" rx="2" fill="#EFEFEF" />
     </svg>
   );
 }
 
 function AllClearIllust() {
   return (
-    <svg width="180" height="160" viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="90" cy="80" r="48" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
-      <circle cx="90" cy="80" r="34" fill="#111111"/>
-      <path d="M76 80 L86 90 L106 70" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <circle cx="34" cy="46" r="3" fill="#E5E7EB"/>
-      <circle cx="150" cy="50" r="2.5" fill="#E5E7EB"/>
-      <circle cx="146" cy="118" r="3" fill="#E5E7EB"/>
-      <circle cx="36" cy="118" r="2.5" fill="#E5E7EB"/>
+    <svg
+      width="180"
+      height="160"
+      viewBox="0 0 180 160"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="90" cy="80" r="48" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF" />
+      <circle cx="90" cy="80" r="34" fill="#111111" />
+      <path
+        d="M76 80 L86 90 L106 70"
+        stroke="#FFFFFF"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"
+      />
+      <circle cx="34" cy="46" r="3" fill="#E5E7EB" />
+      <circle cx="150" cy="50" r="2.5" fill="#E5E7EB" />
+      <circle cx="146" cy="118" r="3" fill="#E5E7EB" />
+      <circle cx="36" cy="118" r="2.5" fill="#E5E7EB" />
     </svg>
   );
 }
@@ -83,11 +125,7 @@ function toAutofixItem(issue: Issue): AutofixItem {
 
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 } as const;
 
-const CLEANUP_RULE_IDS = new Set([
-  "unused-hidden-layer",
-  "zero-opacity",
-  "empty-frame"
-]);
+const CLEANUP_RULE_IDS = new Set(["unused-hidden-layer", "zero-opacity", "empty-frame"]);
 
 function isCleanup(issue: Issue): boolean {
   return CLEANUP_RULE_IDS.has(issue.ruleId);
@@ -121,7 +159,7 @@ export function FixTab({
   onDelete,
   onAutofix,
   onApplyNaming,
-  onReplaceWithLds
+  onReplaceWithLds,
 }: Props) {
   const t = useT();
 
@@ -179,7 +217,7 @@ export function FixTab({
 
   const allIssues = result?.health.issues ?? [];
   const visibleIssues = allIssues.filter(
-    (i) => !deletedIds.has(i.nodeId) && !fixedIssueIds.has(i.id)
+    (i) => !deletedIds.has(i.nodeId) && !fixedIssueIds.has(i.id),
   );
   const cleanupIssues = visibleIssues.filter(isCleanup);
   const otherIssues = useMemo(
@@ -187,22 +225,26 @@ export function FixTab({
       visibleIssues
         .filter((i) => !isCleanup(i))
         .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]),
-    [visibleIssues]
+    [visibleIssues],
   );
 
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: otherIssues.length, hygiene: cleanupIssues.length };
+    const counts: Record<string, number> = {
+      all: otherIssues.length,
+      hygiene: cleanupIssues.length,
+    };
     for (const issue of otherIssues) {
       counts[issue.category] = (counts[issue.category] ?? 0) + 1;
     }
     return counts;
   }, [otherIssues, cleanupIssues]);
 
-  const filteredIssues = filter === "all"
-    ? otherIssues
-    : filter === "hygiene"
-    ? cleanupIssues
-    : otherIssues.filter((i) => i.category === filter);
+  const filteredIssues =
+    filter === "all"
+      ? otherIssues
+      : filter === "hygiene"
+        ? cleanupIssues
+        : otherIssues.filter((i) => i.category === filter);
 
   const anyDeleting = deletingIds.size > 0;
   const anyFixing = fixingIssueIds.size > 0;
@@ -232,7 +274,7 @@ export function FixTab({
       !appliedIds.has(s.nodeId) &&
       !replacedIds.has(s.nodeId) &&
       // 디태치 LDS 후보는 LDS 교체가 원본 이름을 자동 승계하므로 배치 리네임에서 제외.
-      !systemIssueNodeIds.has(s.nodeId)
+      !systemIssueNodeIds.has(s.nodeId),
   );
 
   // 네이밍 카테고리 전용: 제안이 있는 행. 이름 변경만 노출 (LDS 교체는 system 탭에서 처리).
@@ -249,9 +291,7 @@ export function FixTab({
       <div class={`suggestion-row ${done ? "applied" : ""}`} key={issue.id}>
         <IssueRow issue={issue} onSelect={onSelectNode} />
         <div class="suggestion-names">
-          <span class="suggestion-current">
-            {done ? s.suggestedName : s.currentName}
-          </span>
+          <span class="suggestion-current">{done ? s.suggestedName : s.currentName}</span>
           {!done && (
             <>
               <span class="suggestion-arrow">→</span>
@@ -259,7 +299,10 @@ export function FixTab({
             </>
           )}
           {hasSystemIssue && !done && (
-            <span class="badge" title="This node is also a detached LDS candidate — replacing with LDS first will inherit the name automatically">
+            <span
+              class="badge"
+              title="This node is also a detached LDS candidate — replacing with LDS first will inherit the name automatically"
+            >
               LDS replace recommended
             </span>
           )}
@@ -272,10 +315,7 @@ export function FixTab({
               class="btn"
               disabled={applying || anyApplying}
               onClick={() =>
-                onApplyNaming(
-                  [{ nodeId: s.nodeId, suggestedName: s.suggestedName }],
-                  "rename"
-                )
+                onApplyNaming([{ nodeId: s.nodeId, suggestedName: s.suggestedName }], "rename")
               }
               title={
                 hasSystemIssue
@@ -326,7 +366,7 @@ export function FixTab({
               disabled={replacing || anyReplacing}
               onClick={() =>
                 onReplaceWithLds([
-                  { nodeId: issue.nodeId, componentKey: s!.ldsComponentKey as string }
+                  { nodeId: issue.nodeId, componentKey: s!.ldsComponentKey as string },
                 ])
               }
               title="Replace the detached frame with an LDS instance (overrides will be lost)"
@@ -353,8 +393,8 @@ export function FixTab({
                 const hint = keyInvalid
                   ? `This component key is not in the library (likely republished/deleted). Re-extract the library from Settings and re-scan, or find "${s?.suggestedName ?? ""}" in the Assets panel (Shift+I) and replace manually.`
                   : s?.suggestedName
-                  ? `Candidate: "${s.suggestedName}" — search this name in the Assets panel (Shift+I) and drag it in, or copy an existing instance to overwrite this spot.`
-                  : `No LDS match candidate. Find the original in the Assets panel (Shift+I) and drag it in, or copy an existing instance to overwrite this spot.`;
+                    ? `Candidate: "${s.suggestedName}" — search this name in the Assets panel (Shift+I) and drag it in, or copy an existing instance to overwrite this spot.`
+                    : `No LDS match candidate. Find the original in the Assets panel (Shift+I) and drag it in, or copy an existing instance to overwrite this spot.`;
                 onSelectNode(issue.nodeId, hint);
               }}
               title="Select this frame in the Figma viewport — then find the original component in the Assets panel and replace manually"
@@ -467,7 +507,8 @@ export function FixTab({
                 <div class="autofix-bar">
                   <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
                     {combinedSuggestions.length} naming suggestion(s) ·{" "}
-                    {appliedIds.size + replacedIds.size} processed · detached LDS candidates excluded
+                    {appliedIds.size + replacedIds.size} processed · detached LDS candidates
+                    excluded
                   </div>
                   <button
                     class="btn primary"
@@ -476,9 +517,9 @@ export function FixTab({
                       onApplyNaming(
                         pendingNamingSuggestions.map((s) => ({
                           nodeId: s.nodeId,
-                          suggestedName: s.suggestedName
+                          suggestedName: s.suggestedName,
                         })),
-                        "rename"
+                        "rename",
                       )
                     }
                     title="Apply all naming suggestions in bulk, excluding detached LDS candidates"
@@ -493,7 +534,8 @@ export function FixTab({
               {filter === "hygiene" && (
                 <div class="autofix-bar">
                   <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
-                    <strong>{cleanupIssues.length}</strong> hidden / empty layer{cleanupIssues.length !== 1 ? "s" : ""} — safe to delete
+                    <strong>{cleanupIssues.length}</strong> hidden / empty layer
+                    {cleanupIssues.length !== 1 ? "s" : ""} — safe to delete
                   </div>
                   <button
                     class="btn primary"
@@ -505,61 +547,76 @@ export function FixTab({
                 </div>
               )}
 
-              {filter !== "all" && filter !== "naming" && filter !== "hygiene" && (() => {
-                const autofixableInFilter = filteredIssues.filter(isAutofixable);
-                const hasAny = autofixableInFilter.length > 0;
-                // LDS 교체는 system 탭에서만 (디태치 인스턴스 전용)
-                const ldsReplaceable = filter === "system"
-                  ? filteredIssues
-                      .map((i) => suggestionByNode.get(i.nodeId))
-                      .filter((s): s is NamingSuggestion =>
-                        !!s &&
-                        !!s.ldsComponentKey &&
-                        !invalidLdsKeys.has(s.ldsComponentKey) &&
-                        !appliedIds.has(s.nodeId) &&
-                        !replacedIds.has(s.nodeId)
-                      )
-                  : [];
-                const hasLds = ldsReplaceable.length > 0;
-                return (
-                  <div class="autofix-bar">
-                    <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
-                      {hasAny
-                        ? <><strong>{autofixableInFilter.length}</strong> auto-fixable in this category</>
-                        : hasLds
-                          ? <><strong>{ldsReplaceable.length}</strong> LDS replacement(s) available — overrides will be lost</>
-                          : "No auto-fix rules for this category — manual review required"}
-                    </div>
-                    {hasLds && (
-                      <button
-                        class="btn"
-                        disabled={anyReplacing || anyApplying}
-                        onClick={() =>
-                          onReplaceWithLds(
-                            ldsReplaceable.map((s) => ({
-                              nodeId: s.nodeId,
-                              componentKey: s.ldsComponentKey as string
-                            }))
+              {filter !== "all" &&
+                filter !== "naming" &&
+                filter !== "hygiene" &&
+                (() => {
+                  const autofixableInFilter = filteredIssues.filter(isAutofixable);
+                  const hasAny = autofixableInFilter.length > 0;
+                  // LDS 교체는 system 탭에서만 (디태치 인스턴스 전용)
+                  const ldsReplaceable =
+                    filter === "system"
+                      ? filteredIssues
+                          .map((i) => suggestionByNode.get(i.nodeId))
+                          .filter(
+                            (s): s is NamingSuggestion =>
+                              !!s &&
+                              !!s.ldsComponentKey &&
+                              !invalidLdsKeys.has(s.ldsComponentKey) &&
+                              !appliedIds.has(s.nodeId) &&
+                              !replacedIds.has(s.nodeId),
                           )
-                        }
-                        title="Replace all detached instances with LDS components in bulk (overrides will be lost)"
-                      >
-                        {anyReplacing ? "Replacing..." : `Replace all with LDS (${ldsReplaceable.length})`}
-                      </button>
-                    )}
-                    {filter !== "style" && filter !== "system" && (
-                      <button
-                        class="btn primary"
-                        disabled={!hasAny || anyFixing}
-                        onClick={() => onAutofix(autofixableInFilter.map(toAutofixItem))}
-                        title={hasAny ? "" : "No auto-fix rules for this category"}
-                      >
-                        {anyFixing ? "Fixing..." : "Auto-fix all"}
-                      </button>
-                    )}
-                  </div>
-                );
-              })()}
+                      : [];
+                  const hasLds = ldsReplaceable.length > 0;
+                  return (
+                    <div class="autofix-bar">
+                      <div style={{ flex: 1, fontSize: 12, color: "var(--text-muted)" }}>
+                        {hasAny ? (
+                          <>
+                            <strong>{autofixableInFilter.length}</strong> auto-fixable in this
+                            category
+                          </>
+                        ) : hasLds ? (
+                          <>
+                            <strong>{ldsReplaceable.length}</strong> LDS replacement(s) available —
+                            overrides will be lost
+                          </>
+                        ) : (
+                          "No auto-fix rules for this category — manual review required"
+                        )}
+                      </div>
+                      {hasLds && (
+                        <button
+                          class="btn"
+                          disabled={anyReplacing || anyApplying}
+                          onClick={() =>
+                            onReplaceWithLds(
+                              ldsReplaceable.map((s) => ({
+                                nodeId: s.nodeId,
+                                componentKey: s.ldsComponentKey as string,
+                              })),
+                            )
+                          }
+                          title="Replace all detached instances with LDS components in bulk (overrides will be lost)"
+                        >
+                          {anyReplacing
+                            ? "Replacing..."
+                            : `Replace all with LDS (${ldsReplaceable.length})`}
+                        </button>
+                      )}
+                      {filter !== "style" && filter !== "system" && (
+                        <button
+                          class="btn primary"
+                          disabled={!hasAny || anyFixing}
+                          onClick={() => onAutofix(autofixableInFilter.map(toAutofixItem))}
+                          title={hasAny ? "" : "No auto-fix rules for this category"}
+                        >
+                          {anyFixing ? "Fixing..." : "Auto-fix all"}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })()}
 
               {filteredIssues.length === 0 ? (
                 <div class="empty">No issues in this category.</div>
@@ -589,9 +646,7 @@ export function FixTab({
                         return renderNamingNoSuggestionRow(issue);
                       }
                       const s = suggestionByNode.get(issue.nodeId);
-                      return s
-                        ? renderSuggestionRow(issue, s)
-                        : renderNamingNoSuggestionRow(issue);
+                      return s ? renderSuggestionRow(issue, s) : renderNamingNoSuggestionRow(issue);
                     }
                     if (issue.category === "system") {
                       return renderSystemRow(issue);

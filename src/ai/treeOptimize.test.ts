@@ -14,7 +14,7 @@ function child(i: number, over: Partial<SerializedNode> = {}): SerializedNode {
     x: 0,
     y: i * 40,
     componentRef: { name: "ListRow" },
-    ...over
+    ...over,
   };
 }
 
@@ -39,7 +39,7 @@ describe("optimizeTree truncation ordering", () => {
   test("100 unique (non-repeating) children truncate to 80 + marker", () => {
     const children = Array.from({ length: 100 }, (_, i) =>
       // 숫자접미사가 없는 고유 이름이라 repeat-collapse 대상이 아니다.
-      child(i, { name: `Card_${i}_box`, componentRef: undefined, type: "FRAME" })
+      child(i, { name: `Card_${i}_box`, componentRef: undefined, type: "FRAME" }),
     );
     const { tree, stats } = optimizeTree(root(children));
 
@@ -52,7 +52,7 @@ describe("optimizeTree truncation ordering", () => {
   test("under-limit unique children are untouched", () => {
     const children = Array.from({ length: 10 }, (_, i) =>
       // 숫자접미사가 없는 고유 이름이라 repeat-collapse 대상이 아니다.
-      child(i, { name: `Card_${i}_box`, componentRef: undefined, type: "FRAME" })
+      child(i, { name: `Card_${i}_box`, componentRef: undefined, type: "FRAME" }),
     );
     const { tree, stats } = optimizeTree(root(children));
 
@@ -71,7 +71,7 @@ describe("optimizeTree occlusion dedup", () => {
       x: 0,
       y,
       width: 375,
-      height: h
+      height: h,
     };
   }
 
@@ -86,7 +86,7 @@ describe("optimizeTree occlusion dedup", () => {
       name: "Screen",
       width: 375,
       height: 812,
-      children: [navA, header, navB]
+      children: [navA, header, navB],
     };
 
     const { tree, stats } = optimizeTree(screen);
@@ -107,7 +107,7 @@ describe("optimizeTree occlusion dedup", () => {
       name: "Screen",
       width: 375,
       height: 100,
-      children: [badge, avatar]
+      children: [badge, avatar],
     };
 
     const { tree, stats } = optimizeTree(screen);
@@ -125,7 +125,7 @@ describe("optimizeTree occlusion dedup", () => {
       name: "Screen",
       width: 375,
       height: 200,
-      children: [a, b]
+      children: [a, b],
     };
 
     const { tree, stats } = optimizeTree(screen);

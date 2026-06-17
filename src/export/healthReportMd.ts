@@ -14,7 +14,7 @@ export function renderHealthReportMd(label: string, report: HealthReport): strin
     for (const cat of report.categoryScores) {
       const pct = Math.round(cat.passRate * 100);
       lines.push(
-        `- \`${cat.category}\`: ${pct}% (${cat.totalCount - cat.issueCount}/${cat.totalCount})`
+        `- \`${cat.category}\`: ${pct}% (${cat.totalCount - cat.issueCount}/${cat.totalCount})`,
       );
     }
     lines.push("");
@@ -29,7 +29,7 @@ export function renderHealthReportMd(label: string, report: HealthReport): strin
   const bySeverity: Record<string, typeof report.issues> = {
     critical: [],
     warning: [],
-    info: []
+    info: [],
   };
   for (const issue of report.issues) {
     (bySeverity[issue.severity] ?? bySeverity.info).push(issue);
@@ -38,7 +38,7 @@ export function renderHealthReportMd(label: string, report: HealthReport): strin
   const headings: Array<[string, string]> = [
     ["critical", "🔴 Critical"],
     ["warning", "🟡 Warning"],
-    ["info", "🔵 Info"]
+    ["info", "🔵 Info"],
   ];
 
   lines.push("## 이슈 상세 (변환 시 보정할 약점)");
@@ -49,7 +49,7 @@ export function renderHealthReportMd(label: string, report: HealthReport): strin
     lines.push(`### ${heading} (${group.length})`);
     for (const issue of group) {
       lines.push(
-        `- **${issue.title}** — ${issue.nodeType} \`${issue.nodeName}\` (${issue.ruleId})`
+        `- **${issue.title}** — ${issue.nodeType} \`${issue.nodeName}\` (${issue.ruleId})`,
       );
       if (issue.description) lines.push(`  - ${issue.description}`);
     }

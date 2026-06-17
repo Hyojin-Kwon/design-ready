@@ -14,7 +14,7 @@ const TYPES = {
   ".js": "text/javascript",
   ".css": "text/css",
   ".svg": "image/svg+xml",
-  ".json": "application/json"
+  ".json": "application/json",
 };
 
 createServer(async (req, res) => {

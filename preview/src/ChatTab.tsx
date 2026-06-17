@@ -3,7 +3,7 @@
 // Source corpus: design-ready-corpus/screens/chattab (375×812 LINE chat-list screen)
 
 import React from "react";
-import './ChatMenu.css';
+import "./ChatMenu.css";
 
 const fontStack =
   '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Apple SD Gothic Neo", sans-serif';
@@ -61,26 +61,54 @@ const ICONS: Record<string, string> = {
 };
 
 const Icon: React.FC<{ name: string; style?: React.CSSProperties }> = ({ name, style }) => (
-  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, ...style }} dangerouslySetInnerHTML={{ __html: ICONS[name] ?? "" }} />
+  <span
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      ...style,
+    }}
+    dangerouslySetInnerHTML={{ __html: ICONS[name] ?? "" }}
+  />
 );
 
 // ── Story-ring gradient (Aimee, Meru) ──────────────────────────────────────
 const storyRing: React.CSSProperties = {
-  background: "conic-gradient(from 180deg, #20A1FF 0%, #00E5BF 25%, #00E75F 50%, #20BDFF 75%, #5855FF 100%)",
+  background:
+    "conic-gradient(from 180deg, #20A1FF 0%, #00E5BF 25%, #00E75F 50%, #20BDFF 75%, #5855FF 100%)",
   padding: 2.5,
   borderRadius: "50%",
 };
 
 // ── Avatar with optional 58×58 story ring (gradient or static) + pin badge ──
 // Tree spec: photo 48×48; ring 58×58 at (-5,-5); pin 20×20 at (34,30) — overflows.
-type AvatarProps = { img?: string; bg?: string; ring?: "gradient" | "static" | null; pin?: boolean; children?: React.ReactNode };
-const Avatar: React.FC<AvatarProps> = ({ img, bg = "#E5E5E5", ring = null, pin = false, children }) => (
+type AvatarProps = {
+  img?: string;
+  bg?: string;
+  ring?: "gradient" | "static" | null;
+  pin?: boolean;
+  children?: React.ReactNode;
+};
+const Avatar: React.FC<AvatarProps> = ({
+  img,
+  bg = "#E5E5E5",
+  ring = null,
+  pin = false,
+  children,
+}) => (
   <div style={{ position: "relative", width: 48, height: 48, flexShrink: 0 }}>
     {ring === "gradient" && (
       <div
         style={{
-          position: "absolute", left: -5, top: -5, width: 58, height: 58, borderRadius: "50%",
-          background: "conic-gradient(from 180deg, #20A1FF, #00E5BF, #00E75F, #20BDFF, #5855FF, #20A1FF)",
+          position: "absolute",
+          left: -5,
+          top: -5,
+          width: 58,
+          height: 58,
+          borderRadius: "50%",
+          background:
+            "conic-gradient(from 180deg, #20A1FF, #00E5BF, #00E75F, #20BDFF, #5855FF, #20A1FF)",
           WebkitMask: "radial-gradient(circle, transparent 26.5px, #000 26.5px)",
           mask: "radial-gradient(circle, transparent 26.5px, #000 26.5px)",
         }}
@@ -89,27 +117,58 @@ const Avatar: React.FC<AvatarProps> = ({ img, bg = "#E5E5E5", ring = null, pin =
     {ring === "static" && (
       <div
         style={{
-          position: "absolute", left: -5, top: -5, width: 58, height: 58, borderRadius: "50%",
-          border: "2.5px solid #DFDFDF", boxSizing: "border-box",
+          position: "absolute",
+          left: -5,
+          top: -5,
+          width: 58,
+          height: 58,
+          borderRadius: "50%",
+          border: "2.5px solid #DFDFDF",
+          boxSizing: "border-box",
         }}
       />
     )}
     <div
       style={{
-        width: 48, height: 48, borderRadius: "50%",
+        width: 48,
+        height: 48,
+        borderRadius: "50%",
         background: img ? `${bg} url(${img}) center/cover no-repeat` : bg,
         position: "relative",
       }}
     >
       {children}
     </div>
-    {pin && <Icon name="pinBadge" style={{ position: "absolute", left: 30, top: 30, width: 20, height: 20 }} />}
+    {pin && (
+      <Icon
+        name="pinBadge"
+        style={{ position: "absolute", left: 30, top: 30, width: 20, height: 20 }}
+      />
+    )}
   </div>
 );
 
 // ── Unread count badge ──────────────────────────────────────────────────────
 const UnreadBadge: React.FC<{ count: string }> = ({ count }) => (
-  <div style={{ minWidth: 21, height: 21, padding: "0 7px", borderRadius: "50px", background: "#06C755", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Bold, color: "#fff", lineHeight: 1, boxSizing: "border-box" }}>{count}</div>
+  <div
+    style={{
+      minWidth: 21,
+      height: 21,
+      padding: "0 7px",
+      borderRadius: "50px",
+      background: "#06C755",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 13,
+      fontWeight: fw.Bold,
+      color: "#fff",
+      lineHeight: 1,
+      boxSizing: "border-box",
+    }}
+  >
+    {count}
+  </div>
 );
 
 // ── Chat row (avatar + middle col + right col) ──────────────────────────────
@@ -121,212 +180,696 @@ type RowProps = {
   divider?: boolean;
 };
 const ChatRow: React.FC<RowProps> = ({ avatar, title, subtitle, right, divider = true }) => (
-  <div style={{ position: "relative", height: 68, display: "flex", flexDirection: "row", alignItems: "center", padding: "10px 16px", boxSizing: "border-box", background: "#fff" }}>
-    <div style={{ flexShrink: 0, marginRight: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>{avatar}</div>
-    <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 2 }}>
-      <div style={{ fontFamily: fontStack, fontSize: 15, fontWeight: fw.Medium, color: "#111", lineHeight: "20px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 4 }}>{title}</div>
-      <div style={{ fontFamily: fontStack, fontSize: 13, fontWeight: fw.Regular, color: "#616161", lineHeight: "18px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{subtitle}</div>
+  <div
+    style={{
+      position: "relative",
+      height: 68,
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      padding: "10px 16px",
+      boxSizing: "border-box",
+      background: "#fff",
+    }}
+  >
+    <div
+      style={{
+        flexShrink: 0,
+        marginRight: 13,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {avatar}
     </div>
-    <div style={{ flexShrink: 0, marginLeft: 8, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, minWidth: 50 }}>{right}</div>
-    {divider && <div style={{ position: "absolute", left: 78, right: 0, bottom: 0, height: 1, background: "transparent" }} />}
+    <div
+      style={{
+        flex: 1,
+        minWidth: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 2,
+      }}
+    >
+      <div
+        style={{
+          fontFamily: fontStack,
+          fontSize: 15,
+          fontWeight: fw.Medium,
+          color: "#111",
+          lineHeight: "20px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+        }}
+      >
+        {title}
+      </div>
+      <div
+        style={{
+          fontFamily: fontStack,
+          fontSize: 13,
+          fontWeight: fw.Regular,
+          color: "#616161",
+          lineHeight: "18px",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {subtitle}
+      </div>
+    </div>
+    <div
+      style={{
+        flexShrink: 0,
+        marginLeft: 8,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        gap: 4,
+        minWidth: 50,
+      }}
+    >
+      {right}
+    </div>
+    {divider && (
+      <div
+        style={{
+          position: "absolute",
+          left: 78,
+          right: 0,
+          bottom: 0,
+          height: 1,
+          background: "transparent",
+        }}
+      />
+    )}
   </div>
 );
 
 const ChatTab: React.FC = () => (
-  <div style={{ position: "relative", width: 375, height: 812, background: "#fff", overflow: "hidden", fontFamily: fontStack }}>
+  <div
+    style={{
+      position: "relative",
+      width: 375,
+      height: 812,
+      background: "#fff",
+      overflow: "hidden",
+      fontFamily: fontStack,
+    }}
+  >
     {/* Header — status bar */}
     <div style={{ position: "absolute", left: 0, top: 0, width: 375, height: 44 }}>
-      <span style={{ position: "absolute", left: 20, top: 14, width: 54, height: 18, fontSize: 15, fontWeight: fw.Semibold, color: "#000", textAlign: "center", lineHeight: 1 }}>9:41</span>
-      <Icon name="cellular" style={{ position: "absolute", left: 294, top: 18, width: 17, height: 11 }} />
-      <Icon name="wifi" style={{ position: "absolute", left: 316, top: 17, width: 15, height: 11 }} />
-      <Icon name="battery" style={{ position: "absolute", left: 336, top: 17, width: 24, height: 11 }} />
+      <span
+        style={{
+          position: "absolute",
+          left: 20,
+          top: 14,
+          width: 54,
+          height: 18,
+          fontSize: 15,
+          fontWeight: fw.Semibold,
+          color: "#000",
+          textAlign: "center",
+          lineHeight: 1,
+        }}
+      >
+        9:41
+      </span>
+      <Icon
+        name="cellular"
+        style={{ position: "absolute", left: 294, top: 18, width: 17, height: 11 }}
+      />
+      <Icon
+        name="wifi"
+        style={{ position: "absolute", left: 316, top: 17, width: 15, height: 11 }}
+      />
+      <Icon
+        name="battery"
+        style={{ position: "absolute", left: 336, top: 17, width: 24, height: 11 }}
+      />
     </div>
 
     {/* Top Navigation */}
-    <div style={{ position: "absolute", left: 0, top: 44, width: 375, height: 44, background: "#fff" }}>
+    <div
+      style={{ position: "absolute", left: 0, top: 44, width: 375, height: 44, background: "#fff" }}
+    >
       {/* Tab area: Chats pill (selected) + Friends */}
-      <div style={{ position: "absolute", left: 16, top: 2, width: 198, height: 39, display: "flex", flexDirection: "row", alignItems: "center", gap: 12 }}>
-        <div style={{ width: 83, height: 39, background: "#111", borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
+      <div
+        style={{
+          position: "absolute",
+          left: 16,
+          top: 2,
+          width: 198,
+          height: 39,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 12,
+        }}
+      >
+        <div
+          style={{
+            width: 83,
+            height: 39,
+            background: "#111",
+            borderRadius: 50,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxSizing: "border-box",
+          }}
+        >
           <Icon name="chatsPillText" style={{ width: 57, height: 19 }} />
         </div>
-        <span style={{ fontSize: 18, fontWeight: fw.Heavy, color: "#000", lineHeight: "21px" }}>Friends</span>
+        <span style={{ fontSize: 18, fontWeight: fw.Heavy, color: "#000", lineHeight: "21px" }}>
+          Friends
+        </span>
       </div>
       {/* Right buttons */}
-      <div style={{ position: "absolute", left: 261, top: 10, width: 98, height: 24, display: "flex", flexDirection: "row", alignItems: "center", gap: 13 }}>
+      <div
+        style={{
+          position: "absolute",
+          left: 261,
+          top: 10,
+          width: 98,
+          height: 24,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 13,
+        }}
+      >
         <Icon name="aiFriends" style={{ width: 24, height: 24 }} />
         <Icon name="openchat" style={{ width: 24, height: 24 }} />
         <Icon name="plus" style={{ width: 24, height: 24 }} />
       </div>
       {/* Green status dot */}
-      <div style={{ position: "absolute", left: 357, top: 8, width: 5, height: 5, background: "#06C755", borderRadius: "50%" }} />
+      <div
+        style={{
+          position: "absolute",
+          left: 357,
+          top: 8,
+          width: 5,
+          height: 5,
+          background: "#06C755",
+          borderRadius: "50%",
+        }}
+      />
     </div>
 
     {/* Searchbar */}
-    <div style={{ position: "absolute", left: 0, top: 88, width: 375, height: 50, background: "#fff", display: "flex", alignItems: "center", paddingLeft: 16, paddingRight: 16, boxSizing: "border-box" }}>
-      <div style={{ flex: 1, height: 39, background: "#F7F7F7", borderRadius: 100, display: "flex", flexDirection: "row", alignItems: "center", padding: "10px 16px 10px 12px", gap: 12, boxSizing: "border-box" }}>
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 88,
+        width: 375,
+        height: 50,
+        background: "#fff",
+        display: "flex",
+        alignItems: "center",
+        paddingLeft: 16,
+        paddingRight: 16,
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          height: 39,
+          background: "#F7F7F7",
+          borderRadius: 100,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          padding: "10px 16px 10px 12px",
+          gap: 12,
+          boxSizing: "border-box",
+        }}
+      >
         <Icon name="searchSm" style={{ width: 19, height: 19 }} />
-        <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>Enter search keyword</span>
+        <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>
+          Enter search keyword
+        </span>
         <Icon name="qr" style={{ width: 19, height: 19 }} />
       </div>
     </div>
 
     {/* Scrollable content: banner + filter + chat list */}
-    <div className="chat-scroll" style={{ position: "absolute", left: 0, top: 138, width: 375, height: 590, overflowY: "auto", overflowX: "hidden" }}>
-
-    {/* SMC_01_01 banner — 121px */}
-    <div style={{ position: "relative", width: 375, height: 121, background: "#fff", flexShrink: 0 }}>
-      {/* image: 86×86 at (256, 18) */}
-      <div style={{ position: "absolute", left: 256, top: 18, width: 86, height: 86, borderRadius: 5, background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat` }} />
-      {/* text type 2: (18, 32) 218×58 */}
-      <div style={{ position: "absolute", left: 18, top: 32, width: 218, height: 58 }}>
-        {/* main text: 2 lines × 18px */}
-        <div style={{ width: 218, height: 36, fontSize: 14, fontWeight: fw.Semibold, color: "#2A2A2A", lineHeight: "18px", overflow: "hidden", wordBreak: "break-all", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"] }}>
-          WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-        </div>
-        {/* sub text: AD · brand — at offset (0, 44) */}
-        <div style={{ position: "absolute", top: 44, left: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: 3, height: 14 }}>
-          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
-            <Icon name="adInfo" style={{ width: 15, height: 15 }} />
-            <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}>AD</span>
+    <div
+      className="chat-scroll"
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 138,
+        width: 375,
+        height: 590,
+        overflowY: "auto",
+        overflowX: "hidden",
+      }}
+    >
+      {/* SMC_01_01 banner — 121px */}
+      <div
+        style={{ position: "relative", width: 375, height: 121, background: "#fff", flexShrink: 0 }}
+      >
+        {/* image: 86×86 at (256, 18) */}
+        <div
+          style={{
+            position: "absolute",
+            left: 256,
+            top: 18,
+            width: 86,
+            height: 86,
+            borderRadius: 5,
+            background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat`,
+          }}
+        />
+        {/* text type 2: (18, 32) 218×58 */}
+        <div style={{ position: "absolute", left: 18, top: 32, width: 218, height: 58 }}>
+          {/* main text: 2 lines × 18px */}
+          <div
+            style={{
+              width: 218,
+              height: 36,
+              fontSize: 14,
+              fontWeight: fw.Semibold,
+              color: "#2A2A2A",
+              lineHeight: "18px",
+              overflow: "hidden",
+              wordBreak: "break-all",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"],
+            }}
+          >
+            WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
           </div>
-          <span style={{ width: 2, height: 2, background: "#C8C8C8", borderRadius: "50%", flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#909090", lineHeight: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>LUSH Cosmetics</span>
+          {/* sub text: AD · brand — at offset (0, 44) */}
+          <div
+            style={{
+              position: "absolute",
+              top: 44,
+              left: 0,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 3,
+              height: 14,
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
+              <Icon name="adInfo" style={{ width: 15, height: 15 }} />
+              <span
+                style={{ fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}
+              >
+                AD
+              </span>
+            </div>
+            <span
+              style={{
+                width: 2,
+                height: 2,
+                background: "#C8C8C8",
+                borderRadius: "50%",
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: fw.Regular,
+                color: "#909090",
+                lineHeight: "14px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              LUSH Cosmetics
+            </span>
+          </div>
+        </div>
+        {/* banner_ch_mute — 17×17 at (345, 10), icon 9×9 at offset (4, 4) */}
+        <div style={{ position: "absolute", left: 345, top: 10, width: 17, height: 17 }}>
+          <Icon name="bannerMute" style={{ position: "absolute", left: 4, top: 4 }} />
+        </div>
+        {/* banner_ch_more — 17×17 at (345, 93), icon 3×11 at offset (8, 4) */}
+        <div style={{ position: "absolute", left: 345, top: 93, width: 17, height: 17 }}>
+          <Icon name="bannerMore" style={{ position: "absolute", left: 8, top: 4 }} />
         </div>
       </div>
-      {/* banner_ch_mute — 17×17 at (345, 10), icon 9×9 at offset (4, 4) */}
-      <div style={{ position: "absolute", left: 345, top: 10, width: 17, height: 17 }}>
-        <Icon name="bannerMute" style={{ position: "absolute", left: 4, top: 4 }} />
-      </div>
-      {/* banner_ch_more — 17×17 at (345, 93), icon 3×11 at offset (8, 4) */}
-      <div style={{ position: "absolute", left: 345, top: 93, width: 17, height: 17 }}>
-        <Icon name="bannerMore" style={{ position: "absolute", left: 8, top: 4 }} />
-      </div>
-    </div>
 
-    {/* Filter Tabs — sticky below search bar */}
-    <div style={{ width: 375, height: 49, position: "sticky", top: 0, zIndex: 10, background: "#fff", flexShrink: 0, display: "flex", flexDirection: "row", alignItems: "center", padding: "7px 17px", gap: 5, boxSizing: "border-box" }}>
-      {/* All — selected (padding 13/13) */}
-      <div style={{ height: 35, padding: "0 13px", borderRadius: 100, background: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#fff", boxSizing: "border-box" }}>All</div>
-      {/* Friends (padding 13/13) */}
-      <div style={{ height: 35, padding: "0 13px", borderRadius: 100, border: "1px solid #EFEFEF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#111", boxSizing: "border-box" }}>Friends</div>
-      {/* Groups + green-dot (notification) — padding 13/10 */}
-      <div style={{ height: 35, paddingLeft: 13, paddingRight: 10, borderRadius: 100, border: "1px solid #EFEFEF", display: "flex", alignItems: "center", gap: 6, boxSizing: "border-box" }}>
-        <span style={{ fontSize: 13, fontWeight: fw.Semibold, color: "#111", whiteSpace: "nowrap" }}>Groups</span>
-        <span style={{ width: 5, height: 5, background: "#06C755", borderRadius: "50%" }} />
+      {/* Filter Tabs — sticky below search bar */}
+      <div
+        style={{
+          width: 375,
+          height: 49,
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          background: "#fff",
+          flexShrink: 0,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          padding: "7px 17px",
+          gap: 5,
+          boxSizing: "border-box",
+        }}
+      >
+        {/* All — selected (padding 13/13) */}
+        <div
+          style={{
+            height: 35,
+            padding: "0 13px",
+            borderRadius: 100,
+            background: "#111",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 13,
+            fontWeight: fw.Semibold,
+            color: "#fff",
+            boxSizing: "border-box",
+          }}
+        >
+          All
+        </div>
+        {/* Friends (padding 13/13) */}
+        <div
+          style={{
+            height: 35,
+            padding: "0 13px",
+            borderRadius: 100,
+            border: "1px solid #EFEFEF",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 13,
+            fontWeight: fw.Semibold,
+            color: "#111",
+            boxSizing: "border-box",
+          }}
+        >
+          Friends
+        </div>
+        {/* Groups + green-dot (notification) — padding 13/10 */}
+        <div
+          style={{
+            height: 35,
+            paddingLeft: 13,
+            paddingRight: 10,
+            borderRadius: 100,
+            border: "1px solid #EFEFEF",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            boxSizing: "border-box",
+          }}
+        >
+          <span
+            style={{ fontSize: 13, fontWeight: fw.Semibold, color: "#111", whiteSpace: "nowrap" }}
+          >
+            Groups
+          </span>
+          <span style={{ width: 5, height: 5, background: "#06C755", borderRadius: "50%" }} />
+        </div>
+        {/* Official accounts (padding 13/13) */}
+        <div
+          style={{
+            height: 35,
+            padding: "0 13px",
+            borderRadius: 100,
+            border: "1px solid #EFEFEF",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 13,
+            fontWeight: fw.Semibold,
+            color: "#111",
+            whiteSpace: "nowrap",
+            boxSizing: "border-box",
+          }}
+        >
+          Official accounts
+        </div>
       </div>
-      {/* Official accounts (padding 13/13) */}
-      <div style={{ height: 35, padding: "0 13px", borderRadius: 100, border: "1px solid #EFEFEF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#111", whiteSpace: "nowrap", boxSizing: "border-box" }}>Official accounts</div>
-    </div>
 
-    {/* Chat list */}
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      {/* Row 1 — Birthday promo: pink circle + confetti deco + cake body + candle */}
-      <ChatRow
-        avatar={<div style={{ position: "relative", width: 48, height: 48, borderRadius: "50%", background: "#FFDCE4", overflow: "visible" }}>
-          <Icon name="birthdayDeco" style={{ position: "absolute", left: 4, top: 5, width: 41, height: 19 }} />
-          <Icon name="birthdayBody" style={{ position: "absolute", left: 11, top: 24, width: 26, height: 18 }} />
-          <Icon name="birthdayCandle" style={{ position: "absolute", left: 17, top: 12, width: 14, height: 17 }} />
-        </div>}
-        title="Wish friends a happy birthday!"
-        subtitle="Olivia, Hirao kanno"
-        right={<Icon name="muteBadge" style={{ width: 26, height: 26 }} />}
-      />
-      {/* Row 2 — Aimee: story ring (gradient) + pin badge */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format" ring="gradient" pin />}
-        title="Aimee"
-        subtitle="Pancakes are best eaten fresh"
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>3min ago</span><UnreadBadge count="999+" /></>}
-      />
-      {/* Row 3 — Shota saito with draft pencil + timestamp + ! badge on right */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&auto=format" ring="static" />}
-        title={<>Shota saito<Icon name="draftPencil" style={{ width: 16, height: 16, marginLeft: 4 }} /></>}
-        subtitle="Okay"
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>5min ago</span><Icon name="exclaimBadge" style={{ width: 24, height: 24 }} /></>}
-      />
-      {/* Row 4 — Europe Travelers (group, mention) */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=120&h=120&fit=crop&auto=format" />}
-        title="Europe Travelers (268)"
-        subtitle={<>Pancakes are best eaten fresh from <span style={{ color: "#4D73FF", fontWeight: fw.Regular }}>You were mentioned.</span></>}
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>3min ago</span><UnreadBadge count="12" /></>}
-      />
-      {/* Row 5 — Singles group video call */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=120&h=120&fit=crop&auto=format" />}
-        title={<>Singles (3) <Icon name="groupCallBadge" style={{ width: 25, height: 16, marginLeft: 4 }} /></>}
-        subtitle={<><Icon name="callIcon" style={{ width: 12, height: 12, marginRight: 4, verticalAlign: "middle" }} />Group video call started.</>}
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>2:30 PM</span><UnreadBadge count="23" /></>}
-      />
-      {/* Row 6 — Keep (green disc + bookmark profile, NEW badge on right) */}
-      <ChatRow
-        avatar={<Icon name="keepIcon" style={{ width: 48, height: 48 }} />}
-        title="Keep"
-        subtitle="This is a talk room that only you can see. Instead of notes, try sending text…"
-        right={<Icon name="newBadge" style={{ width: 24, height: 24 }} />}
-      />
-      {/* Row 7 — Meru with story ring */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format" ring="gradient" />}
-        title="Meru minami"
-        subtitle="Hey Arthur, how are you?"
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>3min ago</span><UnreadBadge count="9" /></>}
-      />
-      {/* Row 8 — LINE cafe OA */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=120&h=120&fit=crop&auto=format" />}
-        title="LINE cafe OA"
-        subtitle="Live is on air."
-        right={<span style={{ fontSize: 11, color: "#909090" }}>Yesterday</span>}
-      />
-      {/* Row 9 — Meru OpenChat */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=120&h=120&fit=crop&auto=format" />}
-        title="Meru minami"
-        subtitle="Hey Arthur, how are you?"
-        right={<span style={{ fontSize: 11, color: "#909090" }}>Yesterday</span>}
-      />
-      {/* Row 10 — Emma with gradient ring */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&auto=format" ring="gradient" />}
-        title="Emma"
-        subtitle="Sounds good! See you there 😊"
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>1:45 PM</span><UnreadBadge count="3" /></>}
-      />
-      {/* Row 11 — Tokyo Foodies group */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=120&h=120&fit=crop&auto=format" />}
-        title="Tokyo Foodies (12)"
-        subtitle="Yuki: Anyone tried the new ramen place in Shibuya?"
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>11:20 AM</span><UnreadBadge count="7" /></>}
-      />
-      {/* Row 12 — Chris with static ring */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format" ring="static" />}
-        title="Chris"
-        subtitle="Can you send me the file?"
-        right={<><span style={{ fontSize: 11, color: "#909090" }}>10:08 AM</span><UnreadBadge count="1" /></>}
-      />
-      {/* Row 13 — Hana muted */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&auto=format" />}
-        title="Hana"
-        subtitle="Ok thanks! Talk later~"
-        right={<span style={{ fontSize: 11, color: "#909090" }}>Monday</span>}
-      />
-      {/* Row 14 — Weekend Trip group */}
-      <ChatRow
-        avatar={<Avatar img="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=120&h=120&fit=crop&auto=format" />}
-        title="Weekend Trip (6)"
-        subtitle="Let's meet at the station at 8!"
-        right={<span style={{ fontSize: 11, color: "#909090" }}>Sunday</span>}
-      />
+      {/* Chat list */}
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* Row 1 — Birthday promo: pink circle + confetti deco + cake body + candle */}
+        <ChatRow
+          avatar={
+            <div
+              style={{
+                position: "relative",
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                background: "#FFDCE4",
+                overflow: "visible",
+              }}
+            >
+              <Icon
+                name="birthdayDeco"
+                style={{ position: "absolute", left: 4, top: 5, width: 41, height: 19 }}
+              />
+              <Icon
+                name="birthdayBody"
+                style={{ position: "absolute", left: 11, top: 24, width: 26, height: 18 }}
+              />
+              <Icon
+                name="birthdayCandle"
+                style={{ position: "absolute", left: 17, top: 12, width: 14, height: 17 }}
+              />
+            </div>
+          }
+          title="Wish friends a happy birthday!"
+          subtitle="Olivia, Hirao kanno"
+          right={<Icon name="muteBadge" style={{ width: 26, height: 26 }} />}
+        />
+        {/* Row 2 — Aimee: story ring (gradient) + pin badge */}
+        <ChatRow
+          avatar={
+            <Avatar
+              img="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format"
+              ring="gradient"
+              pin
+            />
+          }
+          title="Aimee"
+          subtitle="Pancakes are best eaten fresh"
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>3min ago</span>
+              <UnreadBadge count="999+" />
+            </>
+          }
+        />
+        {/* Row 3 — Shota saito with draft pencil + timestamp + ! badge on right */}
+        <ChatRow
+          avatar={
+            <Avatar
+              img="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&auto=format"
+              ring="static"
+            />
+          }
+          title={
+            <>
+              Shota saito
+              <Icon name="draftPencil" style={{ width: 16, height: 16, marginLeft: 4 }} />
+            </>
+          }
+          subtitle="Okay"
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>5min ago</span>
+              <Icon name="exclaimBadge" style={{ width: 24, height: 24 }} />
+            </>
+          }
+        />
+        {/* Row 4 — Europe Travelers (group, mention) */}
+        <ChatRow
+          avatar={
+            <Avatar img="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=120&h=120&fit=crop&auto=format" />
+          }
+          title="Europe Travelers (268)"
+          subtitle={
+            <>
+              Pancakes are best eaten fresh from{" "}
+              <span style={{ color: "#4D73FF", fontWeight: fw.Regular }}>You were mentioned.</span>
+            </>
+          }
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>3min ago</span>
+              <UnreadBadge count="12" />
+            </>
+          }
+        />
+        {/* Row 5 — Singles group video call */}
+        <ChatRow
+          avatar={
+            <Avatar img="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=120&h=120&fit=crop&auto=format" />
+          }
+          title={
+            <>
+              Singles (3){" "}
+              <Icon name="groupCallBadge" style={{ width: 25, height: 16, marginLeft: 4 }} />
+            </>
+          }
+          subtitle={
+            <>
+              <Icon
+                name="callIcon"
+                style={{ width: 12, height: 12, marginRight: 4, verticalAlign: "middle" }}
+              />
+              Group video call started.
+            </>
+          }
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>2:30 PM</span>
+              <UnreadBadge count="23" />
+            </>
+          }
+        />
+        {/* Row 6 — Keep (green disc + bookmark profile, NEW badge on right) */}
+        <ChatRow
+          avatar={<Icon name="keepIcon" style={{ width: 48, height: 48 }} />}
+          title="Keep"
+          subtitle="This is a talk room that only you can see. Instead of notes, try sending text…"
+          right={<Icon name="newBadge" style={{ width: 24, height: 24 }} />}
+        />
+        {/* Row 7 — Meru with story ring */}
+        <ChatRow
+          avatar={
+            <Avatar
+              img="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format"
+              ring="gradient"
+            />
+          }
+          title="Meru minami"
+          subtitle="Hey Arthur, how are you?"
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>3min ago</span>
+              <UnreadBadge count="9" />
+            </>
+          }
+        />
+        {/* Row 8 — LINE cafe OA */}
+        <ChatRow
+          avatar={
+            <Avatar img="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=120&h=120&fit=crop&auto=format" />
+          }
+          title="LINE cafe OA"
+          subtitle="Live is on air."
+          right={<span style={{ fontSize: 11, color: "#909090" }}>Yesterday</span>}
+        />
+        {/* Row 9 — Meru OpenChat */}
+        <ChatRow
+          avatar={
+            <Avatar img="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=120&h=120&fit=crop&auto=format" />
+          }
+          title="Meru minami"
+          subtitle="Hey Arthur, how are you?"
+          right={<span style={{ fontSize: 11, color: "#909090" }}>Yesterday</span>}
+        />
+        {/* Row 10 — Emma with gradient ring */}
+        <ChatRow
+          avatar={
+            <Avatar
+              img="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&auto=format"
+              ring="gradient"
+            />
+          }
+          title="Emma"
+          subtitle="Sounds good! See you there 😊"
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>1:45 PM</span>
+              <UnreadBadge count="3" />
+            </>
+          }
+        />
+        {/* Row 11 — Tokyo Foodies group */}
+        <ChatRow
+          avatar={
+            <Avatar img="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=120&h=120&fit=crop&auto=format" />
+          }
+          title="Tokyo Foodies (12)"
+          subtitle="Yuki: Anyone tried the new ramen place in Shibuya?"
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>11:20 AM</span>
+              <UnreadBadge count="7" />
+            </>
+          }
+        />
+        {/* Row 12 — Chris with static ring */}
+        <ChatRow
+          avatar={
+            <Avatar
+              img="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format"
+              ring="static"
+            />
+          }
+          title="Chris"
+          subtitle="Can you send me the file?"
+          right={
+            <>
+              <span style={{ fontSize: 11, color: "#909090" }}>10:08 AM</span>
+              <UnreadBadge count="1" />
+            </>
+          }
+        />
+        {/* Row 13 — Hana muted */}
+        <ChatRow
+          avatar={
+            <Avatar img="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&auto=format" />
+          }
+          title="Hana"
+          subtitle="Ok thanks! Talk later~"
+          right={<span style={{ fontSize: 11, color: "#909090" }}>Monday</span>}
+        />
+        {/* Row 14 — Weekend Trip group */}
+        <ChatRow
+          avatar={
+            <Avatar img="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=120&h=120&fit=crop&auto=format" />
+          }
+          title="Weekend Trip (6)"
+          subtitle="Let's meet at the station at 8!"
+          right={<span style={{ fontSize: 11, color: "#909090" }}>Sunday</span>}
+        />
+      </div>
     </div>
-    </div>{/* end scroll container */}
+    {/* end scroll container */}
 
     {/* Bottom Navigation */}
-    <div style={{ position: "absolute", left: 0, top: 728, width: 375, height: 84, background: "#fff", boxShadow: "0 -3px 5px rgba(0,0,0,0.05)", display: "flex", flexDirection: "row", justifyContent: "space-around", paddingTop: 8, boxSizing: "border-box" }}>
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 728,
+        width: 375,
+        height: 84,
+        background: "#fff",
+        boxShadow: "0 -3px 5px rgba(0,0,0,0.05)",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+        paddingTop: 8,
+        boxSizing: "border-box",
+      }}
+    >
       {[
         { name: "navHome", label: "Home", w: 19, h: 20 },
         { name: "navChats", label: "Chats", w: 19, h: 20, selected: true },
@@ -334,15 +877,42 @@ const ChatTab: React.FC = () => (
         { name: "navNews", label: "News", w: 17, h: 18 },
         { name: "navWallet", label: "Wallet", w: 18, h: 16 },
       ].map((tab) => (
-        <div key={tab.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", width: 64, gap: 4, paddingTop: tab.name === "navVoom" ? 0 : 2 }}>
-          <div style={{ height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div
+          key={tab.label}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            width: 64,
+            gap: 4,
+            paddingTop: tab.name === "navVoom" ? 0 : 2,
+          }}
+        >
+          <div
+            style={{ height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
             <Icon name={tab.name} style={{ width: tab.w, height: tab.h }} />
           </div>
-          <span style={{ fontSize: 9, color: "#111", fontWeight: tab.selected ? fw.Bold : fw.Regular }}>{tab.label}</span>
+          <span
+            style={{ fontSize: 9, color: "#111", fontWeight: tab.selected ? fw.Bold : fw.Regular }}
+          >
+            {tab.label}
+          </span>
         </div>
       ))}
       {/* Home indicator */}
-      <div style={{ position: "absolute", left: 121, bottom: 8, width: 134, height: 5, background: "#000", borderRadius: 100 }} />
+      <div
+        style={{
+          position: "absolute",
+          left: 121,
+          bottom: 8,
+          width: 134,
+          height: 5,
+          background: "#000",
+          borderRadius: 100,
+        }}
+      />
     </div>
   </div>
 );

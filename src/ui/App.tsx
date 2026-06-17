@@ -8,7 +8,7 @@ import type {
   NamingSuggestion,
   PluginMessage,
   PluginSettings,
-  ScanResult
+  ScanResult,
 } from "../types";
 import { callAnthropic } from "../ai/semanticInfer";
 import { buildExportPack } from "../export/exportPack";
@@ -30,7 +30,7 @@ const DEFAULT_SETTINGS: PluginSettings = {
   apiKey: "",
   model: "claude-haiku-4-5-20251001",
   aiEnabled: false,
-  ldsReference: ""
+  ldsReference: "",
 };
 
 function post(msg: PluginMessage) {
@@ -40,7 +40,7 @@ function post(msg: PluginMessage) {
 // 번들 + override 카탈로그 병합 (key 기준 dedupe, override 우선).
 function mergeCatalogs(
   bundled: LdsTemplateCatalog | null,
-  override: LdsTemplateCatalog | null
+  override: LdsTemplateCatalog | null,
 ): LdsTemplateCatalog | null {
   if (!bundled && !override) return null;
   const byKey = new Map<string, LdsTemplateCatalog["components"][number]>();
@@ -50,10 +50,8 @@ function mergeCatalogs(
   const source = override ?? bundled!;
   return {
     components,
-    sourceFileName: override
-      ? `${override.sourceFileName} (+ bundled)`
-      : source.sourceFileName,
-    extractedAt: source.extractedAt
+    sourceFileName: override ? `${override.sourceFileName} (+ bundled)` : source.sourceFileName,
+    extractedAt: source.extractedAt,
   };
 }
 
@@ -66,9 +64,7 @@ export function App() {
     { id: "diagnose", label: t.tabCheck },
     { id: "fix", label: t.tabFix },
     { id: "convert", label: t.tabExport },
-    __DEV__
-      ? { id: "settings", label: t.tabSettings }
-      : { id: "about", label: t.tabAbout }
+    __DEV__ ? { id: "settings", label: t.tabSettings } : { id: "about", label: t.tabAbout },
   ];
 
   const [active, setActive] = useState("diagnose");
@@ -209,7 +205,7 @@ export function App() {
         if (msg.download) {
           // 메인테이너가 src/data/ldsCatalog.bundled.json에 커밋할 수 있게 JSON 파일 다운로드
           const blob = new Blob([JSON.stringify(msg.catalog, null, 2)], {
-            type: "application/json"
+            type: "application/json",
           });
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
@@ -243,13 +239,13 @@ export function App() {
             ? " · This key is not in the current library (the original may have been republished/deleted). Re-extract the library from the Settings tab and re-scan. Failed items will be marked as not replaceable."
             : "";
           setReplaceError(
-            `${msg.result.failed.length} replacement(s) failed — ${first.error}${hint}`
+            `${msg.result.failed.length} replacement(s) failed — ${first.error}${hint}`,
           );
           if (looksLikeKeyIssue) {
             const keysToInvalidate = new Set<string>();
             for (const f of msg.result.failed) {
               const sugg = [...(result?.suggestions ?? []), ...aiSuggestions].find(
-                (s) => s.nodeId === f.nodeId
+                (s) => s.nodeId === f.nodeId,
               );
               if (sugg?.ldsComponentKey) keysToInvalidate.add(sugg.ldsComponentKey);
             }
@@ -273,13 +269,12 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const runAiInference = async (
-    contexts: AiNodeContext[],
-    libraryComponents: string[]
-  ) => {
+  const runAiInference = async (contexts: AiNodeContext[], libraryComponents: string[]) => {
     if (contexts.length === 0) {
       setAiRunning(false);
-      setAiNotice("No targets left for AI inference. The rule engine already handled most of them.");
+      setAiNotice(
+        "No targets left for AI inference. The rule engine already handled most of them.",
+      );
       return;
     }
     const current = settingsRef.current;
@@ -294,7 +289,7 @@ export function App() {
         current.model,
         current.ldsReference ?? "",
         libraryComponents,
-        contexts
+        contexts,
       );
       setAiSuggestions((prev) => mergeSuggestions(prev, suggestions));
       const libHint =
@@ -302,7 +297,7 @@ export function App() {
           ? ` · referenced ${libraryComponents.length} library component(s)`
           : "";
       setAiNotice(
-        `AI suggested ${suggestions.length} additional name(s) (analyzed ${contexts.length})${libHint}.`
+        `AI suggested ${suggestions.length} additional name(s) (analyzed ${contexts.length})${libHint}.`,
       );
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -320,7 +315,7 @@ export function App() {
         tree: s.tree,
         iconMap: s.iconMap,
         healthReport: s.healthReport,
-        semanticMap: s.semanticMap
+        semanticMap: s.semanticMap,
       }));
       const mergedCatalog = mergeCatalogs(bundledLdsCatalog, overrideLdsCatalog);
       const { blob, filename } = await buildExportPack({
@@ -332,20 +327,17 @@ export function App() {
         systemPrompt: current.systemPrompt?.trim() || DEFAULT_SYSTEM_PROMPT,
         flow: payload.flow,
         includeTreeJson: true,
-        libraryImportPath: current.libraryImportPath
+        libraryImportPath: current.libraryImportPath,
       });
       triggerDownload(blob, filename);
       setExportBlob({ blob, filename });
-      const iconTotal = payload.screens.reduce(
-        (acc, s) => acc + Object.keys(s.iconMap).length,
-        0
-      );
+      const iconTotal = payload.screens.reduce((acc, s) => acc + Object.keys(s.iconMap).length, 0);
       setExportSummary({
         filename,
         screens: payload.screens.length,
         icons: iconTotal,
         flowLinks: payload.flow.length,
-        optStats: payload.optStats
+        optStats: payload.optStats,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -393,7 +385,7 @@ export function App() {
           next.set(i.nodeId, {
             nodeId: i.nodeId,
             originalName: s?.currentName ?? "",
-            suggestedName: i.suggestedName
+            suggestedName: i.suggestedName,
           });
         }
         return next;
@@ -470,97 +462,95 @@ export function App() {
     post({ type: "lds-template:clear" });
   };
 
-  const combinedSuggestions = result
-    ? mergeSuggestions(result.suggestions, aiSuggestions)
-    : [];
+  const combinedSuggestions = result ? mergeSuggestions(result.suggestions, aiSuggestions) : [];
 
   return (
     <LangCtx.Provider value={{ t, lang, toggle: toggleLang }}>
-    <div class="app">
-      <Tabs
-        tabs={TABS}
-        active={active}
-        onChange={setActive}
-        rightSlot={
-          <select
-            class="lang-select"
-            value={lang}
-            onChange={(e) => setLang((e.target as HTMLSelectElement).value as "en" | "ko")}
-          >
-            <option value="en">EN</option>
-            <option value="ko">KO</option>
-          </select>
-        }
-      />
-      <main class="tab-body">
-        {active === "diagnose" && (
-          <DiagnoseTab
-            result={result}
-            loading={loading}
-            error={error}
-            onScan={onScan}
-            onGoToFix={(category) => {
-              setFixInitialCategory(category ?? null);
-              setActive("fix");
-            }}
-          />
-        )}
-        {active === "fix" && (
-          <FixTab
-            result={result}
-            loading={loading}
-            error={error}
-            deletedIds={deletedIds}
-            deletingIds={deletingIds}
-            fixedIssueIds={fixedIssueIds}
-            fixingIssueIds={fixingIssueIds}
-            fixFailures={fixFailures}
-            combinedSuggestions={combinedSuggestions}
-            appliedIds={appliedIds}
-            applyingIds={applyingIds}
-            applyError={applyError}
-            replacedIds={replacedIds}
-            replacingIds={replacingIds}
-            replaceError={replaceError}
-            invalidLdsKeys={invalidLdsKeys}
-            initialCategory={fixInitialCategory}
-            onScan={onScan}
-            onSelectNode={onSelectNode}
-            onDelete={onDeleteNodes}
-            onAutofix={onAutofix}
-            onApplyNaming={onApplyNaming}
-            onReplaceWithLds={onReplaceWithLds}
-          />
-        )}
-        {active === "convert" && (
-          <ConversionTab
-            running={exportRunning}
-            error={exportError}
-            summary={exportSummary}
-            onExport={onExport}
-            onDownload={onDownload}
-          />
-        )}
-        {__DEV__ && active === "settings" && (
-          <SettingsTab
-            settings={settings}
-            onSave={onSaveSettings}
-            savedMark={settingsSaved}
-            extractedLibrary={extractedLibrary}
-            onExtract={onExtractLibrary}
-            extracting={extracting}
-            bundledLdsCatalog={bundledLdsCatalog}
-            overrideLdsCatalog={overrideLdsCatalog}
-            onExtractLdsTemplate={onExtractLdsTemplate}
-            onClearLdsTemplate={onClearLdsTemplate}
-            ldsTemplateExtracting={ldsTemplateExtracting}
-          />
-        )}
-        {!__DEV__ && active === "about" && (
-          <AboutTab version={PLUGIN_VERSION} bundledLdsCatalog={bundledLdsCatalog} />
-        )}
-      </main>
-    </div>
+      <div class="app">
+        <Tabs
+          tabs={TABS}
+          active={active}
+          onChange={setActive}
+          rightSlot={
+            <select
+              class="lang-select"
+              value={lang}
+              onChange={(e) => setLang((e.target as HTMLSelectElement).value as "en" | "ko")}
+            >
+              <option value="en">EN</option>
+              <option value="ko">KO</option>
+            </select>
+          }
+        />
+        <main class="tab-body">
+          {active === "diagnose" && (
+            <DiagnoseTab
+              result={result}
+              loading={loading}
+              error={error}
+              onScan={onScan}
+              onGoToFix={(category) => {
+                setFixInitialCategory(category ?? null);
+                setActive("fix");
+              }}
+            />
+          )}
+          {active === "fix" && (
+            <FixTab
+              result={result}
+              loading={loading}
+              error={error}
+              deletedIds={deletedIds}
+              deletingIds={deletingIds}
+              fixedIssueIds={fixedIssueIds}
+              fixingIssueIds={fixingIssueIds}
+              fixFailures={fixFailures}
+              combinedSuggestions={combinedSuggestions}
+              appliedIds={appliedIds}
+              applyingIds={applyingIds}
+              applyError={applyError}
+              replacedIds={replacedIds}
+              replacingIds={replacingIds}
+              replaceError={replaceError}
+              invalidLdsKeys={invalidLdsKeys}
+              initialCategory={fixInitialCategory}
+              onScan={onScan}
+              onSelectNode={onSelectNode}
+              onDelete={onDeleteNodes}
+              onAutofix={onAutofix}
+              onApplyNaming={onApplyNaming}
+              onReplaceWithLds={onReplaceWithLds}
+            />
+          )}
+          {active === "convert" && (
+            <ConversionTab
+              running={exportRunning}
+              error={exportError}
+              summary={exportSummary}
+              onExport={onExport}
+              onDownload={onDownload}
+            />
+          )}
+          {__DEV__ && active === "settings" && (
+            <SettingsTab
+              settings={settings}
+              onSave={onSaveSettings}
+              savedMark={settingsSaved}
+              extractedLibrary={extractedLibrary}
+              onExtract={onExtractLibrary}
+              extracting={extracting}
+              bundledLdsCatalog={bundledLdsCatalog}
+              overrideLdsCatalog={overrideLdsCatalog}
+              onExtractLdsTemplate={onExtractLdsTemplate}
+              onClearLdsTemplate={onClearLdsTemplate}
+              ldsTemplateExtracting={ldsTemplateExtracting}
+            />
+          )}
+          {!__DEV__ && active === "about" && (
+            <AboutTab version={PLUGIN_VERSION} bundledLdsCatalog={bundledLdsCatalog} />
+          )}
+        </main>
+      </div>
     </LangCtx.Provider>
   );
 }
@@ -576,10 +566,7 @@ function triggerDownload(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function mergeSuggestions(
-  base: NamingSuggestion[],
-  extra: NamingSuggestion[]
-): NamingSuggestion[] {
+function mergeSuggestions(base: NamingSuggestion[], extra: NamingSuggestion[]): NamingSuggestion[] {
   const map = new Map<string, NamingSuggestion>();
   for (const s of base) map.set(s.nodeId, s);
   for (const s of extra) {

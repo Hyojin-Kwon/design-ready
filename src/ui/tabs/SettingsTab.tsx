@@ -4,7 +4,7 @@ import {
   BUILTIN_LDS,
   getFigmaComponentKey,
   getFigmaComponentName,
-  type LdsFigmaComponent
+  type LdsFigmaComponent,
 } from "../../data/ldsComponents";
 import { DEFAULT_SYSTEM_PROMPT } from "../../export/systemPrompt";
 
@@ -50,7 +50,7 @@ const SHOW_AI_UI = false;
 const MODELS = [
   { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 (fast · cheap)" },
   { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6 (high accuracy)" },
-  { id: "claude-opus-4-7", label: "Claude Opus 4.7 (best accuracy · slow)" }
+  { id: "claude-opus-4-7", label: "Claude Opus 4.7 (best accuracy · slow)" },
 ];
 
 const LDS_PLACEHOLDER = `Example — markdown or list format both work
@@ -102,7 +102,7 @@ function mergeFigmaComponents(lib: ExtractedLibrary): {
     existingCount,
     newCount: lib.components.length,
     addedCount: added,
-    updatedCount: updated
+    updatedCount: updated,
   };
 }
 
@@ -111,7 +111,7 @@ function formatExtractedJson(lib: ExtractedLibrary): string {
   const merged = {
     ...BUILTIN_LDS,
     figmaComponents: list,
-    figmaExtractedAt: lib.extractedAt
+    figmaExtractedAt: lib.extractedAt,
   };
   return JSON.stringify(merged, null, 2);
 }
@@ -127,7 +127,7 @@ export function SettingsTab({
   overrideLdsCatalog,
   onExtractLdsTemplate,
   onClearLdsTemplate,
-  ldsTemplateExtracting
+  ldsTemplateExtracting,
 }: Props) {
   const [apiKey, setApiKey] = useState(settings.apiKey);
   const [model, setModel] = useState(settings.model);
@@ -173,7 +173,7 @@ export function SettingsTab({
       aiEnabled,
       ldsReference,
       systemPrompt: systemPrompt.trim() ? systemPrompt : undefined,
-      libraryImportPath: libraryImportPath.trim() || undefined
+      libraryImportPath: libraryImportPath.trim() || undefined,
     });
 
   const resetSystemPrompt = () => setSystemPrompt("");
@@ -184,8 +184,8 @@ export function SettingsTab({
         <>
           <div class="section-title">AI semantic inference</div>
           <p class="settings-desc">
-            Use the Claude API to infer names for default-named nodes the rule engine missed.
-            The API key is stored only on this device.
+            Use the Claude API to infer names for default-named nodes the rule engine missed. The
+            API key is stored only on this device.
           </p>
 
           <label class="settings-field">
@@ -227,8 +227,9 @@ export function SettingsTab({
             Design system reference
           </div>
           <p class="settings-desc">
-            Paste your LDS (or whatever design system you use) components and naming rules.
-            The AI will align its suggestions to those names. Leave empty to fall back to generic UI conventions.
+            Paste your LDS (or whatever design system you use) components and naming rules. The AI
+            will align its suggestions to those names. Leave empty to fall back to generic UI
+            conventions.
           </p>
 
           <label class="settings-field">
@@ -266,8 +267,8 @@ export function SettingsTab({
         Export Pack system prompt
       </div>
       <p class="settings-desc">
-        Conversion rules included in the Export Pack's <code>PROMPT.md</code>. Leave empty
-        to use the default prompt. Override here for project-specific conventions.
+        Conversion rules included in the Export Pack's <code>PROMPT.md</code>. Leave empty to use
+        the default prompt. Override here for project-specific conventions.
       </p>
 
       <label class="settings-field">
@@ -315,11 +316,13 @@ export function SettingsTab({
         {bundledLdsCatalog ? (
           <>
             {bundledLdsCatalog.sourceFileName} ·{" "}
-            <strong>{bundledLdsCatalog.components.length}</strong> components ·{" "}
-            extracted {formatRelativeTime(bundledLdsCatalog.extractedAt)}
+            <strong>{bundledLdsCatalog.components.length}</strong> components · extracted{" "}
+            {formatRelativeTime(bundledLdsCatalog.extractedAt)}
           </>
         ) : (
-          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>None (maintainer extraction required)</span>
+          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>
+            None (maintainer extraction required)
+          </span>
         )}
       </p>
       <p class="settings-desc" style={{ marginTop: 2 }}>
@@ -327,8 +330,8 @@ export function SettingsTab({
         {overrideLdsCatalog ? (
           <>
             {overrideLdsCatalog.sourceFileName} ·{" "}
-            <strong>{overrideLdsCatalog.components.length}</strong> ·{" "}
-            extracted {formatRelativeTime(overrideLdsCatalog.extractedAt)}
+            <strong>{overrideLdsCatalog.components.length}</strong> · extracted{" "}
+            {formatRelativeTime(overrideLdsCatalog.extractedAt)}
           </>
         ) : (
           <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>None</span>
@@ -354,16 +357,14 @@ export function SettingsTab({
       <div class="section-title" style={{ marginTop: 20 }}>
         Developer mode: LDS Figma extract
       </div>
-      <p class="settings-desc">
-        Two modes supported:
+      <p class="settings-desc">Two modes supported:</p>
+      <p class="settings-desc" style={{ marginTop: 2 }}>
+        <strong>A) Run from the LDS source file</strong> — once published (or republished), scans
+        every COMPONENT/COMPONENT_SET to collect the full vocabulary. Recommended.
       </p>
       <p class="settings-desc" style={{ marginTop: 2 }}>
-        <strong>A) Run from the LDS source file</strong> — once published (or republished),
-        scans every COMPONENT/COMPONENT_SET to collect the full vocabulary. Recommended.
-      </p>
-      <p class="settings-desc" style={{ marginTop: 2 }}>
-        <strong>B) Run from a working file that uses LDS instances</strong> — collects keys
-        from each INSTANCE's mainComponent. Works without publish permissions.
+        <strong>B) Run from a working file that uses LDS instances</strong> — collects keys from
+        each INSTANCE's mainComponent. Works without publish permissions.
       </p>
       <p class="settings-desc" style={{ marginTop: 4 }}>
         Results are <strong>auto-merged with the existing vocabulary</strong>. Run across multiple
@@ -380,15 +381,14 @@ export function SettingsTab({
         <>
           <p class="settings-desc" style={{ marginTop: 4 }}>
             <strong>{extractedLibrary.components.length}</strong> collected · INSTANCE{" "}
-            {extractedLibrary.instanceCount} + COMPONENT{" "}
-            {extractedLibrary.componentCount} · {extractedLibrary.pageCount} pages
+            {extractedLibrary.instanceCount} + COMPONENT {extractedLibrary.componentCount} ·{" "}
+            {extractedLibrary.pageCount} pages
           </p>
           {(() => {
             const m = mergeFigmaComponents(extractedLibrary);
             return (
               <p class="settings-desc" style={{ marginTop: 2 }}>
-                Existing <strong>{m.existingCount}</strong> + added{" "}
-                <strong>{m.addedCount}</strong>
+                Existing <strong>{m.existingCount}</strong> + added <strong>{m.addedCount}</strong>
                 {m.updatedCount > 0 ? ` (key updates ${m.updatedCount})` : ""} → merged total{" "}
                 <strong>{m.list.length}</strong>
               </p>

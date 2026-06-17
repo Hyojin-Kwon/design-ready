@@ -49,19 +49,60 @@ const ICONS: Record<string, string> = {
 };
 
 const Icon: React.FC<{ name: string; style?: React.CSSProperties }> = ({ name, style }) => (
-  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, ...style }} dangerouslySetInnerHTML={{ __html: ICONS[name] ?? "" }} />
+  <span
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0,
+      ...style,
+    }}
+    dangerouslySetInnerHTML={{ __html: ICONS[name] ?? "" }}
+  />
 );
 
 // Avatar with optional online dot
-const Avatar: React.FC<{ size?: number; img?: string; online?: boolean }> = ({ size = 48, img, online }) => (
+const Avatar: React.FC<{ size?: number; img?: string; online?: boolean }> = ({
+  size = 48,
+  img,
+  online,
+}) => (
   <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
-    <div style={{ width: size, height: size, borderRadius: "50%", background: img ? `#E5E5E5 url(${img}) center/cover no-repeat` : "#E5E5E5" }} />
-    {online && <span style={{ position: "absolute", left: 44, top: -1, width: 5, height: 5, background: "#06C755", borderRadius: "50%" }} />}
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        background: img ? `#E5E5E5 url(${img}) center/cover no-repeat` : "#E5E5E5",
+      }}
+    />
+    {online && (
+      <span
+        style={{
+          position: "absolute",
+          left: 44,
+          top: -1,
+          width: 5,
+          height: 5,
+          background: "#06C755",
+          borderRadius: "50%",
+        }}
+      />
+    )}
   </div>
 );
 
 const FriendTab: React.FC = () => (
-  <div style={{ position: "relative", width: 375, height: 812, background: "#fff", overflow: "hidden", fontFamily: fontStack }}>
+  <div
+    style={{
+      position: "relative",
+      width: 375,
+      height: 812,
+      background: "#fff",
+      overflow: "hidden",
+      fontFamily: fontStack,
+    }}
+  >
     <style>{`
       .hide-scroll { scrollbar-width: none; -ms-overflow-style: none; }
       .hide-scroll::-webkit-scrollbar { display: none; }
@@ -70,24 +111,94 @@ const FriendTab: React.FC = () => (
     <div style={{ position: "absolute", left: 0, top: 0, width: 375, height: 88 }}>
       {/* Status bar */}
       <div style={{ position: "absolute", left: 0, top: 0, width: 375, height: 44 }}>
-        <span style={{ position: "absolute", left: 20, top: 14, width: 54, height: 18, fontSize: 15, fontWeight: fw.Semibold, color: "#000", textAlign: "center", lineHeight: 1 }}>9:41</span>
-        <Icon name="cellular" style={{ position: "absolute", left: 294, top: 18, width: 17, height: 11 }} />
-        <Icon name="wifi" style={{ position: "absolute", left: 316, top: 17, width: 15, height: 11 }} />
-        <Icon name="battery" style={{ position: "absolute", left: 336, top: 17, width: 24, height: 11 }} />
+        <span
+          style={{
+            position: "absolute",
+            left: 20,
+            top: 14,
+            width: 54,
+            height: 18,
+            fontSize: 15,
+            fontWeight: fw.Semibold,
+            color: "#000",
+            textAlign: "center",
+            lineHeight: 1,
+          }}
+        >
+          9:41
+        </span>
+        <Icon
+          name="cellular"
+          style={{ position: "absolute", left: 294, top: 18, width: 17, height: 11 }}
+        />
+        <Icon
+          name="wifi"
+          style={{ position: "absolute", left: 316, top: 17, width: 15, height: 11 }}
+        />
+        <Icon
+          name="battery"
+          style={{ position: "absolute", left: 336, top: 17, width: 24, height: 11 }}
+        />
       </div>
       {/* Top nav */}
-      <div style={{ position: "absolute", left: 0, top: 44, width: 375, height: 44, background: "#fff" }}>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 44,
+          width: 375,
+          height: 44,
+          background: "#fff",
+        }}
+      >
         {/* Tab area: Chats link + Friends pill (selected) */}
-        <div style={{ position: "absolute", left: 16, top: 3, width: 188, height: 39, display: "flex", flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 16,
+            top: 3,
+            width: 188,
+            height: 39,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
           {/* "Chats ▾" link as ico_3 */}
           <Icon name="chatsLink" style={{ width: 61, height: 21 }} />
           {/* Selected "Friends" pill */}
-          <div style={{ width: 86, height: 39, background: "#111", borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
-            <span style={{ fontSize: 16, fontWeight: fw.Heavy, color: "#fff", lineHeight: "19px" }}>Friends</span>
+          <div
+            style={{
+              width: 86,
+              height: 39,
+              background: "#111",
+              borderRadius: 50,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxSizing: "border-box",
+            }}
+          >
+            <span style={{ fontSize: 16, fontWeight: fw.Heavy, color: "#fff", lineHeight: "19px" }}>
+              Friends
+            </span>
           </div>
         </div>
         {/* Right buttons */}
-        <div style={{ position: "absolute", left: 261, top: 10, width: 98, height: 24, display: "flex", flexDirection: "row", alignItems: "center", gap: 13 }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 261,
+            top: 10,
+            width: 98,
+            height: 24,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 13,
+          }}
+        >
           <Icon name="aiFriends" style={{ width: 24, height: 24 }} />
           <Icon name="openchat" style={{ width: 24, height: 24 }} />
           <Icon name="plus" style={{ width: 24, height: 24 }} />
@@ -96,35 +207,137 @@ const FriendTab: React.FC = () => (
     </div>
 
     {/* Searchbar */}
-    <div style={{ position: "absolute", left: 0, top: 88, width: 375, height: 50, background: "#fff", display: "flex", alignItems: "center", paddingLeft: 16, paddingRight: 16, boxSizing: "border-box" }}>
-      <div style={{ flex: 1, height: 39, background: "#F7F7F7", borderRadius: 100, display: "flex", flexDirection: "row", alignItems: "center", padding: "10px 16px 10px 12px", gap: 12, boxSizing: "border-box" }}>
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 88,
+        width: 375,
+        height: 50,
+        background: "#fff",
+        display: "flex",
+        alignItems: "center",
+        paddingLeft: 16,
+        paddingRight: 16,
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          height: 39,
+          background: "#F7F7F7",
+          borderRadius: 100,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          padding: "10px 16px 10px 12px",
+          gap: 12,
+          boxSizing: "border-box",
+        }}
+      >
         <Icon name="searchSm" style={{ width: 19, height: 19 }} />
-        <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>Enter search keyword</span>
+        <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>
+          Enter search keyword
+        </span>
         <Icon name="qr" style={{ width: 19, height: 19 }} />
       </div>
     </div>
 
     {/* Scrollable content: banner + filter tabs (sticky) + sections */}
-    <div className="hide-scroll" style={{ position: "absolute", left: 0, top: 138, width: 375, height: 590, overflowY: "auto", overflowX: "hidden", display: "flex", flexDirection: "column" }}>
-
+    <div
+      className="hide-scroll"
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 138,
+        width: 375,
+        height: 590,
+        overflowY: "auto",
+        overflowX: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* SMC_01_01 banner — 121px */}
-      <div style={{ position: "relative", width: 375, height: 121, background: "#fff", flexShrink: 0 }}>
+      <div
+        style={{ position: "relative", width: 375, height: 121, background: "#fff", flexShrink: 0 }}
+      >
         {/* image: 86×86 at (256, 18) */}
-        <div style={{ position: "absolute", left: 256, top: 18, width: 86, height: 86, borderRadius: 5, background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat` }} />
+        <div
+          style={{
+            position: "absolute",
+            left: 256,
+            top: 18,
+            width: 86,
+            height: 86,
+            borderRadius: 5,
+            background: `#F5F5F5 url(https://images.unsplash.com/photo-1556228720-195a672e8a03?w=180&h=180&fit=crop&auto=format) center/cover no-repeat`,
+          }}
+        />
         {/* text type 2: (18, 32) 218×58 */}
         <div style={{ position: "absolute", left: 18, top: 32, width: 218, height: 58 }}>
           {/* main text: 2 lines × 18px */}
-          <div style={{ width: 218, height: 36, fontSize: 14, fontWeight: fw.Semibold, color: "#2A2A2A", lineHeight: "18px", overflow: "hidden", wordBreak: "break-all", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"] }}>
+          <div
+            style={{
+              width: 218,
+              height: 36,
+              fontSize: 14,
+              fontWeight: fw.Semibold,
+              color: "#2A2A2A",
+              lineHeight: "18px",
+              overflow: "hidden",
+              wordBreak: "break-all",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical" as React.CSSProperties["WebkitBoxOrient"],
+            }}
+          >
             WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
           </div>
           {/* sub text: AD · brand — at offset (0, 44) */}
-          <div style={{ position: "absolute", top: 44, left: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: 3, height: 14 }}>
+          <div
+            style={{
+              position: "absolute",
+              top: 44,
+              left: 0,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 3,
+              height: 14,
+            }}
+          >
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
               <Icon name="adInfo" style={{ width: 15, height: 15 }} />
-              <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}>AD</span>
+              <span
+                style={{ fontSize: 12, fontWeight: fw.Regular, color: "#555", lineHeight: "14px" }}
+              >
+                AD
+              </span>
             </div>
-            <span style={{ width: 2, height: 2, background: "#C8C8C8", borderRadius: "50%", flexShrink: 0 }} />
-            <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#909090", lineHeight: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>LUSH Cosmetics</span>
+            <span
+              style={{
+                width: 2,
+                height: 2,
+                background: "#C8C8C8",
+                borderRadius: "50%",
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: fw.Regular,
+                color: "#909090",
+                lineHeight: "14px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              LUSH Cosmetics
+            </span>
           </div>
         </div>
         {/* banner_ch_mute — 17×17 at (345, 10), icon 9×9 at offset (4, 4) */}
@@ -138,149 +351,452 @@ const FriendTab: React.FC = () => (
       </div>
 
       {/* Filter tabs — sticky below search bar */}
-      <div className="hide-scroll" style={{ width: 375, height: 49, position: "sticky", top: 0, zIndex: 10, background: "#fff", flexShrink: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: 5, padding: "7px 17px", boxSizing: "border-box", overflowX: "auto" }}>
-        <div style={{ height: 35, padding: "0 13px", borderRadius: 100, background: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#fff", flexShrink: 0, boxSizing: "border-box" }}>Friends</div>
+      <div
+        className="hide-scroll"
+        style={{
+          width: 375,
+          height: 49,
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          background: "#fff",
+          flexShrink: 0,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 5,
+          padding: "7px 17px",
+          boxSizing: "border-box",
+          overflowX: "auto",
+        }}
+      >
+        <div
+          style={{
+            height: 35,
+            padding: "0 13px",
+            borderRadius: 100,
+            background: "#111",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 13,
+            fontWeight: fw.Semibold,
+            color: "#fff",
+            flexShrink: 0,
+            boxSizing: "border-box",
+          }}
+        >
+          Friends
+        </div>
         {["Favorites", "Groups", "OpenChats", "Official"].map((label) => (
-          <div key={label} style={{ height: 35, padding: "0 13px", borderRadius: 100, border: "1px solid #EFEFEF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: fw.Semibold, color: "#111", whiteSpace: "nowrap", flexShrink: 0, boxSizing: "border-box" }}>{label}</div>
+          <div
+            key={label}
+            style={{
+              height: 35,
+              padding: "0 13px",
+              borderRadius: 100,
+              border: "1px solid #EFEFEF",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 13,
+              fontWeight: fw.Semibold,
+              color: "#111",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              boxSizing: "border-box",
+            }}
+          >
+            {label}
+          </div>
         ))}
       </div>
 
       {/* Content sections */}
       <div style={{ display: "flex", flexDirection: "column", gap: 50, paddingBottom: 100 }}>
-
-      {/* Friends list */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingTop: 6 }}>
+        {/* Friends list */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingTop: 6 }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {[
-              { name: "Adela", body: "on a business trip in paris", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format" },
-              { name: "Alison Lee", body: "Body", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format" },
-              { name: "Becky", body: "Scheduled to arrive in Tokyo next Wednesday afternoon.", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format" },
+              {
+                name: "Adela",
+                body: "on a business trip in paris",
+                img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format",
+              },
+              {
+                name: "Alison Lee",
+                body: "Body",
+                img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format",
+              },
+              {
+                name: "Becky",
+                body: "Scheduled to arrive in Tokyo next Wednesday afternoon.",
+                img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&auto=format",
+              },
             ].map((r) => (
-              <div key={r.name} style={{ height: 68, display: "flex", flexDirection: "row", alignItems: "center", gap: 14, padding: "10px 16px", boxSizing: "border-box", background: "#fff" }}>
+              <div
+                key={r.name}
+                style={{
+                  height: 68,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: "10px 16px",
+                  boxSizing: "border-box",
+                  background: "#fff",
+                }}
+              >
                 <Avatar img={r.img} online />
-                <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 2 }}>
-                  <span style={{ fontSize: 15, fontWeight: fw.Medium, color: "#111", lineHeight: "20px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
-                  <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161", lineHeight: "16px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.body}</span>
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    gap: 2,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 15,
+                      fontWeight: fw.Medium,
+                      color: "#111",
+                      lineHeight: "20px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {r.name}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 13,
+                      fontWeight: fw.Regular,
+                      color: "#616161",
+                      lineHeight: "16px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {r.body}
+                  </span>
                 </div>
               </div>
             ))}
           </div>
           {/* See more button — 339×42, border radius 50, stroke #EFEFEF */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 42, padding: "0 18px" }}>
-            <div style={{ width: 339, height: 42, border: "1px solid #EFEFEF", borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
-              <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161" }}>See more friends</span>
-            </div>
-          </div>
-        </div>
-
-      {/* My schedule section */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {/* Header */}
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: "0 18px" }}>
-          <span style={{ fontSize: 15, fontWeight: fw.Semibold, color: "#111", lineHeight: "19px" }}>My schedule within 30 days</span>
-          <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161", lineHeight: "19px" }}>See more</span>
-        </div>
-        {/* Event 1 — Jazz Concert: 28/Fri date + blue bar (#587EFF) + title + green Today + time + Besties profile */}
-        <div style={{ display: "flex", flexDirection: "row", padding: "10px 18px", gap: 12 }}>
-          <div style={{ width: 30, display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <span style={{ fontSize: 18, fontWeight: fw.Heavy, color: "#111", lineHeight: "21px" }}>28</span>
-            <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#111", lineHeight: "16px" }}>Fri</span>
-          </div>
-          <div style={{ width: 4, height: 58, background: "#587EFF", borderRadius: 2 }} />
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-            <span style={{ fontSize: 15, fontWeight: fw.Medium, color: "#111", lineHeight: "18px" }}>Jazz Concert</span>
-            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 3, fontSize: 13 }}>
-              <span style={{ fontWeight: fw.Medium, color: "#06C755" }}>Today</span>
-              <Icon name="eventDot" style={{ width: 10, height: 10 }} />
-              <span style={{ color: "#616161" }}>19:00 - 21:00</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
-              <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#FFB347", border: "0.5px solid rgba(0,0,0,0.1)", boxSizing: "border-box" }} />
-              <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161" }}>Besties</span>
-            </div>
-          </div>
-        </div>
-        {/* Event 2 — Make a event: gray bar (#909090) + black Medium title */}
-        <div style={{ display: "flex", flexDirection: "row", padding: "0 18px", gap: 12, alignItems: "center" }}>
-          <div style={{ width: 30, height: 26, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Icon name="calendarPlus" style={{ width: 12, height: 12 }} />
-          </div>
-          <div style={{ width: 4, height: 26, background: "#909090", borderRadius: 2 }} />
-          <span style={{ fontSize: 15, fontWeight: fw.Medium, color: "#111", lineHeight: "18px" }}>Make a event with friends</span>
-        </div>
-      </div>
-
-      {/* Album section */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <div style={{ padding: "0 18px" }}>
-          <span style={{ fontSize: 15, fontWeight: fw.Semibold, color: "#111", lineHeight: "19px" }}>The album with my friends</span>
-        </div>
-        {/* Album banner — 343×120, 1px #EFEFEF border, radius 9, padding 23/20, gap 18 */}
-        <div style={{ margin: "0 16px", height: 120, display: "flex", flexDirection: "row", alignItems: "center", gap: 18, padding: "23px 20px", border: "1px solid #EFEFEF", borderRadius: 9, boxSizing: "border-box" }}>
-          {/* Composite polaroid stack 83×78 */}
-          <div style={{ position: "relative", width: 83, height: 78, flexShrink: 0 }}>
-            {/* Back photo — gray placeholder (Group 2085665917, fill #D9D9D9), 47×54 at (4,7), tilted left */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: 42,
+              padding: "0 18px",
+            }}
+          >
             <div
               style={{
-                position: "absolute",
-                left: 4,
-                top: 7,
-                width: 47,
-                height: 54,
-                background: "#D9D9D9",
-                borderRadius: 6,
-                transform: "rotate(-10deg)",
+                width: 339,
+                height: 42,
+                border: "1px solid #EFEFEF",
+                borderRadius: 50,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxSizing: "border-box",
               }}
-            />
-            {/* Front photo — image (Group 2085665916), 50×56 at (32,15), tilted right */}
+            >
+              <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161" }}>
+                See more friends
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* My schedule section */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Header */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0 18px",
+            }}
+          >
+            <span
+              style={{ fontSize: 15, fontWeight: fw.Semibold, color: "#111", lineHeight: "19px" }}
+            >
+              My schedule within 30 days
+            </span>
+            <span
+              style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161", lineHeight: "19px" }}
+            >
+              See more
+            </span>
+          </div>
+          {/* Event 1 — Jazz Concert: 28/Fri date + blue bar (#587EFF) + title + green Today + time + Besties profile */}
+          <div style={{ display: "flex", flexDirection: "row", padding: "10px 18px", gap: 12 }}>
+            <div
+              style={{ width: 30, display: "flex", flexDirection: "column", alignItems: "center" }}
+            >
+              <span
+                style={{ fontSize: 18, fontWeight: fw.Heavy, color: "#111", lineHeight: "21px" }}
+              >
+                28
+              </span>
+              <span
+                style={{ fontSize: 13, fontWeight: fw.Regular, color: "#111", lineHeight: "16px" }}
+              >
+                Fri
+              </span>
+            </div>
+            <div style={{ width: 4, height: 58, background: "#587EFF", borderRadius: 2 }} />
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+              <span
+                style={{ fontSize: 15, fontWeight: fw.Medium, color: "#111", lineHeight: "18px" }}
+              >
+                Jazz Concert
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 3,
+                  fontSize: 13,
+                }}
+              >
+                <span style={{ fontWeight: fw.Medium, color: "#06C755" }}>Today</span>
+                <Icon name="eventDot" style={{ width: 10, height: 10 }} />
+                <span style={{ color: "#616161" }}>19:00 - 21:00</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
+                  marginTop: 4,
+                }}
+              >
+                <div
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: "50%",
+                    background: "#FFB347",
+                    border: "0.5px solid rgba(0,0,0,0.1)",
+                    boxSizing: "border-box",
+                  }}
+                />
+                <span style={{ fontSize: 13, fontWeight: fw.Regular, color: "#616161" }}>
+                  Besties
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* Event 2 — Make a event: gray bar (#909090) + black Medium title */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              padding: "0 18px",
+              gap: 12,
+              alignItems: "center",
+            }}
+          >
             <div
               style={{
-                position: "absolute",
-                left: 32,
-                top: 15,
-                width: 50,
-                height: 56,
-                background: `url(https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=160&h=180&fit=crop&auto=format) center/cover no-repeat`,
-                borderRadius: 6,
-                transform: "rotate(8deg)",
+                width: 30,
+                height: 26,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
-          </div>
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-            <span style={{ fontSize: 14, fontWeight: fw.Semibold, color: "#111", lineHeight: "17px" }}>Let's look back on the past memories</span>
-            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 4, fontSize: 13, color: "#616161" }}>
-              <span>Go to my albums</span>
-              <Icon name="arrowRight" style={{ width: 8, height: 16 }} />
+            >
+              <Icon name="calendarPlus" style={{ width: 12, height: 12 }} />
             </div>
+            <div style={{ width: 4, height: 26, background: "#909090", borderRadius: 2 }} />
+            <span
+              style={{ fontSize: 15, fontWeight: fw.Medium, color: "#111", lineHeight: "18px" }}
+            >
+              Make a event with friends
+            </span>
           </div>
         </div>
-      </div>
 
-      {/* Recommended carousel */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <div style={{ padding: "0 18px" }}>
-          <span style={{ fontSize: 15, fontWeight: fw.Semibold, color: "#111", lineHeight: "19px" }}>Recommended For you</span>
-        </div>
-        <div className="hide-scroll" style={{ display: "flex", flexDirection: "row", gap: 8, paddingLeft: 14, paddingRight: 14, overflowX: "auto" }}>
-          {[
-            { name: "Alison Lee", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format" },
-            { name: "Suzumi", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&auto=format" },
-            { name: "Hosoya", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&auto=format" },
-            { name: "Profile Studio", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format" },
-            { name: "Edit my profile", img: undefined },
-          ].map((r) => (
-            <div key={r.name} style={{ width: 58, display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
-              <Avatar img={r.img} />
-              <span style={{ fontSize: 12, fontWeight: fw.Regular, color: "#111", lineHeight: "15px", textAlign: "center", maxWidth: 58, wordBreak: "break-word" }}>{r.name}</span>
+        {/* Album section */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ padding: "0 18px" }}>
+            <span
+              style={{ fontSize: 15, fontWeight: fw.Semibold, color: "#111", lineHeight: "19px" }}
+            >
+              The album with my friends
+            </span>
+          </div>
+          {/* Album banner — 343×120, 1px #EFEFEF border, radius 9, padding 23/20, gap 18 */}
+          <div
+            style={{
+              margin: "0 16px",
+              height: 120,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 18,
+              padding: "23px 20px",
+              border: "1px solid #EFEFEF",
+              borderRadius: 9,
+              boxSizing: "border-box",
+            }}
+          >
+            {/* Composite polaroid stack 83×78 */}
+            <div style={{ position: "relative", width: 83, height: 78, flexShrink: 0 }}>
+              {/* Back photo — gray placeholder (Group 2085665917, fill #D9D9D9), 47×54 at (4,7), tilted left */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: 4,
+                  top: 7,
+                  width: 47,
+                  height: 54,
+                  background: "#D9D9D9",
+                  borderRadius: 6,
+                  transform: "rotate(-10deg)",
+                }}
+              />
+              {/* Front photo — image (Group 2085665916), 50×56 at (32,15), tilted right */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: 32,
+                  top: 15,
+                  width: 50,
+                  height: 56,
+                  background: `url(https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=160&h=180&fit=crop&auto=format) center/cover no-repeat`,
+                  borderRadius: 6,
+                  transform: "rotate(8deg)",
+                }}
+              />
             </div>
-          ))}
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+              <span
+                style={{ fontSize: 14, fontWeight: fw.Semibold, color: "#111", lineHeight: "17px" }}
+              >
+                Let's look back on the past memories
+              </span>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 4,
+                  fontSize: 13,
+                  color: "#616161",
+                }}
+              >
+                <span>Go to my albums</span>
+                <Icon name="arrowRight" style={{ width: 8, height: 16 }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recommended carousel */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ padding: "0 18px" }}>
+            <span
+              style={{ fontSize: 15, fontWeight: fw.Semibold, color: "#111", lineHeight: "19px" }}
+            >
+              Recommended For you
+            </span>
+          </div>
+          <div
+            className="hide-scroll"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 8,
+              paddingLeft: 14,
+              paddingRight: 14,
+              overflowX: "auto",
+            }}
+          >
+            {[
+              {
+                name: "Alison Lee",
+                img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&auto=format",
+              },
+              {
+                name: "Suzumi",
+                img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&auto=format",
+              },
+              {
+                name: "Hosoya",
+                img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&auto=format",
+              },
+              {
+                name: "Profile Studio",
+                img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&h=120&fit=crop&auto=format",
+              },
+              { name: "Edit my profile", img: undefined },
+            ].map((r) => (
+              <div
+                key={r.name}
+                style={{
+                  width: 58,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 6,
+                  flexShrink: 0,
+                }}
+              >
+                <Avatar img={r.img} />
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: fw.Regular,
+                    color: "#111",
+                    lineHeight: "15px",
+                    textAlign: "center",
+                    maxWidth: 58,
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {r.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      </div>{/* end content sections */}
-    </div>{/* end scroll container */}
+      {/* end content sections */}
+    </div>
+    {/* end scroll container */}
 
     {/* Bottom navigation — Chats not selected here either */}
-    <div style={{ position: "absolute", left: 0, top: 728, width: 375, height: 84, background: "#fff", boxShadow: "0 -3px 5px rgba(0,0,0,0.05)", display: "flex", flexDirection: "row", justifyContent: "space-around", paddingTop: 8, boxSizing: "border-box" }}>
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 728,
+        width: 375,
+        height: 84,
+        background: "#fff",
+        boxShadow: "0 -3px 5px rgba(0,0,0,0.05)",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+        paddingTop: 8,
+        boxSizing: "border-box",
+      }}
+    >
       {[
         { name: "navHome", label: "Home", w: 19, h: 20 },
         { name: "navChats", label: "Chats", w: 19, h: 20 },
@@ -288,14 +804,37 @@ const FriendTab: React.FC = () => (
         { name: "navNews", label: "News", w: 17, h: 18 },
         { name: "navWallet", label: "Wallet", w: 18, h: 16 },
       ].map((tab) => (
-        <div key={tab.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", width: 64, gap: 4, paddingTop: tab.name === "navVoom" ? 0 : 2 }}>
-          <div style={{ height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div
+          key={tab.label}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            width: 64,
+            gap: 4,
+            paddingTop: tab.name === "navVoom" ? 0 : 2,
+          }}
+        >
+          <div
+            style={{ height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
             <Icon name={tab.name} style={{ width: tab.w, height: tab.h }} />
           </div>
           <span style={{ fontSize: 9, color: "#111", fontWeight: fw.Regular }}>{tab.label}</span>
         </div>
       ))}
-      <div style={{ position: "absolute", left: 121, bottom: 8, width: 134, height: 5, background: "#000", borderRadius: 100 }} />
+      <div
+        style={{
+          position: "absolute",
+          left: 121,
+          bottom: 8,
+          width: 134,
+          height: 5,
+          background: "#000",
+          borderRadius: 100,
+        }}
+      />
     </div>
   </div>
 );

@@ -1,0 +1,15 @@
+# 모든 도구(Codex/VSCode/Claude)가 동일한 줄바꿈을 쓰도록 강제
+* text=auto eol=lf
+
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.css  text eol=lf
+*.md   text eol=lf
+
+# 바이너리는 정규화 제외
+*.png  binary
+*.jpg  binary
+*.svg  text eol=lf

@@ -8,7 +8,7 @@ const FIXTURES = [
   { name: "TEST_Header / NavigationBar / BackButton", key: "k_header_back" },
   { name: "TEST_Notification - OFF", key: "k_noti_off" },
   { name: "TEST_Title + Body Bold", key: "k_title_bold" },
-  { name: "TEST_Button / Primary", key: "k_btn_primary" }
+  { name: "TEST_Button / Primary", key: "k_btn_primary" },
 ];
 
 beforeEach(() => {

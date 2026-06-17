@@ -6,7 +6,6 @@ interface Props {
   bundledLdsCatalog: LdsTemplateCatalog | null;
 }
 
-
 export function AboutTab({ version, bundledLdsCatalog }: Props) {
   const t = useT();
 
@@ -44,8 +43,7 @@ export function AboutTab({ version, bundledLdsCatalog }: Props) {
         <div class="about-section-title">{t.aboutExamplePrompt}</div>
         <pre class="about-codeblock">{t.aboutExamplePromptText}</pre>
         <p class="about-note">
-          {t.aboutNudge}{" "}
-          <code>"Re-check rules (a)(b)(c) in PROMPT.md"</code>.
+          {t.aboutNudge} <code>"Re-check rules (a)(b)(c) in PROMPT.md"</code>.
         </p>
       </section>
 
@@ -53,9 +51,7 @@ export function AboutTab({ version, bundledLdsCatalog }: Props) {
         <div class="about-footer-row">
           <span class="about-footer-label">{t.aboutLdsMatcher}</span>
           <span class="about-footer-value">
-            {bundledLdsCatalog
-              ? `${bundledLdsCatalog.components.length} components`
-              : t.aboutEmpty}
+            {bundledLdsCatalog ? `${bundledLdsCatalog.components.length} components` : t.aboutEmpty}
           </span>
         </div>
         {bundledLdsCatalog && (

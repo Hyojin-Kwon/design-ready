@@ -105,7 +105,7 @@ export const AUTOFIX_RULE_IDS: ReadonlySet<string> = new Set<AutofixRuleId>([
   "single-child-frame-wrapper",
   "deep-group-nesting",
   "empty-frame",
-  "missing-auto-layout"
+  "missing-auto-layout",
 ]);
 
 export interface AutofixItem {

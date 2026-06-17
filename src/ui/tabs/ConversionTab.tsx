@@ -3,18 +3,77 @@ import { useT } from "../LangContext";
 
 function ExportIllust() {
   return (
-    <svg width="180" height="90" viewBox="8 38 168 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="14" y="42" width="48" height="64" rx="5" stroke="#E5E7EB" stroke-width="1.7" fill="#FFFFFF"/>
-      <rect x="22" y="50" width="48" height="64" rx="5" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
-      <rect x="30" y="58" width="48" height="64" rx="5" stroke="#111111" stroke-width="1.7" fill="#FFFFFF"/>
-      <rect x="38" y="68" width="24" height="4" rx="2" fill="#E5E7EB"/>
-      <rect x="38" y="76" width="18" height="4" rx="2" fill="#E5E7EB"/>
-      <rect x="38" y="92" width="32" height="20" rx="3" fill="#F3F3F3"/>
-      <path d="M92 80 L114 80 M108 74 L114 80 L108 86" stroke="#111111" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <rect x="124" y="48" width="48" height="64" rx="5" stroke="#D1D5DB" stroke-width="1.7" fill="#FFFFFF"/>
-      <path d="M124 64 L172 64" stroke="#D1D5DB" stroke-width="1.7"/>
-      <path d="M148 48 L148 64" stroke="#D1D5DB" stroke-width="1.7"/>
-      <text x="148" y="92" text-anchor="middle" font-family="Pretendard Variable, Pretendard, sans-serif" font-size="10" font-weight="700" fill="#9CA3AF">.zip</text>
+    <svg
+      width="180"
+      height="90"
+      viewBox="8 38 168 88"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        x="14"
+        y="42"
+        width="48"
+        height="64"
+        rx="5"
+        stroke="#E5E7EB"
+        stroke-width="1.7"
+        fill="#FFFFFF"
+      />
+      <rect
+        x="22"
+        y="50"
+        width="48"
+        height="64"
+        rx="5"
+        stroke="#D1D5DB"
+        stroke-width="1.7"
+        fill="#FFFFFF"
+      />
+      <rect
+        x="30"
+        y="58"
+        width="48"
+        height="64"
+        rx="5"
+        stroke="#111111"
+        stroke-width="1.7"
+        fill="#FFFFFF"
+      />
+      <rect x="38" y="68" width="24" height="4" rx="2" fill="#E5E7EB" />
+      <rect x="38" y="76" width="18" height="4" rx="2" fill="#E5E7EB" />
+      <rect x="38" y="92" width="32" height="20" rx="3" fill="#F3F3F3" />
+      <path
+        d="M92 80 L114 80 M108 74 L114 80 L108 86"
+        stroke="#111111"
+        stroke-width="1.7"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <rect
+        x="124"
+        y="48"
+        width="48"
+        height="64"
+        rx="5"
+        stroke="#D1D5DB"
+        stroke-width="1.7"
+        fill="#FFFFFF"
+      />
+      <path d="M124 64 L172 64" stroke="#D1D5DB" stroke-width="1.7" />
+      <path d="M148 48 L148 64" stroke="#D1D5DB" stroke-width="1.7" />
+      <text
+        x="148"
+        y="92"
+        text-anchor="middle"
+        font-family="Pretendard Variable, Pretendard, sans-serif"
+        font-size="10"
+        font-weight="700"
+        fill="#9CA3AF"
+      >
+        .zip
+      </text>
     </svg>
   );
 }
@@ -109,7 +168,8 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
                     {summary.optStats.beforeNodes} → {summary.optStats.afterNodes}
                     {summary.optStats.beforeNodes > 0 && (
                       <span class="export-opt-delta">
-                        {" "}(-{summary.optStats.beforeNodes - summary.optStats.afterNodes})
+                        {" "}
+                        (-{summary.optStats.beforeNodes - summary.optStats.afterNodes})
                       </span>
                     )}
                   </span>
@@ -117,7 +177,8 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
                 <div class="export-opt-row">
                   <span class="export-opt-label">{t.exportFlattened}</span>
                   <span class="export-opt-val">
-                    GROUP {summary.optStats.flattenedGroups} · FRAME {summary.optStats.flattenedFrames}
+                    GROUP {summary.optStats.flattenedGroups} · FRAME{" "}
+                    {summary.optStats.flattenedFrames}
                   </span>
                 </div>
                 <div class="export-opt-row">
@@ -146,7 +207,10 @@ export function ConversionTab({ running, error, summary, onExport, onDownload }:
                   <span class="export-opt-label">{t.exportIconDedup}</span>
                   <span class="export-opt-val">
                     {summary.optStats.totalIconNodes} nodes → {summary.optStats.uniqueIcons} unique
-                    <span class="export-opt-delta"> ({Math.round(summary.optStats.iconBytes / 1024)}KB)</span>
+                    <span class="export-opt-delta">
+                      {" "}
+                      ({Math.round(summary.optStats.iconBytes / 1024)}KB)
+                    </span>
                   </span>
                 </div>
               </div>

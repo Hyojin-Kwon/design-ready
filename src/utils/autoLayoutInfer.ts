@@ -1,17 +1,12 @@
 type Direction = "HORIZONTAL" | "VERTICAL";
 
-export type AutoLayoutInferenceResult =
-  | { applied: true }
-  | { applied: false; reason: string };
+export type AutoLayoutInferenceResult = { applied: true } | { applied: false; reason: string };
 
 const GAP_TOLERANCE = 4;
 const CROSS_ALIGN_TOLERANCE = 2;
 const OVERLAP_TOLERANCE = 1;
 
-function isLinearArrangement(
-  sorted: readonly SceneNode[],
-  direction: Direction
-): boolean {
+function isLinearArrangement(sorted: readonly SceneNode[], direction: Direction): boolean {
   for (let i = 1; i < sorted.length; i += 1) {
     const prev = sorted[i - 1];
     const curr = sorted[i];
@@ -40,7 +35,7 @@ function computeGaps(sorted: readonly SceneNode[], direction: Direction): number
 
 function detectCounterAlign(
   children: readonly SceneNode[],
-  direction: Direction
+  direction: Direction,
 ): "MIN" | "CENTER" | "MAX" {
   if (direction === "HORIZONTAL") {
     const tops = children.map((c) => c.y);
@@ -107,10 +102,7 @@ function pickContainmentOverlays(children: readonly SceneNode[]): Set<SceneNode>
   return overlays;
 }
 
-function pickBoundaryOverlays(
-  children: readonly SceneNode[],
-  frame: FrameNode
-): Set<SceneNode> {
+function pickBoundaryOverlays(children: readonly SceneNode[], frame: FrameNode): Set<SceneNode> {
   const overlays = new Set<SceneNode>();
   for (const c of children) {
     if (extendsBeyondFrame(c, frame)) overlays.add(c);
@@ -120,7 +112,7 @@ function pickBoundaryOverlays(
 
 function findLargestLinearSubset(
   children: readonly SceneNode[],
-  direction: Direction
+  direction: Direction,
 ): SceneNode[] {
   // Greedy: sort by primary axis, keep only those that don't overlap the previously kept one.
   const sorted =
@@ -161,7 +153,7 @@ export function tryApplyAutoLayout(frame: FrameNode): AutoLayoutInferenceResult 
   if (children.length === 0) {
     return {
       applied: false,
-      reason: "의도된 오버레이 구조로 보임 (auto-layout 부적절)"
+      reason: "의도된 오버레이 구조로 보임 (auto-layout 부적절)",
     };
   }
   if (children.length === 1) {
@@ -170,7 +162,7 @@ export function tryApplyAutoLayout(frame: FrameNode): AutoLayoutInferenceResult 
     // anchoring, so skip instead.
     return {
       applied: false,
-      reason: "오버레이 합성 구조로 보임 (auto-layout 부적절)"
+      reason: "오버레이 합성 구조로 보임 (auto-layout 부적절)",
     };
   }
 
@@ -215,7 +207,7 @@ export function tryApplyAutoLayout(frame: FrameNode): AutoLayoutInferenceResult 
     if (coverage < 0.75) {
       return {
         applied: false,
-        reason: `자식 배치가 선형이 아님 (${best.length}/${children.length}만 정렬). 수동 검토 필요.`
+        reason: `자식 배치가 선형이 아님 (${best.length}/${children.length}만 정렬). 수동 검토 필요.`,
       };
     }
     direction = best === xSubset ? "HORIZONTAL" : "VERTICAL";
@@ -242,16 +234,12 @@ export function tryApplyAutoLayout(frame: FrameNode): AutoLayoutInferenceResult 
     paddingLeft = Math.round(first.x);
     paddingRight = Math.round(frame.width - (last.x + last.width));
     paddingTop = Math.round(Math.min(...children.map((c) => c.y)));
-    paddingBottom = Math.round(
-      frame.height - Math.max(...children.map((c) => c.y + c.height))
-    );
+    paddingBottom = Math.round(frame.height - Math.max(...children.map((c) => c.y + c.height)));
   } else {
     paddingTop = Math.round(first.y);
     paddingBottom = Math.round(frame.height - (last.y + last.height));
     paddingLeft = Math.round(Math.min(...children.map((c) => c.x)));
-    paddingRight = Math.round(
-      frame.width - Math.max(...children.map((c) => c.x + c.width))
-    );
+    paddingRight = Math.round(frame.width - Math.max(...children.map((c) => c.x + c.width)));
   }
 
   // Clamp negative padding (can occur after boundary-overlay relaxation) instead of failing.
@@ -272,7 +260,7 @@ export function tryApplyAutoLayout(frame: FrameNode): AutoLayoutInferenceResult 
     } else {
       return {
         applied: false,
-        reason: `간격이 일정하지 않음 (${Math.round(minGap)}~${Math.round(maxGap)}px)`
+        reason: `간격이 일정하지 않음 (${Math.round(minGap)}~${Math.round(maxGap)}px)`,
       };
     }
   }
@@ -280,10 +268,7 @@ export function tryApplyAutoLayout(frame: FrameNode): AutoLayoutInferenceResult 
   const counterAxis = detectCounterAlign(children, direction);
 
   // Capture pre-layout positions for overlays so we can restore them afterwards.
-  const overlayPositions = new Map<
-    SceneNode,
-    { x: number; y: number }
-  >();
+  const overlayPositions = new Map<SceneNode, { x: number; y: number }>();
   for (const o of overlays) {
     overlayPositions.set(o, { x: o.x, y: o.y });
   }

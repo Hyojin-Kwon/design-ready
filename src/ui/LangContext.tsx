@@ -11,7 +11,7 @@ interface LangCtxValue {
 export const LangCtx = createContext<LangCtxValue>({
   t: translations.en,
   lang: "en",
-  toggle: () => {}
+  toggle: () => {},
 });
 
 export const useT = () => useContext(LangCtx).t;

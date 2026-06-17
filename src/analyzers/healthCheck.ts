@@ -5,7 +5,7 @@ import { checkDefaultNaming, checkDetachedInstance } from "../rules/namingRules"
 import {
   checkAbsoluteInsideAutoLayout,
   checkGroupNestingDepth,
-  checkMissingAutoLayout
+  checkMissingAutoLayout,
 } from "../rules/layoutRules";
 import {
   checkEffectTokenMissing,
@@ -13,22 +13,22 @@ import {
   checkStrokeTokenMissing,
   checkStyleOrTokenMissing,
   createSpacingTokenCheck,
-  hasSpacingVariablesInFile
+  hasSpacingVariablesInFile,
 } from "../rules/styleRules";
 import {
   checkEmptyFrame,
   checkHiddenSubtreeRoot,
-  checkNearlyInvisible
+  checkNearlyInvisible,
 } from "../rules/hygieneRules";
 import {
   checkSubpixelPosition,
   checkSubpixelSize,
-  checkSubpixelSpacing
+  checkSubpixelSpacing,
 } from "../rules/precisionRules";
 import {
   checkIconWithoutVector,
   checkOversizedRaster,
-  checkRasterInIconSlot
+  checkRasterInIconSlot,
 } from "../rules/assetRules";
 import { checkSingleChildWrapper } from "../rules/wrapperRules";
 
@@ -53,7 +53,7 @@ export function runHealthCheck(root: BaseNode): HealthReport {
     checkRasterInIconSlot,
     checkIconWithoutVector,
     checkOversizedRaster,
-    checkSingleChildWrapper
+    checkSingleChildWrapper,
   ];
 
   const issues: Issue[] = [];
@@ -78,6 +78,6 @@ export function runHealthCheck(root: BaseNode): HealthReport {
     score: computeScore(totalNodes, issues),
     totalNodes,
     issues,
-    categoryScores: computeCategoryScores(totalNodes, issues)
+    categoryScores: computeCategoryScores(totalNodes, issues),
   };
 }

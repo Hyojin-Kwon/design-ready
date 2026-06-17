@@ -10,7 +10,7 @@ const PRIMITIVE_SHAPE_TYPES = new Set([
   "ELLIPSE",
   "STAR",
   "POLYGON",
-  "LINE"
+  "LINE",
 ]);
 
 function buildContext(node: SceneNode): AiNodeContext {
@@ -19,7 +19,7 @@ function buildContext(node: SceneNode): AiNodeContext {
     currentName: node.name,
     type: node.type,
     childrenSummary: [],
-    siblingNames: []
+    siblingNames: [],
   };
 
   if ("width" in node && "height" in node) {
@@ -138,7 +138,7 @@ function buildLdsSection(): string | null {
   if (BUILTIN_LDS.components.length > 0) {
     parts.push(
       "Top-level components from naming doc (prefer these exact names, including numeric prefix):\n" +
-        BUILTIN_LDS.components.map((n) => `- ${n}`).join("\n")
+        BUILTIN_LDS.components.map((n) => `- ${n}`).join("\n"),
     );
   }
   if (BUILTIN_LDS.figmaComponents && BUILTIN_LDS.figmaComponents.length > 0) {
@@ -146,13 +146,13 @@ function buildLdsSection(): string | null {
     const sampled = summarizeFigmaComponents(names);
     parts.push(
       "Components present in the LDS Figma library (use these as vocabulary):\n" +
-        sampled.map((n) => `- ${n}`).join("\n")
+        sampled.map((n) => `- ${n}`).join("\n"),
     );
   }
   if (BUILTIN_LDS.subPatterns && BUILTIN_LDS.subPatterns.length > 0) {
     parts.push(
       "Common sub-patterns (use ' / ' separator with spaces):\n" +
-        BUILTIN_LDS.subPatterns.map((n) => `- ${n}`).join("\n")
+        BUILTIN_LDS.subPatterns.map((n) => `- ${n}`).join("\n"),
     );
   }
   if (BUILTIN_LDS.variants) {
@@ -186,7 +186,7 @@ function buildSystemPrompt(ldsReference: string, libraryComponents: string[]): s
     sections.push(
       `### Components used in this file (supplementary vocabulary)\n\n${libraryComponents
         .map((n) => `- ${n}`)
-        .join("\n")}`
+        .join("\n")}`,
     );
   }
 
@@ -214,7 +214,7 @@ async function callOnce(
   model: string,
   ldsReference: string,
   libraryComponents: string[],
-  contexts: AiNodeContext[]
+  contexts: AiNodeContext[],
 ): Promise<NamingSuggestion[]> {
   const userPrompt = `Rename these ${contexts.length} layers. Output a JSON array with exactly ${contexts.length} items (one per nodeId). JSON only, no prose.\n\n${JSON.stringify(contexts)}`;
 
@@ -225,7 +225,7 @@ async function callOnce(
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
       "anthropic-beta": "prompt-caching-2024-07-31",
-      "anthropic-dangerous-direct-browser-access": "true"
+      "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify({
       model,
@@ -236,11 +236,11 @@ async function callOnce(
         {
           type: "text",
           text: buildSystemPrompt(ldsReference, libraryComponents),
-          cache_control: { type: "ephemeral" }
-        }
+          cache_control: { type: "ephemeral" },
+        },
       ],
-      messages: [{ role: "user", content: userPrompt }]
-    })
+      messages: [{ role: "user", content: userPrompt }],
+    }),
   });
 
   const data = (await response.json()) as AnthropicResponse;
@@ -260,7 +260,7 @@ export async function callAnthropic(
   model: string,
   ldsReference: string,
   libraryComponents: string[],
-  contexts: AiNodeContext[]
+  contexts: AiNodeContext[],
 ): Promise<NamingSuggestion[]> {
   if (contexts.length === 0) return [];
   const all: NamingSuggestion[] = [];
@@ -294,7 +294,7 @@ function parseNamingJson(raw: string, contexts: AiNodeContext[]): NamingSuggesti
       nodeType: ctx.type,
       currentName: ctx.currentName,
       suggestedName: item.suggestedName,
-      reason: `AI: ${item.reason ?? "컨텍스트 기반 추론"}`
+      reason: `AI: ${item.reason ?? "컨텍스트 기반 추론"}`,
     });
   }
   return suggestions;

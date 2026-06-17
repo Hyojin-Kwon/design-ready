@@ -5,7 +5,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
   layout: "Layout",
   system: "System",
   style: "Style",
-  hygiene: "Hygiene"
+  hygiene: "Hygiene",
 };
 
 interface Props {
@@ -18,9 +18,7 @@ export function ScoreCard({ score, totalNodes, categories }: Props) {
   return (
     <div class="score-card">
       <div class="score-value">{score}</div>
-      <div class="score-label">
-        Health score · {totalNodes} nodes scanned
-      </div>
+      <div class="score-label">Health score · {totalNodes} nodes scanned</div>
       <div class="category-grid">
         {categories.map((c) => (
           <div class="category-chip" key={c.category}>

@@ -16,13 +16,22 @@
     {
       "name": "plugin-ui-redesign",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["scripts/preview-ui.mjs", ".claude/worktrees/nervous-golick-173d0e/dist", "5181"],
+      "runtimeArgs": [
+        "scripts/preview-ui.mjs",
+        ".claude/worktrees/nervous-golick-173d0e/dist",
+        "5181"
+      ],
       "port": 5181
     },
     {
       "name": "chat-bubble-preview",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "/Users/al03175865/Downloads/figma-export-pack-chat-bubble-20260427-1058/preview-app"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "/Users/al03175865/Downloads/figma-export-pack-chat-bubble-20260427-1058/preview-app"
+      ],
       "port": 5174
     }
   ]

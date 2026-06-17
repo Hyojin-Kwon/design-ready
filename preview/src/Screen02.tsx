@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Icon } from "./Icon";
 
-const fontStack = "-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Helvetica Neue', Arial, sans-serif";
+const fontStack =
+  "-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Helvetica Neue', Arial, sans-serif";
 const fw = { Regular: 400, Medium: 500, Semibold: 600, Bold: 700, Heavy: 900 } as const;
 
 type RowProps = {
@@ -33,9 +34,27 @@ function ChatRow({ top, thumb, title, body, right, pad }: RowProps) {
         boxSizing: "border-box",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 14, flex: 1, minWidth: 0 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 14,
+          flex: 1,
+          minWidth: 0,
+        }}
+      >
         {thumb}
-        <div style={{ display: "flex", flexDirection: "column", gap: 2, justifyContent: "center", flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            justifyContent: "center",
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
           {title}
           {body}
         </div>
@@ -56,9 +75,7 @@ function Avatar48({ badge }: { badge?: React.ReactNode }) {
           background: "#E5E5E5",
         }}
       />
-      {badge ? (
-        <div style={{ position: "absolute", left: 34, top: 32 }}>{badge}</div>
-      ) : null}
+      {badge ? <div style={{ position: "absolute", left: 34, top: 32 }}>{badge}</div> : null}
     </div>
   );
 }
@@ -77,8 +94,7 @@ function StoryRingAvatar({ badge }: { badge?: React.ReactNode }) {
           padding: 2.5,
           background:
             "conic-gradient(from 0deg, #20A1FF 4%, #00E5BF 18%, #00E75F 40%, #20BDFF 59%, #5855FF 77%, #5855FF 97%)",
-          WebkitMask:
-            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
           WebkitMaskComposite: "xor",
           maskComposite: "exclude",
         }}
@@ -118,7 +134,15 @@ function NotiBadge({ children, width }: { children: React.ReactNode; width?: num
   );
 }
 
-function RightMeta({ time, badge, width = 47 }: { time: string; badge?: React.ReactNode; width?: number }) {
+function RightMeta({
+  time,
+  badge,
+  width = 47,
+}: {
+  time: string;
+  badge?: React.ReactNode;
+  width?: number;
+}) {
   return (
     <div
       style={{
@@ -205,7 +229,17 @@ export default function Screen02() {
           >
             9:41
           </div>
-          <div style={{ position: "absolute", left: 294, top: 17, display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }}>
+          <div
+            style={{
+              position: "absolute",
+              left: 294,
+              top: 17,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
             <Icon name="cellular" />
             <Icon name="wifi" />
             <Icon name="battery" />
@@ -213,32 +247,101 @@ export default function Screen02() {
         </div>
 
         {/* Maintab Chat */}
-        <div style={{ position: "absolute", left: 0, top: 44, width: 375, height: 44, background: "#FFFFFF" }}>
-          <div style={{ position: "absolute", left: 17, top: 8, display: "flex", flexDirection: "row", alignItems: "center", gap: 4 }}>
-            <span style={{ fontFamily: fontStack, fontSize: 24, fontWeight: fw.Heavy, color: "#000000", lineHeight: "29px" }}>Chats</span>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 44,
+            width: 375,
+            height: 44,
+            background: "#FFFFFF",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              left: 17,
+              top: 8,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: fontStack,
+                fontSize: 24,
+                fontWeight: fw.Heavy,
+                color: "#000000",
+                lineHeight: "29px",
+              }}
+            >
+              Chats
+            </span>
             <Icon name="arrowDown" />
           </div>
           <button
             aria-label="chat edit"
-            style={{ position: "absolute", right: 160, top: 10, width: 24, height: 24, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}
+            style={{
+              position: "absolute",
+              right: 160,
+              top: 10,
+              width: 24,
+              height: 24,
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+            }}
           >
             <Icon name="chatEdit" />
           </button>
           <button
             aria-label="albums"
-            style={{ position: "absolute", right: 120, top: 10, width: 24, height: 24, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}
+            style={{
+              position: "absolute",
+              right: 120,
+              top: 10,
+              width: 24,
+              height: 24,
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+            }}
           >
             <Icon name="albums" />
           </button>
           <button
             aria-label="open chat"
-            style={{ position: "absolute", right: 80, top: 10, width: 24, height: 24, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}
+            style={{
+              position: "absolute",
+              right: 80,
+              top: 10,
+              width: 24,
+              height: 24,
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+            }}
           >
             <Icon name="openChat" />
           </button>
           <button
             aria-label="add chat"
-            style={{ position: "absolute", right: 40, top: 10, width: 24, height: 24, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}
+            style={{
+              position: "absolute",
+              right: 40,
+              top: 10,
+              width: 24,
+              height: 24,
+              padding: 0,
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+            }}
           >
             <Icon name="addChat" />
           </button>
@@ -279,7 +382,16 @@ export default function Screen02() {
           >
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 3 }}>
               <Icon name="search" />
-              <span style={{ fontFamily: fontStack, fontSize: 13, fontWeight: fw.Medium, color: "#B7B7B7" }}>Search</span>
+              <span
+                style={{
+                  fontFamily: fontStack,
+                  fontSize: 13,
+                  fontWeight: fw.Medium,
+                  color: "#B7B7B7",
+                }}
+              >
+                Search
+              </span>
             </div>
             <Icon name="searchQr" />
           </div>
@@ -287,7 +399,15 @@ export default function Screen02() {
       </header>
 
       {/* Smart CH */}
-      <section style={{ position: "relative", width: 375, height: 110, background: "#FFFFFF", flexShrink: 0 }}>
+      <section
+        style={{
+          position: "relative",
+          width: 375,
+          height: 110,
+          background: "#FFFFFF",
+          flexShrink: 0,
+        }}
+      >
         {/* 86x86 thumbnail */}
         <div
           style={{
@@ -301,7 +421,18 @@ export default function Screen02() {
           }}
         />
         {/* banner_ch_mute */}
-        <div style={{ position: "absolute", left: 346, top: 10, width: 17, height: 17, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 346,
+            top: 10,
+            width: 17,
+            height: 17,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Icon name="muteIcon" />
         </div>
         {/* text type 2 */}
@@ -342,10 +473,32 @@ export default function Screen02() {
             >
               AD
             </span>
-            <span style={{ position: "absolute", left: 17, top: 0, width: 14, height: 14, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+            <span
+              style={{
+                position: "absolute",
+                left: 17,
+                top: 0,
+                width: 14,
+                height: 14,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Icon name="infoCircle" />
             </span>
-            <span style={{ position: "absolute", left: 31, top: 2, width: 10, height: 10, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+            <span
+              style={{
+                position: "absolute",
+                left: 31,
+                top: 2,
+                width: 10,
+                height: 10,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Icon name="bannerDot" />
             </span>
             <span
@@ -385,8 +538,26 @@ export default function Screen02() {
             boxSizing: "border-box",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 14, flex: 1, minWidth: 0 }}>
-            <div style={{ position: "relative", width: 48, height: 48, borderRadius: "50%", background: "#FFDCE4", flexShrink: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 14,
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                background: "#FFDCE4",
+                flexShrink: 0,
+              }}
+            >
               <div style={{ position: "absolute", left: 5, top: 0, width: 41, height: 19 }}>
                 <Icon name="cakeSparkles" />
               </div>
@@ -399,7 +570,16 @@ export default function Screen02() {
                 </div>
               </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2, justifyContent: "center", flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                justifyContent: "center",
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
               <div style={titleStyle}>Wish friends a happy birthday!</div>
               <div style={{ ...bodyStyle, color: "#616161" }}>Olivia, Hirao kanno</div>
             </div>
@@ -477,7 +657,16 @@ export default function Screen02() {
           thumb={<Avatar48 />}
           title={
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 25, height: 16, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div
+                style={{
+                  width: 25,
+                  height: 16,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <Icon name="listBadgeCall" />
               </div>
               <span style={titleStyle}>Singles (3)</span>
@@ -485,7 +674,16 @@ export default function Screen02() {
           }
           body={
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 3 }}>
-              <div style={{ width: 12, height: 12, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div
+                style={{
+                  width: 12,
+                  height: 12,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <Icon name="callIcon" />
               </div>
               <span style={bodyStyle}>Group video call stared.</span>
@@ -508,7 +706,16 @@ export default function Screen02() {
           title={
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }}>
               <span style={{ ...titleStyle, flex: "0 1 auto" }}>Europe Travelers (268)</span>
-              <span style={{ width: 16, height: 16, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <span
+                style={{
+                  width: 16,
+                  height: 16,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <Icon name="badgeMuted" />
               </span>
             </div>
@@ -516,14 +723,38 @@ export default function Screen02() {
           body={
             <>
               <div style={bodyStyle}>Pancakes are best eaten fresh from</div>
-              <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5, marginTop: 0 }}>
-                <span style={{ fontFamily: fontStack, fontSize: 12, fontWeight: fw.Regular, color: "#4D73FF", lineHeight: "14px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 5,
+                  marginTop: 0,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: fontStack,
+                    fontSize: 12,
+                    fontWeight: fw.Regular,
+                    color: "#4D73FF",
+                    lineHeight: "14px",
+                  }}
+                >
                   You were mentioned.
                 </span>
                 <span style={{ width: 2, height: 2, display: "inline-flex" }}>
                   <Icon name="oval2" />
                 </span>
-                <span style={{ fontFamily: fontStack, fontSize: 12, fontWeight: fw.Regular, color: "#B7B7B7", lineHeight: "14px" }}>
+                <span
+                  style={{
+                    fontFamily: fontStack,
+                    fontSize: 12,
+                    fontWeight: fw.Regular,
+                    color: "#B7B7B7",
+                    lineHeight: "14px",
+                  }}
+                >
                   Multi chat title
                 </span>
               </div>
@@ -534,7 +765,9 @@ export default function Screen02() {
               time="5min ago"
               badge={
                 <NotiBadge width={40}>
-                  <span style={{ width: 13, height: 13, position: "relative", display: "inline-flex" }}>
+                  <span
+                    style={{ width: 13, height: 13, position: "relative", display: "inline-flex" }}
+                  >
                     <span style={{ position: "absolute", left: 1, top: 2 }}>
                       <Icon name="threadMain" />
                     </span>
@@ -560,7 +793,15 @@ export default function Screen02() {
             </div>
           }
           right={
-            <div style={{ width: 24, height: 38, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div
+              style={{
+                width: 24,
+                height: 38,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Icon name="notiNewMessage" />
             </div>
           }
@@ -579,11 +820,41 @@ export default function Screen02() {
         }}
       >
         {[
-          { x: 6, label: "Home", icon: "navHome" as const, badge: "dot", size: { w: 19, h: 20, x: 23, y: 28 } },
-          { x: 81, label: "Chats", icon: "navChats" as const, badge: "111", size: { w: 19, h: 20, x: 22, y: 28 } },
-          { x: 156, label: "Voom", icon: "navVoom" as const, badge: "dot", size: { w: 24, h: 24, x: 20, y: 26 } },
-          { x: 231, label: "News", icon: "navNews" as const, badge: "dot", size: { w: 17, h: 18, x: 24, y: 29 } },
-          { x: 306, label: "Wallet", icon: "navWallet" as const, badge: "dot", size: { w: 18, h: 16, x: 23, y: 30 } },
+          {
+            x: 6,
+            label: "Home",
+            icon: "navHome" as const,
+            badge: "dot",
+            size: { w: 19, h: 20, x: 23, y: 28 },
+          },
+          {
+            x: 81,
+            label: "Chats",
+            icon: "navChats" as const,
+            badge: "111",
+            size: { w: 19, h: 20, x: 22, y: 28 },
+          },
+          {
+            x: 156,
+            label: "Voom",
+            icon: "navVoom" as const,
+            badge: "dot",
+            size: { w: 24, h: 24, x: 20, y: 26 },
+          },
+          {
+            x: 231,
+            label: "News",
+            icon: "navNews" as const,
+            badge: "dot",
+            size: { w: 17, h: 18, x: 24, y: 29 },
+          },
+          {
+            x: 306,
+            label: "Wallet",
+            icon: "navWallet" as const,
+            badge: "dot",
+            size: { w: 18, h: 16, x: 23, y: 30 },
+          },
         ].map((tab) => (
           <button
             key={tab.label}
@@ -600,7 +871,16 @@ export default function Screen02() {
               cursor: "pointer",
             }}
           >
-            <span style={{ position: "absolute", left: tab.size.x, top: tab.size.y, width: tab.size.w, height: tab.size.h, display: "inline-flex" }}>
+            <span
+              style={{
+                position: "absolute",
+                left: tab.size.x,
+                top: tab.size.y,
+                width: tab.size.w,
+                height: tab.size.h,
+                display: "inline-flex",
+              }}
+            >
               <Icon name={tab.icon} />
             </span>
             <span
@@ -621,7 +901,16 @@ export default function Screen02() {
               {tab.label}
             </span>
             {tab.badge === "dot" ? (
-              <span style={{ position: "absolute", left: 47, top: 26, width: 5, height: 5, display: "inline-flex" }}>
+              <span
+                style={{
+                  position: "absolute",
+                  left: 47,
+                  top: 26,
+                  width: 5,
+                  height: 5,
+                  display: "inline-flex",
+                }}
+              >
                 <Icon name="dotRed" />
               </span>
             ) : (
@@ -653,7 +942,17 @@ export default function Screen02() {
           </button>
         ))}
         {/* Home Indicator */}
-        <div style={{ position: "absolute", left: 120, top: 71, width: 134, height: 5, background: "#000000", borderRadius: 100 }} />
+        <div
+          style={{
+            position: "absolute",
+            left: 120,
+            top: 71,
+            width: 134,
+            height: 5,
+            background: "#000000",
+            borderRadius: 100,
+          }}
+        />
       </nav>
     </div>
   );

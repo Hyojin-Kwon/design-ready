@@ -46,13 +46,13 @@ function countNodes(n: SerializedNode): number {
 function hasVisualProps(n: SerializedNode): boolean {
   return Boolean(
     n.fill ||
-      n.stroke ||
-      n.cornerRadius ||
-      (n.effects && n.effects.length > 0) ||
-      n.componentRef ||
-      n.text ||
-      n.iconId ||
-      n.layout
+    n.stroke ||
+    n.cornerRadius ||
+    (n.effects && n.effects.length > 0) ||
+    n.componentRef ||
+    n.text ||
+    n.iconId ||
+    n.layout,
   );
 }
 
@@ -65,11 +65,7 @@ function isWrapperCandidate(n: SerializedNode): boolean {
     // Conservative FRAME flatten: no layout, no visual props, single child, not absolute-anchored,
     // and no bound tokens (those are semantic).
     return (
-      !hasVisualProps(n) &&
-      !n.boundTokens &&
-      !!n.children &&
-      n.children.length === 1 &&
-      !n.absolute
+      !hasVisualProps(n) && !n.boundTokens && !!n.children && n.children.length === 1 && !n.absolute
     );
   }
   return false;
@@ -106,13 +102,13 @@ function hasChildrenCoords(children: SerializedNode[]): boolean {
       typeof c.x === "number" &&
       typeof c.y === "number" &&
       typeof c.width === "number" &&
-      typeof c.height === "number"
+      typeof c.height === "number",
   );
 }
 
 function inferLayoutFor(
   parent: SerializedNode,
-  children: SerializedNode[]
+  children: SerializedNode[],
 ): InferredLayout | undefined {
   if (children.length < 2) return undefined;
   if (!hasChildrenCoords(children)) return undefined;
@@ -141,11 +137,12 @@ function inferLayoutFor(
   if (!horizontal && !vertical) return undefined;
 
   // Prefer direction with tighter cross-axis alignment
-  const direction: "HORIZONTAL" | "VERTICAL" = horizontal && !vertical
-    ? "HORIZONTAL"
-    : vertical && !horizontal
-      ? "VERTICAL"
-      : pickDirection(typed);
+  const direction: "HORIZONTAL" | "VERTICAL" =
+    horizontal && !vertical
+      ? "HORIZONTAL"
+      : vertical && !horizontal
+        ? "VERTICAL"
+        : pickDirection(typed);
 
   const sorted = direction === "HORIZONTAL" ? byX : byY;
 
@@ -187,9 +184,7 @@ function inferLayoutFor(
   }
 
   const counterAxisAlign = detectCounterAlign(typed, direction);
-  const primaryAxisAlign = uniformGap
-    ? "MIN"
-    : detectPrimaryAlign(typed, direction, parent);
+  const primaryAxisAlign = uniformGap ? "MIN" : detectPrimaryAlign(typed, direction, parent);
 
   // 균등 간격이면 그 값을, 비균등이면 최소 간격을 gap으로 사용 (나머지는 align으로 표현).
   const gap = Math.max(0, Math.round(minGap));
@@ -202,12 +197,12 @@ function inferLayoutFor(
     paddingLeft: Math.round(paddingLeft),
     paddingRight: Math.round(paddingRight),
     primaryAxisAlign,
-    counterAxisAlign
+    counterAxisAlign,
   };
 }
 
 function pickDirection(
-  children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>
+  children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>,
 ): "HORIZONTAL" | "VERTICAL" {
   const ys = children.map((c) => c.y);
   const xs = children.map((c) => c.x);
@@ -218,7 +213,7 @@ function pickDirection(
 
 function detectCounterAlign(
   children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>,
-  direction: "HORIZONTAL" | "VERTICAL"
+  direction: "HORIZONTAL" | "VERTICAL",
 ): "MIN" | "CENTER" | "MAX" {
   if (direction === "HORIZONTAL") {
     const tops = children.map((c) => c.y);
@@ -241,7 +236,7 @@ function detectCounterAlign(
 function detectPrimaryAlign(
   children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>,
   direction: "HORIZONTAL" | "VERTICAL",
-  parent: SerializedNode
+  parent: SerializedNode,
 ): "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN" {
   if (children.length < 2) return "MIN";
   const first = children[0];
@@ -341,7 +336,7 @@ function truncateBreadth(n: SerializedNode, stats: OptimizeStats): void {
     n.children.push({
       id: "__truncated__",
       type: "META",
-      name: `... ${removed}개 자식 생략`
+      name: `... ${removed}개 자식 생략`,
     });
     stats.truncatedChildren += removed;
   }
@@ -397,7 +392,7 @@ export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stat
     inferredLayouts: 0,
     collapsedRepeats: 0,
     truncatedChildren: 0,
-    occludedDuplicates: 0
+    occludedDuplicates: 0,
   };
   const flattened = flattenGroupWrappers(root, stats);
   // 겹친 중복(쌓인 대체 상태)은 압축·추론 전에 제거 — 죽은 DOM이 이후 패스에 끼지 않게.

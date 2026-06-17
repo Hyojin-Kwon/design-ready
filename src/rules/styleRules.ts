@@ -6,10 +6,11 @@ const ICON_SHAPE_TYPES: ReadonlyArray<SceneNode["type"]> = [
   "ELLIPSE",
   "STAR",
   "POLYGON",
-  "LINE"
+  "LINE",
 ];
 
-const ILLUSTRATION_NAME_PATTERN = /\b(illustration|illust|artwork|image|photo|picture|graphic|bg|background)\b/i;
+const ILLUSTRATION_NAME_PATTERN =
+  /\b(illustration|illust|artwork|image|photo|picture|graphic|bg|background)\b/i;
 
 // 일러스트/벡터 아트워크 내부인지. 토큰 대상 아님.
 function isInsideIllustration(node: SceneNode): boolean {
@@ -51,10 +52,7 @@ function isOverlayOnImage(node: SceneNode): boolean {
   if (fills === figma.mixed || !Array.isArray(fills)) return false;
   const solid = fills.find((f) => f.visible !== false && f.type === "SOLID");
   if (!solid) return false;
-  const opacity =
-    (node as BlendMixin).opacity ??
-    (solid as SolidPaint).opacity ??
-    1;
+  const opacity = (node as BlendMixin).opacity ?? (solid as SolidPaint).opacity ?? 1;
   if (opacity >= 0.8) return false;
   const parent = node.parent;
   if (!parent || !("children" in parent)) return false;
@@ -111,7 +109,7 @@ export function checkStyleOrTokenMissing(node: SceneNode): Issue | null {
       title: "텍스트 스타일 미적용",
       description: `텍스트 "${node.name}"이 로컬 타이포그래피를 사용합니다. LDS 텍스트 스타일을 적용해주세요.`,
       severity: "info",
-      category: "style"
+      category: "style",
     };
   }
 
@@ -138,7 +136,7 @@ export function checkStyleOrTokenMissing(node: SceneNode): Issue | null {
     title: "LDS 토큰 미연결 컬러",
     description: `"${node.name}"이 로컬 컬러를 사용합니다. LDS 컬러 스타일이나 변수에 연결해주세요.`,
     severity: "info",
-    category: "style"
+    category: "style",
   };
 }
 
@@ -160,7 +158,7 @@ export function checkStrokeTokenMissing(node: SceneNode): Issue | null {
     title: "LDS 토큰 미연결 스트로크",
     description: `"${node.name}"의 스트로크가 로컬 컬러를 사용합니다. LDS 컬러 토큰에 연결하면 border-color가 변수로 추출됩니다.`,
     severity: "info",
-    category: "style"
+    category: "style",
   };
 }
 
@@ -179,7 +177,7 @@ export function checkEffectTokenMissing(node: SceneNode): Issue | null {
     title: "LDS 토큰 미연결 이펙트",
     description: `"${node.name}"에 그림자/블러가 로컬 값으로 적용되어 있습니다. LDS 이펙트 스타일에 연결하면 box-shadow 토큰이 일관됩니다.`,
     severity: "info",
-    category: "style"
+    category: "style",
   };
 }
 
@@ -187,7 +185,7 @@ const RADIUS_KEYS = [
   "topLeftRadius",
   "topRightRadius",
   "bottomLeftRadius",
-  "bottomRightRadius"
+  "bottomRightRadius",
 ] as const;
 
 export function checkRadiusTokenMissing(node: SceneNode): Issue | null {
@@ -210,7 +208,7 @@ export function checkRadiusTokenMissing(node: SceneNode): Issue | null {
     title: "LDS 토큰 미연결 라운드",
     description: `"${node.name}"의 코너 반경이 하드코딩되어 있습니다. 숫자 변수에 연결하면 border-radius가 토큰으로 뽑힙니다.`,
     severity: "info",
-    category: "style"
+    category: "style",
   };
 }
 
@@ -219,7 +217,7 @@ const SPACING_KEYS = [
   "paddingLeft",
   "paddingRight",
   "paddingTop",
-  "paddingBottom"
+  "paddingBottom",
 ] as const;
 
 export function hasSpacingVariablesInFile(): boolean {
@@ -231,9 +229,7 @@ export function hasSpacingVariablesInFile(): boolean {
   }
 }
 
-export function createSpacingTokenCheck(
-  enabled: boolean
-): (node: SceneNode) => Issue | null {
+export function createSpacingTokenCheck(enabled: boolean): (node: SceneNode) => Issue | null {
   if (!enabled) return () => null;
   return (node) => {
     if (node.type !== "FRAME" && node.type !== "COMPONENT" && node.type !== "INSTANCE") {
@@ -259,7 +255,7 @@ export function createSpacingTokenCheck(
       title: "LDS 토큰 미연결 간격",
       description: `"${node.name}"의 padding/gap이 하드코딩되어 있습니다(${unbound.length}개 값). 파일에 정의된 스페이싱 변수에 연결해주세요.`,
       severity: "info",
-      category: "style"
+      category: "style",
     };
   };
 }
