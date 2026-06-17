@@ -7,15 +7,18 @@ interface Props {
 }
 
 
-const EXAMPLE_PROMPT = `Read PROMPT.md first and internalize rules (a)(b)(c).
-Based on screens/<slug>/tree.json + meta.json,
-convert to a single React file.
+const EXAMPLE_PROMPT = `Read PROMPT.md first — it is the source of truth. Follow its rules exactly.
+Based on screens/<slug>/tree.json + meta.json, convert to a single React file.
 
-(a) Use only foundation/ tokens via var(--...) (no literal colors/sizes)
-(b) Use only library components (no new components)
-(c) Keep text verbatim from tree.json
+Key points (detailed in PROMPT.md — do not override):
+(a) Use foundation/ tokens via var(--...) for colors, typography, radius,
+    stroke, and gap/padding only. Layout geometry (width/height/left/top)
+    stays as raw px — never compose tokens (no calc(var(--a) + var(--b))).
+(b) No React component library is bundled: preserve componentRef.name as a
+    data-component attribute and never fabricate import paths.
+(c) Keep all text verbatim from tree.json.
 
-If you're not sure, ask — don't guess.`;
+PROMPT.md already resolves the common ambiguities — follow it instead of asking.`;
 
 export function AboutTab({ version, bundledLdsCatalog }: Props) {
   const t = useT();
