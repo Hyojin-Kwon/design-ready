@@ -61,6 +61,18 @@ const en = {
     "Tidy Figma designs into a code-conversion-ready shape and generate an Export Pack that AI coding tools can convert to React.",
   aboutHowItWorks: "How it works",
   aboutExamplePrompt: "Example prompt",
+  aboutExamplePromptText: `Read PROMPT.md first — it is the source of truth. Follow its rules exactly.
+Based on screens/<slug>/tree.json + meta.json, convert to a single React file.
+
+Key points (detailed in PROMPT.md — do not override):
+(a) Use foundation/ tokens via var(--...) for colors, typography, radius,
+    stroke, and gap/padding only. Layout geometry (width/height/left/top)
+    stays as raw px — never compose tokens (no calc(var(--a) + var(--b))).
+(b) No React component library is bundled: preserve componentRef.name as a
+    data-component attribute and never fabricate import paths.
+(c) Keep all text verbatim from tree.json.
+
+PROMPT.md already resolves the common ambiguities — follow it instead of asking.`,
   aboutNudge: "If the AI slips on (a)(b)(c), nudge with",
   aboutLdsMatcher: "LDS matcher",
   aboutSource: "Source",
@@ -131,6 +143,18 @@ const ko: typeof en = {
     "Figma 디자인을 코드 변환에 최적화된 형태로 정리하고, AI 코딩 도구가 React로 변환할 수 있는 내보내기 팩을 생성합니다.",
   aboutHowItWorks: "사용 방법",
   aboutExamplePrompt: "예시 프롬프트",
+  aboutExamplePromptText: `먼저 PROMPT.md를 읽으세요 — 이것이 단일 진실원입니다. 규칙을 정확히 따르세요.
+screens/<slug>/tree.json + meta.json을 기반으로 단일 React 파일로 변환하세요.
+
+핵심 (자세한 내용은 PROMPT.md — 임의로 바꾸지 말 것):
+(a) foundation/ 토큰(var(--...))은 색상·타이포·radius·stroke·gap/padding에만 사용.
+    레이아웃 치수(width/height/left/top)는 raw px 유지 — 토큰을 산술 조합하지 말 것
+    (calc(var(--a) + var(--b)) 금지).
+(b) React 컴포넌트 라이브러리는 포함돼 있지 않음: componentRef.name을 data-component
+    속성으로 보존하고, import 경로를 지어내지 말 것.
+(c) 모든 텍스트는 tree.json에서 그대로 유지.
+
+PROMPT.md가 흔한 모호함을 이미 해결해 둠 — 묻지 말고 그대로 따르세요.`,
   aboutNudge: "AI가 (a)(b)(c)를 놓치면 다음으로 유도하세요:",
   aboutLdsMatcher: "LDS 매처",
   aboutSource: "소스",

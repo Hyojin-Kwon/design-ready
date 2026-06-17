@@ -7,19 +7,6 @@ interface Props {
 }
 
 
-const EXAMPLE_PROMPT = `Read PROMPT.md first — it is the source of truth. Follow its rules exactly.
-Based on screens/<slug>/tree.json + meta.json, convert to a single React file.
-
-Key points (detailed in PROMPT.md — do not override):
-(a) Use foundation/ tokens via var(--...) for colors, typography, radius,
-    stroke, and gap/padding only. Layout geometry (width/height/left/top)
-    stays as raw px — never compose tokens (no calc(var(--a) + var(--b))).
-(b) No React component library is bundled: preserve componentRef.name as a
-    data-component attribute and never fabricate import paths.
-(c) Keep all text verbatim from tree.json.
-
-PROMPT.md already resolves the common ambiguities — follow it instead of asking.`;
-
 export function AboutTab({ version, bundledLdsCatalog }: Props) {
   const t = useT();
 
@@ -55,7 +42,7 @@ export function AboutTab({ version, bundledLdsCatalog }: Props) {
 
       <section class="about-section">
         <div class="about-section-title">{t.aboutExamplePrompt}</div>
-        <pre class="about-codeblock">{EXAMPLE_PROMPT}</pre>
+        <pre class="about-codeblock">{t.aboutExamplePromptText}</pre>
         <p class="about-note">
           {t.aboutNudge}{" "}
           <code>"Re-check rules (a)(b)(c) in PROMPT.md"</code>.
