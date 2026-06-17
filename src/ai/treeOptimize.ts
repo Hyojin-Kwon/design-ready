@@ -8,6 +8,7 @@ export interface OptimizeStats {
   inferredLayouts: number;
   collapsedRepeats: number;
   truncatedChildren: number;
+  occludedDuplicates: number;
 }
 
 // 사용자 대상 자식 수 상한. repeat-collapse 이후 최종 적용되어, 반복 리스트가
@@ -346,6 +347,47 @@ function truncateBreadth(n: SerializedNode, stats: OptimizeStats): void {
   }
 }
 
+// Figma children 배열은 index 0이 최하단, 마지막이 최상단(z-order). 같은 컴포넌트
+// 정체성 + 동일 bounds로 완전히 겹친 형제는 디자이너가 쌓아둔 대체 상태(예: 뱃지
+// 유/무 두 버전의 BottomNav) — 위 형제에 완전히 가려 보이지 않으므로, 가려진 쪽을
+// 제거한다. 화면에 보이는 결과는 바뀌지 않고 죽은 DOM만 사라진다.
+function occlusionKey(n: SerializedNode): string | null {
+  const ref = n.componentRef?.name ?? n.name;
+  return ref ? `${n.type}:${ref}` : null;
+}
+
+function sameBox(a: SerializedNode, b: SerializedNode): boolean {
+  return (
+    Math.abs((a.x ?? 0) - (b.x ?? 0)) <= CROSS_TOLERANCE &&
+    Math.abs((a.y ?? 0) - (b.y ?? 0)) <= CROSS_TOLERANCE &&
+    Math.abs((a.width ?? 0) - (b.width ?? 0)) <= CROSS_TOLERANCE &&
+    Math.abs((a.height ?? 0) - (b.height ?? 0)) <= CROSS_TOLERANCE
+  );
+}
+
+function dropOccludedDuplicates(n: SerializedNode, stats: OptimizeStats): void {
+  if (n.children && n.children.length > 1) {
+    const kept: SerializedNode[] = [];
+    for (let i = 0; i < n.children.length; i++) {
+      const c = n.children[i];
+      const key = occlusionKey(c);
+      let occluded = false;
+      if (key && c.width && c.height) {
+        for (let j = i + 1; j < n.children.length; j++) {
+          if (occlusionKey(n.children[j]) === key && sameBox(c, n.children[j])) {
+            occluded = true;
+            break;
+          }
+        }
+      }
+      if (occluded) stats.occludedDuplicates += 1;
+      else kept.push(c);
+    }
+    n.children = kept;
+  }
+  if (n.children) for (const c of n.children) dropOccludedDuplicates(c, stats);
+}
+
 export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stats: OptimizeStats } {
   const stats: OptimizeStats = {
     beforeNodes: countNodes(root),
@@ -354,9 +396,12 @@ export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stat
     flattenedFrames: 0,
     inferredLayouts: 0,
     collapsedRepeats: 0,
-    truncatedChildren: 0
+    truncatedChildren: 0,
+    occludedDuplicates: 0
   };
   const flattened = flattenGroupWrappers(root, stats);
+  // 겹친 중복(쌓인 대체 상태)은 압축·추론 전에 제거 — 죽은 DOM이 이후 패스에 끼지 않게.
+  dropOccludedDuplicates(flattened, stats);
   collapseRepeatingChildren(flattened, stats);
   // 잘림은 압축 이후 마지막에 — 반복 리스트는 이미 줄어든 상태이므로 잘릴 일이 없다.
   truncateBreadth(flattened, stats);

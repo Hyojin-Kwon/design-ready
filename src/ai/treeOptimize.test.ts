@@ -60,3 +60,77 @@ describe("optimizeTree truncation ordering", () => {
     expect(tree.children!.some((c) => c.id === "__truncated__")).toBe(false);
   });
 });
+
+describe("optimizeTree occlusion dedup", () => {
+  function band(id: string, name: string, y: number, h: number): SerializedNode {
+    return {
+      id,
+      type: "INSTANCE",
+      name,
+      componentRef: { name },
+      x: 0,
+      y,
+      width: 375,
+      height: h
+    };
+  }
+
+  test("stacked same-component duplicates at identical bounds → occluded one dropped, topmost kept", () => {
+    // 두 BottomNav가 같은 위치에 겹쳐 쌓임(뱃지 유/무 두 상태). 사이에 Header.
+    const navA = band("navA", "Bottom Navigation", 728, 84);
+    const header = band("header", "Header", 0, 44);
+    const navB = band("navB", "Bottom Navigation", 728, 84);
+    const screen: SerializedNode = {
+      id: "root",
+      type: "FRAME",
+      name: "Screen",
+      width: 375,
+      height: 812,
+      children: [navA, header, navB]
+    };
+
+    const { tree, stats } = optimizeTree(screen);
+
+    expect(stats.occludedDuplicates).toBe(1);
+    const navs = tree.children!.filter((c) => c.name === "Bottom Navigation");
+    expect(navs.length).toBe(1);
+    expect(navs[0].id).toBe("navB"); // 최상단(나중 index)이 남는다
+    expect(tree.children!.some((c) => c.name === "Header")).toBe(true);
+  });
+
+  test("overlapping but DIFFERENT components are NOT deduped", () => {
+    const badge = band("a", "Badge", 0, 20);
+    const avatar = band("b", "Avatar", 0, 20);
+    const screen: SerializedNode = {
+      id: "root",
+      type: "FRAME",
+      name: "Screen",
+      width: 375,
+      height: 100,
+      children: [badge, avatar]
+    };
+
+    const { tree, stats } = optimizeTree(screen);
+
+    expect(stats.occludedDuplicates).toBe(0);
+    expect(tree.children!.length).toBe(2);
+  });
+
+  test("same component at DIFFERENT positions is NOT deduped", () => {
+    const a = band("a", "Tab", 0, 40);
+    const b = band("b", "Tab", 100, 40); // 다른 y → 겹치지 않음
+    const screen: SerializedNode = {
+      id: "root",
+      type: "FRAME",
+      name: "Screen",
+      width: 375,
+      height: 200,
+      children: [a, b]
+    };
+
+    const { tree, stats } = optimizeTree(screen);
+
+    expect(stats.occludedDuplicates).toBe(0);
+    expect(tree.children!.length).toBe(2);
+  });
+});
