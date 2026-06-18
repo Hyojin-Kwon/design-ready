@@ -24,7 +24,7 @@ import { AboutTab } from "./tabs/AboutTab";
 import { LangCtx } from "./LangContext";
 import { translations, type Lang } from "../i18n";
 
-const PLUGIN_VERSION = "0.1.0";
+const PLUGIN_VERSION = "0.2.0";
 
 const DEFAULT_SETTINGS: PluginSettings = {
   apiKey: "",
