@@ -287,14 +287,30 @@ function inferLayouts(n: SerializedNode, stats: OptimizeStats): void {
   }
 }
 
+// 서브트리의 보이는 텍스트를 순서대로 이어붙인 지문. 반복 판정에 텍스트 동일성을
+// 포함시키기 위함 — 구조가 같아도 내용이 다르면 다른 지문이 된다.
+function subtreeText(n: SerializedNode): string {
+  let s = n.text?.chars ?? "";
+  if (n.children) for (const c of n.children) s += "\n" + subtreeText(c);
+  return s;
+}
+
 function repeatSignature(n: SerializedNode): string | null {
-  if (n.componentRef?.name) return `c:${n.componentRef.name}`;
-  // Match siblings with numbered suffixes: "List Item 1", "List Item 2" → sig "List Item"
-  const stripped = n.name.replace(/[\s_-]*\d+$/, "");
-  if (stripped !== n.name && stripped.length > 0 && n.type !== "TEXT") {
-    return `p:${n.type}:${stripped}`;
+  let base: string | null = null;
+  if (n.componentRef?.name) {
+    base = `c:${n.componentRef.name}`;
+  } else {
+    // Match siblings with numbered suffixes: "List Item 1", "List Item 2" → sig "List Item"
+    const stripped = n.name.replace(/[\s_-]*\d+$/, "");
+    if (stripped !== n.name && stripped.length > 0 && n.type !== "TEXT") {
+      base = `p:${n.type}:${stripped}`;
+    }
   }
-  return null;
+  if (base === null) return null;
+  // 컴포넌트/이름 정체성이 같아도 "보이는 텍스트까지 동일"할 때만 반복으로 합친다.
+  // 텍스트가 다른 형제(라벨이 다른 탭/칩, 이름이 다른 리스트 행)를 합치면 대표 1개의
+  // 텍스트로 N개가 찍혀 나머지 내용이 영구 소실된다(탭/리스트 누락의 원인).
+  return `${base} ${subtreeText(n)}`;
 }
 
 function collapseRepeatingChildren(n: SerializedNode, stats: OptimizeStats): void {

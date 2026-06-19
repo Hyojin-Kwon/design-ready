@@ -134,3 +134,67 @@ describe("optimizeTree occlusion dedup", () => {
     expect(tree.children!.length).toBe(2);
   });
 });
+
+describe("optimizeTree content-aware repeat collapse", () => {
+  // 같은 컴포넌트(Chip) 인스턴스지만 라벨 텍스트가 다른 탭/칩.
+  function chip(id: string, label: string, x: number): SerializedNode {
+    return {
+      id,
+      type: "INSTANCE",
+      name: "Chip",
+      width: 80,
+      height: 35,
+      x,
+      y: 0,
+      componentRef: { name: "Chip" },
+      children: [
+        {
+          id: `${id}-t`,
+          type: "TEXT",
+          name: "label",
+          width: 60,
+          height: 18,
+          text: { chars: label, fontSize: 13, fontWeight: 600 },
+        },
+      ],
+    };
+  }
+  function bar(children: SerializedNode[]): SerializedNode {
+    return { id: "root", type: "FRAME", name: "Tabs", width: 375, height: 49, children };
+  }
+
+  test("동일 컴포넌트라도 텍스트가 다른 형제는 collapse하지 않는다 (탭/리스트 누락 방지)", () => {
+    const tree0 = bar([
+      chip("a", "Favorites", 0),
+      chip("b", "OpenChats", 84),
+      chip("c", "Groups", 168),
+      chip("d", "Events", 252),
+    ]);
+    const { tree, stats } = optimizeTree(tree0);
+
+    expect(stats.collapsedRepeats).toBe(0);
+    expect(tree.children!.length).toBe(4);
+    // 네 탭의 라벨이 전부 보존된다.
+    expect(tree.children!.map((c) => c.children![0].text!.chars)).toEqual([
+      "Favorites",
+      "OpenChats",
+      "Groups",
+      "Events",
+    ]);
+    expect(tree.children!.some((c) => typeof c.repeatCount === "number")).toBe(false);
+  });
+
+  test("컴포넌트 + 텍스트까지 동일한 진짜 반복은 여전히 collapse된다", () => {
+    const tree0 = bar([
+      chip("a", "Tag", 0),
+      chip("b", "Tag", 84),
+      chip("c", "Tag", 168),
+      chip("d", "Tag", 252),
+    ]);
+    const { tree, stats } = optimizeTree(tree0);
+
+    expect(stats.collapsedRepeats).toBeGreaterThan(0);
+    const rep = tree.children!.find((c) => typeof c.repeatCount === "number");
+    expect(rep?.repeatCount).toBe(4);
+  });
+});
