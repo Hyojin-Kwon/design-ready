@@ -184,6 +184,57 @@ describe("optimizeTree content-aware repeat collapse", () => {
     expect(tree.children!.some((c) => typeof c.repeatCount === "number")).toBe(false);
   });
 
+  test("오토레이아웃 행(좌표 없음)은 같은 이름·크기라도 겹침 제거되지 않는다", () => {
+    // 세로 리스트의 행들은 오토레이아웃 흐름이라 x/y가 없다. 같은 이름("List/Row")이라도
+    // 절대 좌표상 겹치지 않으므로 dropOccludedDuplicates가 떨궈선 안 된다(친구 행 누락 버그).
+    const row = (id: string, label: string): SerializedNode => ({
+      id,
+      type: "FRAME",
+      name: "List/Row",
+      width: 205,
+      height: 48,
+      children: [
+        { id: `${id}-p`, type: "FRAME", name: "Photo", width: 48, height: 48, fill: "#EEE" },
+        {
+          id: `${id}-t`,
+          type: "TEXT",
+          name: "name",
+          width: 143,
+          height: 18,
+          text: { chars: label, fontSize: 15, fontWeight: 500 },
+        },
+      ],
+    });
+    const list: SerializedNode = {
+      id: "list",
+      type: "FRAME",
+      name: "list",
+      width: 375,
+      height: 204,
+      layout: {
+        mode: "VERTICAL",
+        gap: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
+        primaryAxisAlign: "MIN",
+        counterAxisAlign: "MIN",
+      },
+      children: [row("a", "Adela"), row("b", "Alison Lee"), row("c", "Becky")],
+    };
+
+    const { tree, stats } = optimizeTree(list);
+
+    expect(stats.occludedDuplicates).toBe(0);
+    expect(tree.children!.length).toBe(3);
+    expect(tree.children!.map((r) => r.children![1].text!.chars)).toEqual([
+      "Adela",
+      "Alison Lee",
+      "Becky",
+    ]);
+  });
+
   test("컴포넌트 + 텍스트까지 동일한 진짜 반복은 여전히 collapse된다", () => {
     const tree0 = bar([
       chip("a", "Tag", 0),

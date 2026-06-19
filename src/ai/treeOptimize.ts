@@ -368,9 +368,16 @@ function occlusionKey(n: SerializedNode): string | null {
 }
 
 function sameBox(a: SerializedNode, b: SerializedNode): boolean {
+  // 겹침은 "절대 좌표상 같은 위치에 쌓임"일 때만 성립한다. 오토레이아웃 자식은 x/y가
+  // 없어 흐름 배치되므로(세로 리스트 행 등) 결코 같은 위치에 겹치지 않는다. 좌표가
+  // 하나라도 없으면 같은 박스로 보지 않는다 — 그러지 않으면 좌표 미정(=0)으로 오판해
+  // 같은 이름의 리스트 행들이 통째로 중복 제거되어 사라진다.
+  if (a.x === undefined || a.y === undefined || b.x === undefined || b.y === undefined) {
+    return false;
+  }
   return (
-    Math.abs((a.x ?? 0) - (b.x ?? 0)) <= CROSS_TOLERANCE &&
-    Math.abs((a.y ?? 0) - (b.y ?? 0)) <= CROSS_TOLERANCE &&
+    Math.abs(a.x - b.x) <= CROSS_TOLERANCE &&
+    Math.abs(a.y - b.y) <= CROSS_TOLERANCE &&
     Math.abs((a.width ?? 0) - (b.width ?? 0)) <= CROSS_TOLERANCE &&
     Math.abs((a.height ?? 0) - (b.height ?? 0)) <= CROSS_TOLERANCE
   );
