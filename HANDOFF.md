@@ -44,6 +44,11 @@ Figma: Plugins → Development → Import plugin from manifest → 이 폴더의
 
 - **`src/export/systemPrompt.ts`의 `DEFAULT_SYSTEM_PROMPT`를 4월판(cde0b7b)으로 교체.** 검증된 깔끔 출력 프롬프트. (토큰 enumeration은 PROMPT.md에 별도 생성되므로 4월 프롬프트로도 토큰 사용 유지됨)
 - "leaner 트리" 실험은 **회귀 원인이 아님이 확정되어 전량 롤백**(토글·패스·테스트 제거).
+- **content-aware 반복 collapse** (`treeOptimize.ts` `repeatSignature`): 컴포넌트 정체성만 보고 텍스트 다른 형제까지 합쳐 라벨이 다른 탭/리스트 행이 대표 1개로 뭉개지던 버그. signature에 서브트리 텍스트 지문을 포함해 "보이는 텍스트까지 동일"할 때만 collapse.
+- **occlusion 좌표 가드** (`treeOptimize.ts` `sameBox`): x/y 미정의를 `?? 0`으로 떨어뜨려 오토레이아웃 자식(세로 리스트 행 등)을 전부 (0,0)에 겹친 중복으로 오판 → 같은 이름 친구 행 3개 중 2개가 사라지던 버그. x/y가 하나라도 없으면 같은 박스로 보지 않도록 수정(절대 배치 스택 dedup은 유지).
+- **`systemPrompt.ts` componentRef 규칙** + **예시 프롬프트(i18n EN/KO)**: "컴포넌트 라이브러리 없음 → children으로 인라인 렌더 + `// from:` 주석, import 지어내지 말 것"으로 명시·동기화(`data-component` 제거).
+
+위 fix들은 실제 Codex 5.5 변환 출력(friends 화면)으로 탭/행 누락 해소·컴포넌트 인라인 렌더 검증 완료.
 
 **남은 follow-up (선택):**
 - 4월 프롬프트로 Codex 5.5가 트리워커를 재발시키면, 장황한 HAND-WRITE 대신 **최소 가드 1줄**만 다시 추가.
