@@ -26,15 +26,30 @@ Figma: Plugins → Development → Import plugin from manifest → 이 폴더의
 
 **남은 배포 단계:** Figma 데스크탑에서 플러그인 **Publish**(사람이 직접; CLI 불가).
 
-## 다음 작업: V1 퀄리티 복원 ("leaner 트리" 실험)
+## 회귀 원인 규명 완료 (2026-06-19): 범인은 시스템 프롬프트
 
-**문제:** 트리워커는 잡았지만, 출력이 여전히 `position:absolute` + 정확 px로 픽셀-고정된 기계적 코드. 맨 처음 배포(V1, 4월)가 더 깔끔(flex 위주)했던 것으로 보임.
+**증상:** 출력이 `position:absolute` + 정확 px로 픽셀-고정된 기계적 코드. 4월(V1)이 더 깔끔(컴포넌트 분해 + CSS flex)했음.
 
-**근거(git 측정, 추측 아님):** V1 트리 직렬화엔 `absolute`/`inferredLayout`/`boundTokens`/정확 geometry 필드가 **전무**했음(0). 지금 SerializedNode는 66필드. 즉 V1은 뼈대만 줘서 모델이 flex로 해석·재구성하게 강제했고, 우리가 정확 좌표를 다 넣으면서 픽셀-전사로 몰림.
+**이전 가설은 반증됨:** "트리가 비대해져서(0→66필드) 픽셀 전사로 몰렸다"는 추정은 **git 측정으로 틀린 것으로 확인**. 변환 기능은 첫 커밋(cde0b7b, 4/23)부터 `absolute`/`x`/`y`/`inferredLayout`/`boundTokens`를 갖고 있었고, `SerializedNode` 필드 수는 4월 36 → 지금 37(추가된 건 `svgOmitted` 하나)뿐. flex/absolute 결정 기계(직렬화기 + 프롬프트의 absolute 규칙)는 4월과 글자 단위로 동일.
 
-**실험:** `src/ai/conversionSerialize.ts` / `src/ai/treeOptimize.ts`에서 직렬화를 **의도적으로 leaner하게** (정확 x/y·absolute 비중 축소, 뼈대 위주) → 같은 화면 변환해 flex/깔끔도 비교.
+**격리 실험으로 범인 확정 (변수 1개씩 고정):**
+- 변환 = Codex(플러그인이 아님). 4월 Codex 5.3 → 지금 5.5.
+- 4월 팩(4월 프롬프트+4월 패스+4월 트리)을 **현재 Codex 5.5**로 변환 → 깔끔 ✅ (∴ 모델 무죄)
+- **현재 트리·패스 그대로 + 프롬프트만 4월 것**으로 변환 → 깔끔 회복 ✅
+- ∴ **회귀는 100% 시스템 프롬프트.** optimize 패스 3개·트리·모델 모두 무죄.
 
-**필수 규율(오늘의 교훈):** 변환 출력은 **run마다 편차가 큼**. 같은 프롬프트가 시맨틱/트리워커 둘 다 냄. **샘플 1개로 인과 단정 금지** — 변경마다 같은 화면 2~3회 돌려 비교할 것.
+**유력 용의자:** 4월→현재 추가된 프롬프트 규칙 중 **HAND-WRITE 규칙(b42cc4d, 6/18)**. "author the JSX literally, element by element … styles inline"이 Codex 5.5를 컴포넌트 분해 대신 납작한 인라인 전사로 몰았을 가능성(트리워커 막으려다 픽셀 전사 유발).
+
+## 적용된 fix (2026-06-19)
+
+- **`src/export/systemPrompt.ts`의 `DEFAULT_SYSTEM_PROMPT`를 4월판(cde0b7b)으로 교체.** 검증된 깔끔 출력 프롬프트. (토큰 enumeration은 PROMPT.md에 별도 생성되므로 4월 프롬프트로도 토큰 사용 유지됨)
+- "leaner 트리" 실험은 **회귀 원인이 아님이 확정되어 전량 롤백**(토글·패스·테스트 제거).
+
+**남은 follow-up (선택):**
+- 4월 프롬프트로 Codex 5.5가 트리워커를 재발시키면, 장황한 HAND-WRITE 대신 **최소 가드 1줄**만 다시 추가.
+- 정밀히 하려면: 신규 규칙(토큰/variant/modification)을 하나씩 다시 넣어 **정확히 어느 규칙이 깨뜨리는지** 외과적 bisect → 유용한 규칙은 살리고 범인만 제거.
+
+**규율(교훈):** 변환 출력은 run마다 편차 큼 — 변경마다 같은 화면 2~3회 돌려 비교. 그리고 "git 측정"이라도 **실제로 다시 세어 검증**할 것(이번에 0→66필드 주장이 반증됨).
 
 ## 핵심 파일
 
