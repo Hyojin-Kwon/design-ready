@@ -14,6 +14,26 @@ npm run build
 Figma: Plugins → Development → Import plugin from manifest → 이 폴더의 `manifest.json`.
 플러그인 UI 미리보기(브라우저): `node scripts/preview-ui.mjs` → http://localhost:5180/ui.html
 
+## ⏭️ 월요일(2026-06-22) 이어서 할 일 — 우선순위순
+
+> 금요일(6/19) 세션 결과: 변환 회귀 5종 fix 완료(PR #1, 커밋 `6b4571c`~`c6192d1`). 아래 진단/적용 내역은 이 파일 하단 "회귀 원인 규명" 참조.
+
+**1. 최신 빌드 검증 (먼저)**
+- `git pull` 후 `rm -rf dist && npm run build:dev` → Figma에서 **Development** 항목으로 실행(게시본 말고!).
+- friends 화면 export → 검증: `PROMPT.md`에 `"TOKEN REPORT"` **없음** / `"Render the component inline"` **있음**, `tree.json`에 `repeatCount` **없음**, 출력에 친구 3행·탭 5개 다 있음.
+- 금요일에 사용자가 본 누락/TOKEN REPORT는 **Figma가 옛 게시본(stale)을 돌려서**였음(소스·clean dist는 정상 확인됨). Settings override는 비어 있음(확인됨).
+
+**2. 빌드 가드 추가 (재발 방지) — 이번 회귀의 진짜 원인**
+- `esbuild.config.mjs:9-11,147-154`의 **"워크트리에서 빌드 시 메인 `dist/ui.html` 자동 덮어쓰기"**가 stale dist의 원흉. (4월 테스트용 worktree 빌드가 메인 dist를 오염시킴)
+- 환경변수(예: `DESIGN_READY_SYNC_MAIN=true`)가 있을 때만 sync하도록 가드 추가, 기본은 끔. 또는 release 스크립트가 항상 `rm -rf dist` 선행하도록.
+- 남은 worktree(`youthful-joliot-e52fec` @cde0b7b) 정리도 검토 — 거기서 빌드되면 또 오염.
+
+**3. 정상 확인되면 prod 재배포**
+- `rm -rf dist && npm run build` → Figma 데스크탑에서 **Publish**(사람이 직접; CLI 불가).
+- 게시 직전 30초 검증: `grep -c "TOKEN REPORT" dist/ui.html`(=0), `grep -ic "render the component inline" dist/ui.html`(=1).
+
+**4. PR #1 머지** (검증·배포 끝나면)
+
 ## 현재 상태 (v0.2.0, 커밋 e576eaf)
 
 오늘 끝낸 것:
