@@ -7,6 +7,12 @@
   "editorType": ["figma"],
   "documentAccess": "dynamic-page",
   "networkAccess": {
-    "allowedDomains": ["https://api.anthropic.com"]
+    "allowedDomains": [
+      "https://api.anthropic.com",
+      "https://cdn.jsdelivr.net",
+      "https://hangeul.pstatic.net",
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com"
+    ]
   }
 }

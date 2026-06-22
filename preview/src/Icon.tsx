@@ -1,5 +1,5 @@
 // Icon.tsx — shared icon module for all baseline screens (merged).
-import React from 'react';
+import React from "react";
 
 export const ICONS: Record<string, string> = {
   // ── Status bar (shared) ─────────────────────────────────────────────────
@@ -50,7 +50,14 @@ export const Icon: React.FC<IconProps> = ({ name, style, className }) => {
   return (
     <span
       className={className}
-      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 0, flexShrink: 0, ...style }}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        lineHeight: 0,
+        flexShrink: 0,
+        ...style,
+      }}
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

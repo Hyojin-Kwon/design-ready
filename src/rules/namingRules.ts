@@ -9,7 +9,7 @@ const PRIMITIVE_SHAPE_TYPES: ReadonlyArray<SceneNode["type"]> = [
   "ELLIPSE",
   "STAR",
   "POLYGON",
-  "LINE"
+  "LINE",
 ];
 
 const DEFAULT_NAME_PATTERN =
@@ -35,7 +35,7 @@ export function checkDefaultNaming(node: SceneNode): Issue | null {
     title: "디폴트 레이어 이름",
     description: `"${node.name}"은 자동 생성된 이름입니다. 시맨틱하게 바꿔주세요 (예: Header/NavigationBar).`,
     severity: "warning",
-    category: "naming"
+    category: "naming",
   };
 }
 
@@ -71,6 +71,6 @@ export function checkDetachedInstance(node: SceneNode): Issue | null {
     title: "디태치된 인스턴스 의심",
     description,
     severity: "critical",
-    category: "system"
+    category: "system",
   };
 }

@@ -21,7 +21,7 @@ import type {
   PluginMessage,
   PluginSettings,
   ReplaceWithLdsResult,
-  ScanResult
+  ScanResult,
 } from "./types";
 
 const SETTINGS_KEY = "design-ready-settings";
@@ -30,7 +30,7 @@ const DEFAULT_SETTINGS: PluginSettings = {
   apiKey: "",
   model: "claude-haiku-4-5-20251001",
   aiEnabled: false,
-  ldsReference: ""
+  ldsReference: "",
 };
 
 // ============================================================================
@@ -94,7 +94,9 @@ async function applyOverrides(root: SceneNode, overrides: OverrideMap): Promise<
     if (ov && ov.type === node.type) {
       // 가시성.
       if (ov.visible === false && node.visible !== false) {
-        try { node.visible = false; } catch {}
+        try {
+          node.visible = false;
+        } catch {}
       }
       // 텍스트.
       if (node.type === "TEXT" && ov.characters != null && ov.fontName) {
@@ -178,7 +180,7 @@ async function clearLdsOverrideCatalog(): Promise<void> {
 
 function mergeCatalogPool(
   bundled: LdsTemplateCatalog | null,
-  override: LdsTemplateCatalog | null
+  override: LdsTemplateCatalog | null,
 ): LdsTemplateCatalogEntry[] {
   const byKey = new Map<string, LdsTemplateCatalogEntry>();
   if (bundled) for (const c of bundled.components) byKey.set(c.key, c);
@@ -216,12 +218,14 @@ async function extractLdsTemplateCatalog(): Promise<LdsTemplateCatalog> {
     // variant property 정의 추출 — COMPONENT_SET만 가짐. AI가 valid variant 조합을 알게.
     let variantProperties: Record<string, string[]> | undefined;
     if (target.type === "COMPONENT_SET") {
-      const defs = (target as unknown as {
-        componentPropertyDefinitions?: Record<
-          string,
-          { type: string; defaultValue: unknown; variantOptions?: string[] }
-        >;
-      }).componentPropertyDefinitions;
+      const defs = (
+        target as unknown as {
+          componentPropertyDefinitions?: Record<
+            string,
+            { type: string; defaultValue: unknown; variantOptions?: string[] }
+          >;
+        }
+      ).componentPropertyDefinitions;
       if (defs) {
         const result: Record<string, string[]> = {};
         for (const [propName, def] of Object.entries(defs)) {
@@ -241,7 +245,7 @@ async function extractLdsTemplateCatalog(): Promise<LdsTemplateCatalog> {
   return {
     components: entries,
     sourceFileName: figma.root.name,
-    extractedAt: new Date().toISOString()
+    extractedAt: new Date().toISOString(),
   };
 }
 
@@ -304,7 +308,7 @@ async function extractLibraryComponents(): Promise<{
     extractedAt: new Date().toISOString(),
     pageCount: figma.root.children.length,
     instanceCount: instanceCaptured,
-    componentCount: componentCaptured
+    componentCount: componentCaptured,
   };
 }
 
@@ -491,7 +495,7 @@ async function applyAutofix(item: AutofixItem): Promise<void> {
       }
       (parent as ChildrenMixin & { insertChild(i: number, n: SceneNode): void }).insertChild(
         index < 0 ? 0 : index,
-        child
+        child,
       );
       frame.remove();
       return;
@@ -529,9 +533,11 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
     const scene = node as SceneNode;
     const page = findOwningPage(scene);
     if (page && page.id !== figma.currentPage.id) {
-      const setter = (figma as unknown as {
-        setCurrentPageAsync?: (p: PageNode) => Promise<void>;
-      }).setCurrentPageAsync;
+      const setter = (
+        figma as unknown as {
+          setCurrentPageAsync?: (p: PageNode) => Promise<void>;
+        }
+      ).setCurrentPageAsync;
       if (typeof setter === "function") {
         await setter.call(figma, page);
       } else {
@@ -687,7 +693,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       const first = result.failed[0];
       figma.notify(`자동 수정 실패 (${ok}/${total}): ${first.error}`, {
         error: true,
-        timeout: 5000
+        timeout: 5000,
       });
     } else {
       figma.notify(`${ok}/${total}개 자동 수정 완료`);
@@ -701,7 +707,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       if (selection.length === 0) {
         figma.ui.postMessage({
           type: "export:error",
-          message: "변환할 프레임을 1개 이상 선택해주세요."
+          message: "변환할 프레임을 1개 이상 선택해주세요.",
         });
         return;
       }
@@ -710,7 +716,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
       if (invalid.length > 0) {
         figma.ui.postMessage({
           type: "export:error",
-          message: "FRAME, COMPONENT, INSTANCE, SECTION만 export 가능합니다."
+          message: "FRAME, COMPONENT, INSTANCE, SECTION만 export 가능합니다.",
         });
         return;
       }
@@ -730,7 +736,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         truncatedChildren: 0,
         totalIconNodes: 0,
         uniqueIcons: 0,
-        iconBytes: 0
+        iconBytes: 0,
       };
       for (const target of selection) {
         const scene = target as SceneNode;
@@ -778,8 +784,8 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
           screens,
           libraryComponents: Array.from(libSet).sort(),
           flow,
-          optStats
-        }
+          optStats,
+        },
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -817,9 +823,11 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
           component = await figma.importComponentByKeyAsync(item.componentKey);
         } catch (firstErr) {
           try {
-            const set = await (figma as unknown as {
-              importComponentSetByKeyAsync: (key: string) => Promise<ComponentSetNode>;
-            }).importComponentSetByKeyAsync(item.componentKey);
+            const set = await (
+              figma as unknown as {
+                importComponentSetByKeyAsync: (key: string) => Promise<ComponentSetNode>;
+              }
+            ).importComponentSetByKeyAsync(item.componentKey);
             const def =
               (set as unknown as { defaultVariant?: ComponentNode }).defaultVariant ??
               (set.children.find((c) => c.type === "COMPONENT") as ComponentNode | undefined);
@@ -828,7 +836,7 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
           } catch (secondErr) {
             // 로컬 fallback: 현재 파일 내 컴포넌트 중 key 일치하는 노드 탐색.
             const localMatches = figma.root.findAllWithCriteria({
-              types: ["COMPONENT", "COMPONENT_SET"]
+              types: ["COMPONENT", "COMPONENT_SET"],
             });
             let localFound: ComponentNode | null = null;
             for (const n of localMatches) {
@@ -871,12 +879,16 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
           layoutGrow: (frame as unknown as { layoutGrow?: number }).layoutGrow,
           layoutPositioning: (frame as unknown as { layoutPositioning?: "AUTO" | "ABSOLUTE" })
             .layoutPositioning,
-          layoutSizingHorizontal: (frame as unknown as {
-            layoutSizingHorizontal?: "FIXED" | "HUG" | "FILL";
-          }).layoutSizingHorizontal,
-          layoutSizingVertical: (frame as unknown as {
-            layoutSizingVertical?: "FIXED" | "HUG" | "FILL";
-          }).layoutSizingVertical
+          layoutSizingHorizontal: (
+            frame as unknown as {
+              layoutSizingHorizontal?: "FIXED" | "HUG" | "FILL";
+            }
+          ).layoutSizingHorizontal,
+          layoutSizingVertical: (
+            frame as unknown as {
+              layoutSizingVertical?: "FIXED" | "HUG" | "FILL";
+            }
+          ).layoutSizingVertical,
         };
 
         const index = (parent as ChildrenMixin).children.indexOf(frame);
@@ -885,13 +897,13 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
         // 삽입 먼저 (부모 오토레이아웃 문맥 들어간 뒤 sizing 적용해야 반영됨).
         (parent as ChildrenMixin & { insertChild(i: number, n: SceneNode): void }).insertChild(
           index < 0 ? 0 : index,
-          instance
+          instance,
         );
 
         // 절대 위치 복원 (부모가 오토레이아웃이면 layoutPositioning=ABSOLUTE일 때만 효과).
         if (snapshot.layoutPositioning) {
-          (instance as unknown as { layoutPositioning?: "AUTO" | "ABSOLUTE" })
-            .layoutPositioning = snapshot.layoutPositioning;
+          (instance as unknown as { layoutPositioning?: "AUTO" | "ABSOLUTE" }).layoutPositioning =
+            snapshot.layoutPositioning;
         }
         instance.x = snapshot.x;
         instance.y = snapshot.y;
@@ -910,12 +922,16 @@ figma.ui.onmessage = async (msg: PluginMessage) => {
             if (snapshot.layoutSizingHorizontal === "FILL") {
               inst.layoutSizingHorizontal = "FILL";
             } else {
-              try { inst.layoutSizingHorizontal = "FIXED"; } catch {}
+              try {
+                inst.layoutSizingHorizontal = "FIXED";
+              } catch {}
             }
             if (snapshot.layoutSizingVertical === "FILL") {
               inst.layoutSizingVertical = "FILL";
             } else {
-              try { inst.layoutSizingVertical = "FIXED"; } catch {}
+              try {
+                inst.layoutSizingVertical = "FIXED";
+              } catch {}
             }
             instance.resize(snapshot.width, snapshot.height);
           }
@@ -989,11 +1005,15 @@ function collectPrototypeFlow(selection: readonly SceneNode[]): ExportFlowLink[]
   for (const sourceRoot of selection) {
     const fromScreen = sourceRoot.name;
     const visit = (node: BaseNode) => {
-      const reactions = (node as unknown as { reactions?: Array<{
-        trigger?: { type?: string };
-        action?: { type?: string; navigation?: string; destinationId?: string };
-        actions?: Array<{ type?: string; navigation?: string; destinationId?: string }>;
-      }> }).reactions;
+      const reactions = (
+        node as unknown as {
+          reactions?: Array<{
+            trigger?: { type?: string };
+            action?: { type?: string; navigation?: string; destinationId?: string };
+            actions?: Array<{ type?: string; navigation?: string; destinationId?: string }>;
+          }>;
+        }
+      ).reactions;
       if (Array.isArray(reactions)) {
         for (const r of reactions) {
           const actionList = r.actions ?? (r.action ? [r.action] : []);
@@ -1005,7 +1025,7 @@ function collectPrototypeFlow(selection: readonly SceneNode[]): ExportFlowLink[]
               from: { screen: fromScreen, nodeId: node.id, nodeName: node.name },
               to: { screen: idToLabel.get(destId)! },
               trigger: r.trigger?.type ?? "UNKNOWN",
-              action: a.navigation ?? a.type ?? "NAVIGATE"
+              action: a.navigation ?? a.type ?? "NAVIGATE",
             });
           }
         }

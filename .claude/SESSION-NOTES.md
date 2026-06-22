@@ -39,6 +39,7 @@
 ## 월요일 계획: Level 1-2 신규 디자인 생성
 
 ### 목표
+
 Export Pack을 base로 **LDS 스타일 신규 화면 생성** 가능하게. Figma→code 변환을 넘어 code→new design까지.
 
 - **Level 1** = 기존 화면 변주 (도메인/컨텐츠만 교체, 구조 유지)

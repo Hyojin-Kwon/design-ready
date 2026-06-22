@@ -55,7 +55,10 @@ function minifySvg(svg: string): string {
   // Drop figma-specific/verbose attributes that have no rendering impact.
   s = s.replace(/\s(?:id|data-[a-zA-Z0-9_-]+|xmlns:[a-zA-Z]+)="[^"]*"/g, "");
   // Collapse whitespace.
-  s = s.replace(/>\s+</g, "><").replace(/\s{2,}/g, " ").trim();
+  s = s
+    .replace(/>\s+</g, "><")
+    .replace(/\s{2,}/g, " ")
+    .trim();
   return s;
 }
 
@@ -65,9 +68,10 @@ export interface IconExtractStats {
   totalBytes: number;
 }
 
-export function extractIcons(
-  tree: SerializedNode
-): { iconMap: Record<string, string>; stats: IconExtractStats } {
+export function extractIcons(tree: SerializedNode): {
+  iconMap: Record<string, string>;
+  stats: IconExtractStats;
+} {
   const iconMap: Record<string, string> = {};
   const byContent = new Map<string, string>();
   let seq = 0;
@@ -94,7 +98,7 @@ export function extractIcons(
   for (const v of Object.values(iconMap)) totalBytes += v.length;
   return {
     iconMap,
-    stats: { totalIconNodes, uniqueIcons: Object.keys(iconMap).length, totalBytes }
+    stats: { totalIconNodes, uniqueIcons: Object.keys(iconMap).length, totalBytes },
   };
 }
 
@@ -115,7 +119,7 @@ const VECTOR_PRIMITIVE_TYPES = new Set([
   "STAR",
   "POLYGON",
   "LINE",
-  "ELLIPSE"
+  "ELLIPSE",
 ]);
 
 function isVectorPrimitive(type: string): boolean {
@@ -127,24 +131,18 @@ function hasGradientStroke(node: SceneNode): boolean {
   const strokes = (node as GeometryMixin).strokes;
   if (!Array.isArray(strokes)) return false;
   return strokes.some(
-    (s) => s.visible !== false && typeof s.type === "string" && s.type.startsWith("GRADIENT")
+    (s) => s.visible !== false && typeof s.type === "string" && s.type.startsWith("GRADIENT"),
   );
 }
 
 function isIconCandidate(node: SceneNode): boolean {
   if (isVectorPrimitive(node.type)) return true;
   if (hasGradientStroke(node)) return true;
-  if (
-    (node.type === "FRAME" || node.type === "GROUP") &&
-    "width" in node &&
-    "height" in node
-  ) {
+  if ((node.type === "FRAME" || node.type === "GROUP") && "width" in node && "height" in node) {
     const w = (node as LayoutMixin).width;
     const h = (node as LayoutMixin).height;
     if (w <= ICON_MAX_DIM && h <= ICON_MAX_DIM && "findOne" in node) {
-      const hasVector = (node as FrameNode | GroupNode).findOne((n) =>
-        isVectorPrimitive(n.type)
-      );
+      const hasVector = (node as FrameNode | GroupNode).findOne((n) => isVectorPrimitive(n.type));
       if (hasVector) return true;
     }
   }
@@ -154,9 +152,11 @@ function isIconCandidate(node: SceneNode): boolean {
 async function tryExportSvg(node: SceneNode): Promise<string | undefined> {
   if (!("exportAsync" in node)) return undefined;
   try {
-    const svg = await (node as unknown as {
-      exportAsync(settings: { format: "SVG_STRING" }): Promise<string>;
-    }).exportAsync({ format: "SVG_STRING" });
+    const svg = await (
+      node as unknown as {
+        exportAsync(settings: { format: "SVG_STRING" }): Promise<string>;
+      }
+    ).exportAsync({ format: "SVG_STRING" });
     if (!svg) return undefined;
     const compact = svg.replace(/\s+/g, " ").trim();
     if (compact.length > MAX_SVG_CHARS) return undefined;
@@ -167,7 +167,10 @@ async function tryExportSvg(node: SceneNode): Promise<string | undefined> {
 }
 
 function hex(r: number, g: number, b: number): string {
-  const toHex = (v: number) => Math.round(v * 255).toString(16).padStart(2, "0");
+  const toHex = (v: number) =>
+    Math.round(v * 255)
+      .toString(16)
+      .padStart(2, "0");
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
 }
 
@@ -231,7 +234,7 @@ function describeEffects(node: SceneNode): string[] | undefined {
       const color = hex(ds.color.r, ds.color.g, ds.color.b);
       const alpha = Math.round(ds.color.a * 100);
       out.push(
-        `${e.type === "INNER_SHADOW" ? "inset " : ""}${ds.offset.x} ${ds.offset.y} ${ds.radius} ${color}@${alpha}%`
+        `${e.type === "INNER_SHADOW" ? "inset " : ""}${ds.offset.x} ${ds.offset.y} ${ds.radius} ${color}@${alpha}%`,
       );
     } else if (e.type === "LAYER_BLUR" || e.type === "BACKGROUND_BLUR") {
       out.push(`${e.type.toLowerCase()}(${e.radius})`);
@@ -276,12 +279,12 @@ function describeCornerRadius(node: SceneNode): number | undefined {
   return undefined;
 }
 
-async function describeBoundTokens(
-  node: SceneNode
-): Promise<Record<string, string> | undefined> {
-  const bound = (node as unknown as {
-    boundVariables?: Record<string, { id: string } | { id: string }[]>;
-  }).boundVariables;
+async function describeBoundTokens(node: SceneNode): Promise<Record<string, string> | undefined> {
+  const bound = (
+    node as unknown as {
+      boundVariables?: Record<string, { id: string } | { id: string }[]>;
+    }
+  ).boundVariables;
   if (!bound) return undefined;
   const out: Record<string, string> = {};
   for (const [key, value] of Object.entries(bound)) {
@@ -298,9 +301,7 @@ async function describeBoundTokens(
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
-async function describeComponentRef(
-  node: SceneNode
-): Promise<SerializedNode["componentRef"]> {
+async function describeComponentRef(node: SceneNode): Promise<SerializedNode["componentRef"]> {
   if (node.type !== "INSTANCE") return undefined;
   const instance = node as InstanceNode;
   // documentAccess: "dynamic-page" 모드에서는 동기 mainComponent 접근 금지.
@@ -317,24 +318,21 @@ export async function serializeNode(
   node: SceneNode,
   depth = 0,
   parentLayoutMode?: string,
-  parentName?: string
+  parentName?: string,
 ): Promise<SerializedNode> {
   const result: SerializedNode = {
     id: node.id,
     type: node.type,
-    name: node.name
+    name: node.name,
   };
 
   if ("width" in node && "height" in node) {
     result.width = Math.round((node as LayoutMixin).width);
     result.height = Math.round((node as LayoutMixin).height);
   }
-  const layoutPositioning = (node as unknown as { layoutPositioning?: string })
-    .layoutPositioning;
+  const layoutPositioning = (node as unknown as { layoutPositioning?: string }).layoutPositioning;
   const isAbsolute =
-    layoutPositioning === "ABSOLUTE" ||
-    !parentLayoutMode ||
-    parentLayoutMode === "NONE";
+    layoutPositioning === "ABSOLUTE" || !parentLayoutMode || parentLayoutMode === "NONE";
   if ((depth === 0 || isAbsolute) && "x" in node && "y" in node) {
     result.x = Math.round((node as LayoutMixin).x);
     result.y = Math.round((node as LayoutMixin).y);
@@ -343,13 +341,15 @@ export async function serializeNode(
       if (parentName) result.anchorParent = parentName;
     }
   }
-  const constraints = (node as unknown as {
-    constraints?: { horizontal: string; vertical: string };
-  }).constraints;
+  const constraints = (
+    node as unknown as {
+      constraints?: { horizontal: string; vertical: string };
+    }
+  ).constraints;
   if (constraints && isAbsolute && depth > 0) {
     result.constraints = {
       horizontal: constraints.horizontal,
-      vertical: constraints.vertical
+      vertical: constraints.vertical,
     };
   }
 
@@ -364,7 +364,7 @@ export async function serializeNode(
         paddingLeft: frame.paddingLeft,
         paddingRight: frame.paddingRight,
         primaryAxisAlign: frame.primaryAxisAlignItems,
-        counterAxisAlign: frame.counterAxisAlignItems
+        counterAxisAlign: frame.counterAxisAlignItems,
       };
     }
   }
@@ -399,8 +399,7 @@ export async function serializeNode(
     }
     // SVG export 실패(과대/에러). 자식이 없으면 모양을 조각으로 복구할 수도 없으므로
     // 조용히 빈 노드로 흘려보내지 말고, 아이콘이었음을 명시해 누락을 드러낸다.
-    const hasChildren =
-      "children" in node && (node as ChildrenMixin).children.length > 0;
+    const hasChildren = "children" in node && (node as ChildrenMixin).children.length > 0;
     if (!hasChildren) {
       result.svgOmitted = true;
       const dims = result.width && result.height ? `${result.width}x${result.height}` : "";
@@ -419,8 +418,7 @@ export async function serializeNode(
     const children = (node as ChildrenMixin).children as readonly SceneNode[];
     const visible = children.filter((c) => c.visible !== false);
     if (visible.length > 0) {
-      const ownLayoutMode =
-        (node as unknown as { layoutMode?: string }).layoutMode ?? "NONE";
+      const ownLayoutMode = (node as unknown as { layoutMode?: string }).layoutMode ?? "NONE";
       const serialized: SerializedNode[] = [];
       for (const c of visible.slice(0, SERIALIZE_CHILD_SAFETY)) {
         serialized.push(await serializeNode(c, depth + 1, ownLayoutMode, node.name));
@@ -429,7 +427,7 @@ export async function serializeNode(
         serialized.push({
           id: "__truncated__",
           type: "META",
-          name: `... ${visible.length - SERIALIZE_CHILD_SAFETY}개 자식 생략`
+          name: `... ${visible.length - SERIALIZE_CHILD_SAFETY}개 자식 생략`,
         });
       }
       result.children = serialized;

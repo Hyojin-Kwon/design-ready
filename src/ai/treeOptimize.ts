@@ -8,6 +8,7 @@ export interface OptimizeStats {
   inferredLayouts: number;
   collapsedRepeats: number;
   truncatedChildren: number;
+  occludedDuplicates: number;
 }
 
 // 사용자 대상 자식 수 상한. repeat-collapse 이후 최종 적용되어, 반복 리스트가
@@ -45,13 +46,13 @@ function countNodes(n: SerializedNode): number {
 function hasVisualProps(n: SerializedNode): boolean {
   return Boolean(
     n.fill ||
-      n.stroke ||
-      n.cornerRadius ||
-      (n.effects && n.effects.length > 0) ||
-      n.componentRef ||
-      n.text ||
-      n.iconId ||
-      n.layout
+    n.stroke ||
+    n.cornerRadius ||
+    (n.effects && n.effects.length > 0) ||
+    n.componentRef ||
+    n.text ||
+    n.iconId ||
+    n.layout,
   );
 }
 
@@ -64,11 +65,7 @@ function isWrapperCandidate(n: SerializedNode): boolean {
     // Conservative FRAME flatten: no layout, no visual props, single child, not absolute-anchored,
     // and no bound tokens (those are semantic).
     return (
-      !hasVisualProps(n) &&
-      !n.boundTokens &&
-      !!n.children &&
-      n.children.length === 1 &&
-      !n.absolute
+      !hasVisualProps(n) && !n.boundTokens && !!n.children && n.children.length === 1 && !n.absolute
     );
   }
   return false;
@@ -105,13 +102,13 @@ function hasChildrenCoords(children: SerializedNode[]): boolean {
       typeof c.x === "number" &&
       typeof c.y === "number" &&
       typeof c.width === "number" &&
-      typeof c.height === "number"
+      typeof c.height === "number",
   );
 }
 
 function inferLayoutFor(
   parent: SerializedNode,
-  children: SerializedNode[]
+  children: SerializedNode[],
 ): InferredLayout | undefined {
   if (children.length < 2) return undefined;
   if (!hasChildrenCoords(children)) return undefined;
@@ -140,11 +137,12 @@ function inferLayoutFor(
   if (!horizontal && !vertical) return undefined;
 
   // Prefer direction with tighter cross-axis alignment
-  const direction: "HORIZONTAL" | "VERTICAL" = horizontal && !vertical
-    ? "HORIZONTAL"
-    : vertical && !horizontal
-      ? "VERTICAL"
-      : pickDirection(typed);
+  const direction: "HORIZONTAL" | "VERTICAL" =
+    horizontal && !vertical
+      ? "HORIZONTAL"
+      : vertical && !horizontal
+        ? "VERTICAL"
+        : pickDirection(typed);
 
   const sorted = direction === "HORIZONTAL" ? byX : byY;
 
@@ -186,9 +184,7 @@ function inferLayoutFor(
   }
 
   const counterAxisAlign = detectCounterAlign(typed, direction);
-  const primaryAxisAlign = uniformGap
-    ? "MIN"
-    : detectPrimaryAlign(typed, direction, parent);
+  const primaryAxisAlign = uniformGap ? "MIN" : detectPrimaryAlign(typed, direction, parent);
 
   // 균등 간격이면 그 값을, 비균등이면 최소 간격을 gap으로 사용 (나머지는 align으로 표현).
   const gap = Math.max(0, Math.round(minGap));
@@ -201,12 +197,12 @@ function inferLayoutFor(
     paddingLeft: Math.round(paddingLeft),
     paddingRight: Math.round(paddingRight),
     primaryAxisAlign,
-    counterAxisAlign
+    counterAxisAlign,
   };
 }
 
 function pickDirection(
-  children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>
+  children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>,
 ): "HORIZONTAL" | "VERTICAL" {
   const ys = children.map((c) => c.y);
   const xs = children.map((c) => c.x);
@@ -217,7 +213,7 @@ function pickDirection(
 
 function detectCounterAlign(
   children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>,
-  direction: "HORIZONTAL" | "VERTICAL"
+  direction: "HORIZONTAL" | "VERTICAL",
 ): "MIN" | "CENTER" | "MAX" {
   if (direction === "HORIZONTAL") {
     const tops = children.map((c) => c.y);
@@ -240,7 +236,7 @@ function detectCounterAlign(
 function detectPrimaryAlign(
   children: Array<SerializedNode & { x: number; y: number; width: number; height: number }>,
   direction: "HORIZONTAL" | "VERTICAL",
-  parent: SerializedNode
+  parent: SerializedNode,
 ): "MIN" | "CENTER" | "MAX" | "SPACE_BETWEEN" {
   if (children.length < 2) return "MIN";
   const first = children[0];
@@ -291,14 +287,30 @@ function inferLayouts(n: SerializedNode, stats: OptimizeStats): void {
   }
 }
 
+// 서브트리의 보이는 텍스트를 순서대로 이어붙인 지문. 반복 판정에 텍스트 동일성을
+// 포함시키기 위함 — 구조가 같아도 내용이 다르면 다른 지문이 된다.
+function subtreeText(n: SerializedNode): string {
+  let s = n.text?.chars ?? "";
+  if (n.children) for (const c of n.children) s += "\n" + subtreeText(c);
+  return s;
+}
+
 function repeatSignature(n: SerializedNode): string | null {
-  if (n.componentRef?.name) return `c:${n.componentRef.name}`;
-  // Match siblings with numbered suffixes: "List Item 1", "List Item 2" → sig "List Item"
-  const stripped = n.name.replace(/[\s_-]*\d+$/, "");
-  if (stripped !== n.name && stripped.length > 0 && n.type !== "TEXT") {
-    return `p:${n.type}:${stripped}`;
+  let base: string | null = null;
+  if (n.componentRef?.name) {
+    base = `c:${n.componentRef.name}`;
+  } else {
+    // Match siblings with numbered suffixes: "List Item 1", "List Item 2" → sig "List Item"
+    const stripped = n.name.replace(/[\s_-]*\d+$/, "");
+    if (stripped !== n.name && stripped.length > 0 && n.type !== "TEXT") {
+      base = `p:${n.type}:${stripped}`;
+    }
   }
-  return null;
+  if (base === null) return null;
+  // 컴포넌트/이름 정체성이 같아도 "보이는 텍스트까지 동일"할 때만 반복으로 합친다.
+  // 텍스트가 다른 형제(라벨이 다른 탭/칩, 이름이 다른 리스트 행)를 합치면 대표 1개의
+  // 텍스트로 N개가 찍혀 나머지 내용이 영구 소실된다(탭/리스트 누락의 원인).
+  return `${base} ${subtreeText(n)}`;
 }
 
 function collapseRepeatingChildren(n: SerializedNode, stats: OptimizeStats): void {
@@ -340,10 +352,58 @@ function truncateBreadth(n: SerializedNode, stats: OptimizeStats): void {
     n.children.push({
       id: "__truncated__",
       type: "META",
-      name: `... ${removed}개 자식 생략`
+      name: `... ${removed}개 자식 생략`,
     });
     stats.truncatedChildren += removed;
   }
+}
+
+// Figma children 배열은 index 0이 최하단, 마지막이 최상단(z-order). 같은 컴포넌트
+// 정체성 + 동일 bounds로 완전히 겹친 형제는 디자이너가 쌓아둔 대체 상태(예: 뱃지
+// 유/무 두 버전의 BottomNav) — 위 형제에 완전히 가려 보이지 않으므로, 가려진 쪽을
+// 제거한다. 화면에 보이는 결과는 바뀌지 않고 죽은 DOM만 사라진다.
+function occlusionKey(n: SerializedNode): string | null {
+  const ref = n.componentRef?.name ?? n.name;
+  return ref ? `${n.type}:${ref}` : null;
+}
+
+function sameBox(a: SerializedNode, b: SerializedNode): boolean {
+  // 겹침은 "절대 좌표상 같은 위치에 쌓임"일 때만 성립한다. 오토레이아웃 자식은 x/y가
+  // 없어 흐름 배치되므로(세로 리스트 행 등) 결코 같은 위치에 겹치지 않는다. 좌표가
+  // 하나라도 없으면 같은 박스로 보지 않는다 — 그러지 않으면 좌표 미정(=0)으로 오판해
+  // 같은 이름의 리스트 행들이 통째로 중복 제거되어 사라진다.
+  if (a.x === undefined || a.y === undefined || b.x === undefined || b.y === undefined) {
+    return false;
+  }
+  return (
+    Math.abs(a.x - b.x) <= CROSS_TOLERANCE &&
+    Math.abs(a.y - b.y) <= CROSS_TOLERANCE &&
+    Math.abs((a.width ?? 0) - (b.width ?? 0)) <= CROSS_TOLERANCE &&
+    Math.abs((a.height ?? 0) - (b.height ?? 0)) <= CROSS_TOLERANCE
+  );
+}
+
+function dropOccludedDuplicates(n: SerializedNode, stats: OptimizeStats): void {
+  if (n.children && n.children.length > 1) {
+    const kept: SerializedNode[] = [];
+    for (let i = 0; i < n.children.length; i++) {
+      const c = n.children[i];
+      const key = occlusionKey(c);
+      let occluded = false;
+      if (key && c.width && c.height) {
+        for (let j = i + 1; j < n.children.length; j++) {
+          if (occlusionKey(n.children[j]) === key && sameBox(c, n.children[j])) {
+            occluded = true;
+            break;
+          }
+        }
+      }
+      if (occluded) stats.occludedDuplicates += 1;
+      else kept.push(c);
+    }
+    n.children = kept;
+  }
+  if (n.children) for (const c of n.children) dropOccludedDuplicates(c, stats);
 }
 
 export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stats: OptimizeStats } {
@@ -354,9 +414,12 @@ export function optimizeTree(root: SerializedNode): { tree: SerializedNode; stat
     flattenedFrames: 0,
     inferredLayouts: 0,
     collapsedRepeats: 0,
-    truncatedChildren: 0
+    truncatedChildren: 0,
+    occludedDuplicates: 0,
   };
   const flattened = flattenGroupWrappers(root, stats);
+  // 겹친 중복(쌓인 대체 상태)은 압축·추론 전에 제거 — 죽은 DOM이 이후 패스에 끼지 않게.
+  dropOccludedDuplicates(flattened, stats);
   collapseRepeatingChildren(flattened, stats);
   // 잘림은 압축 이후 마지막에 — 반복 리스트는 이미 줄어든 상태이므로 잘릴 일이 없다.
   truncateBreadth(flattened, stats);

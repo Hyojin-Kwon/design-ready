@@ -4,7 +4,7 @@ import {
   BUILTIN_LDS,
   getFigmaComponentKey,
   getFigmaComponentName,
-  type LdsFigmaComponent
+  type LdsFigmaComponent,
 } from "../../data/ldsComponents";
 import { DEFAULT_SYSTEM_PROMPT } from "../../export/systemPrompt";
 
@@ -35,12 +35,12 @@ function formatRelativeTime(iso: string): string {
   if (Number.isNaN(then)) return iso;
   const diff = Date.now() - then;
   const min = Math.floor(diff / 60000);
-  if (min < 1) return "방금 전";
-  if (min < 60) return `${min}분 전`;
+  if (min < 1) return "just now";
+  if (min < 60) return `${min}m ago`;
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}시간 전`;
+  if (hr < 24) return `${hr}h ago`;
   const day = Math.floor(hr / 24);
-  return `${day}일 전`;
+  return `${day}d ago`;
 }
 
 // AI 네이밍 추론 기능은 잘못된 LDS 매칭을 유발해 일시 비활성화.
@@ -48,23 +48,23 @@ function formatRelativeTime(iso: string): string {
 const SHOW_AI_UI = false;
 
 const MODELS = [
-  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 (빠름·저렴)" },
-  { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6 (정확도 높음)" },
-  { id: "claude-opus-4-7", label: "Claude Opus 4.7 (최고 정확도·느림)" }
+  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 (fast · cheap)" },
+  { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6 (high accuracy)" },
+  { id: "claude-opus-4-7", label: "Claude Opus 4.7 (best accuracy · slow)" },
 ];
 
-const LDS_PLACEHOLDER = `예시 — 마크다운/리스트 형식 모두 가능
+const LDS_PLACEHOLDER = `Example — markdown or list format both work
 
 ## Components
-- Header: 최상단 내비게이션 바. 변형: Default, Transparent, Search
-- BottomNavigation: 하단 탭바 (3~5 items)
+- Header: top navigation bar. Variants: Default, Transparent, Search
+- BottomNavigation: bottom tab bar (3~5 items)
 - Button: Primary, Secondary, Tertiary, Ghost
 - ListItem: Single, WithThumbnail, WithMeta
 - Card, Chip, Badge, Avatar, Divider, Modal, BottomSheet, Toast
 
 ## Naming
-- 슬래시 계층: Header/BackButton, Card/Thumbnail
-- 상태: /Selected, /Disabled
+- Slash hierarchy: Header/BackButton, Card/Thumbnail
+- States: /Selected, /Disabled
 `;
 
 function mergeFigmaComponents(lib: ExtractedLibrary): {
@@ -102,7 +102,7 @@ function mergeFigmaComponents(lib: ExtractedLibrary): {
     existingCount,
     newCount: lib.components.length,
     addedCount: added,
-    updatedCount: updated
+    updatedCount: updated,
   };
 }
 
@@ -111,7 +111,7 @@ function formatExtractedJson(lib: ExtractedLibrary): string {
   const merged = {
     ...BUILTIN_LDS,
     figmaComponents: list,
-    figmaExtractedAt: lib.extractedAt
+    figmaExtractedAt: lib.extractedAt,
   };
   return JSON.stringify(merged, null, 2);
 }
@@ -127,7 +127,7 @@ export function SettingsTab({
   overrideLdsCatalog,
   onExtractLdsTemplate,
   onClearLdsTemplate,
-  ldsTemplateExtracting
+  ldsTemplateExtracting,
 }: Props) {
   const [apiKey, setApiKey] = useState(settings.apiKey);
   const [model, setModel] = useState(settings.model);
@@ -162,7 +162,7 @@ export function SettingsTab({
         copied = false;
       }
     }
-    setCopyMark(copied ? "복사됨" : "Cmd+C로 복사해주세요");
+    setCopyMark(copied ? "Copied" : "Press Cmd+C to copy");
     setTimeout(() => setCopyMark(""), 2500);
   };
 
@@ -173,7 +173,7 @@ export function SettingsTab({
       aiEnabled,
       ldsReference,
       systemPrompt: systemPrompt.trim() ? systemPrompt : undefined,
-      libraryImportPath: libraryImportPath.trim() || undefined
+      libraryImportPath: libraryImportPath.trim() || undefined,
     });
 
   const resetSystemPrompt = () => setSystemPrompt("");
@@ -182,10 +182,10 @@ export function SettingsTab({
     <div class="settings">
       {SHOW_AI_UI && (
         <>
-          <div class="section-title">AI 시맨틱 추론</div>
+          <div class="section-title">AI semantic inference</div>
           <p class="settings-desc">
-            룰로 못 잡은 디폴트 네이밍 노드를 Claude API로 추론합니다. API 키는 이 기기에만
-            저장됩니다.
+            Use the Claude API to infer names for default-named nodes the rule engine missed. The
+            API key is stored only on this device.
           </p>
 
           <label class="settings-field">
@@ -200,7 +200,7 @@ export function SettingsTab({
           </label>
 
           <label class="settings-field">
-            <span class="settings-label">모델</span>
+            <span class="settings-label">Model</span>
             <select
               class="settings-input"
               value={model}
@@ -220,19 +220,20 @@ export function SettingsTab({
               checked={aiEnabled}
               onChange={(e) => setAiEnabled((e.target as HTMLInputElement).checked)}
             />
-            <span>AI 추론 기능 활성화</span>
+            <span>Enable AI inference</span>
           </label>
 
           <div class="section-title" style={{ marginTop: 16 }}>
-            디자인 시스템 레퍼런스
+            Design system reference
           </div>
           <p class="settings-desc">
-            LDS(또는 쓰는 디자인 시스템) 컴포넌트/네이밍 규칙을 붙여넣으면 AI가 이 이름에 맞춰
-            제안합니다. 비워두면 일반 UI 컨벤션으로 동작합니다.
+            Paste your LDS (or whatever design system you use) components and naming rules. The AI
+            will align its suggestions to those names. Leave empty to fall back to generic UI
+            conventions.
           </p>
 
           <label class="settings-field">
-            <span class="settings-label">LDS 컴포넌트 · 규칙</span>
+            <span class="settings-label">LDS components · rules</span>
             <textarea
               class="settings-input settings-textarea"
               placeholder={LDS_PLACEHOLDER}
@@ -245,33 +246,33 @@ export function SettingsTab({
       )}
 
       <div class="section-title" style={{ marginTop: 16 }}>
-        React 컴포넌트 import 경로
+        React component import path
       </div>
       <p class="settings-desc">
-        라이브러리 컴포넌트의 React import 패키지 경로. 입력하면 <code>PROMPT.md</code>에
-        포함되어 Codex가 정확한 import 구문을 생성합니다.
+        The React import package path for library components. When set, it's included in{" "}
+        <code>PROMPT.md</code> so Codex generates accurate import statements.
       </p>
       <label class="settings-field">
-        <span class="settings-label">import 경로 (선택)</span>
+        <span class="settings-label">Import path (optional)</span>
         <input
           type="text"
           class="settings-input"
-          placeholder="예: @company/design-system"
+          placeholder="e.g. @company/design-system"
           value={libraryImportPath}
           onInput={(e) => setLibraryImportPath((e.target as HTMLInputElement).value)}
         />
       </label>
 
       <div class="section-title" style={{ marginTop: 16 }}>
-        Export Pack 시스템 프롬프트
+        Export Pack system prompt
       </div>
       <p class="settings-desc">
-        Export Pack의 <code>PROMPT.md</code>에 포함되는 변환 규칙입니다. 비워두면 기본
-        프롬프트가 사용됩니다. 프로젝트별 컨벤션이 있다면 여기서 덮어쓰세요.
+        Conversion rules included in the Export Pack's <code>PROMPT.md</code>. Leave empty to use
+        the default prompt. Override here for project-specific conventions.
       </p>
 
       <label class="settings-field">
-        <span class="settings-label">시스템 프롬프트 (선택)</span>
+        <span class="settings-label">System prompt (optional)</span>
         <textarea
           class="settings-input settings-textarea"
           placeholder={DEFAULT_SYSTEM_PROMPT}
@@ -282,7 +283,7 @@ export function SettingsTab({
       </label>
       <div class="settings-actions">
         <button class="btn" onClick={resetSystemPrompt} disabled={systemPrompt.length === 0}>
-          기본값으로 초기화
+          Reset to default
         </button>
       </div>
 
@@ -292,105 +293,104 @@ export function SettingsTab({
           onClick={save}
           disabled={SHOW_AI_UI && apiKey.trim().length === 0}
         >
-          저장
+          Save
         </button>
-        {savedMark && <span class="settings-saved">저장됨</span>}
+        {savedMark && <span class="settings-saved">Saved</span>}
       </div>
 
       {SHOW_AI_UI && (
         <p class="settings-note">
-          키 발급: <code>https://console.anthropic.com/</code>
+          Get a key: <code>https://console.anthropic.com/</code>
         </p>
       )}
 
       <div class="section-title" style={{ marginTop: 20 }}>
-        LDS 템플릿 카탈로그
+        LDS template catalog
       </div>
       <p class="settings-desc">
-        번들 카탈로그는 플러그인 빌드 시점에 인라인되어 모든 사용자에게 자동 적용됩니다.
-        로컬 override는 빌드 없이 시험할 때만 사용 (이 기기에만 저장).
+        The bundled catalog is inlined at plugin build time and applies to all users automatically.
+        The local override is for testing without a build (stored only on this device).
       </p>
       <p class="settings-desc" style={{ marginTop: 6 }}>
-        <strong>번들:</strong>{" "}
+        <strong>Bundled:</strong>{" "}
         {bundledLdsCatalog ? (
           <>
             {bundledLdsCatalog.sourceFileName} ·{" "}
-            <strong>{bundledLdsCatalog.components.length}개</strong> 컴포넌트 ·{" "}
-            {formatRelativeTime(bundledLdsCatalog.extractedAt)} 추출
+            <strong>{bundledLdsCatalog.components.length}</strong> components · extracted{" "}
+            {formatRelativeTime(bundledLdsCatalog.extractedAt)}
           </>
         ) : (
-          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>없음 (메인테이너 추출 필요)</span>
+          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>
+            None (maintainer extraction required)
+          </span>
         )}
       </p>
       <p class="settings-desc" style={{ marginTop: 2 }}>
-        <strong>로컬 override:</strong>{" "}
+        <strong>Local override:</strong>{" "}
         {overrideLdsCatalog ? (
           <>
             {overrideLdsCatalog.sourceFileName} ·{" "}
-            <strong>{overrideLdsCatalog.components.length}개</strong> ·{" "}
-            {formatRelativeTime(overrideLdsCatalog.extractedAt)} 추출
+            <strong>{overrideLdsCatalog.components.length}</strong> · extracted{" "}
+            {formatRelativeTime(overrideLdsCatalog.extractedAt)}
           </>
         ) : (
-          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>없음</span>
+          <span style={{ color: "var(--figma-color-text-secondary, #888)" }}>None</span>
         )}
       </p>
       <div class="settings-actions">
         <button class="btn" onClick={onExtractLdsTemplate} disabled={ldsTemplateExtracting}>
-          {ldsTemplateExtracting ? "추출 중..." : "현재 파일에서 추출 → JSON 다운로드"}
+          {ldsTemplateExtracting ? "Extracting..." : "Extract from current file → Download JSON"}
         </button>
         <button
           class="btn"
           onClick={onClearLdsTemplate}
           disabled={ldsTemplateExtracting || !overrideLdsCatalog}
         >
-          로컬 override 삭제
+          Clear local override
         </button>
       </div>
       <p class="settings-desc" style={{ marginTop: 4 }}>
-        메인테이너: 추출된 JSON을 <code>src/data/ldsCatalog.bundled.json</code>에
-        커밋하고 빌드 → 다음 릴리즈에 번들로 반영됩니다.
+        Maintainers: commit the extracted JSON to <code>src/data/ldsCatalog.bundled.json</code>
+        and rebuild → it ships as the bundle in the next release.
       </p>
 
       <div class="section-title" style={{ marginTop: 20 }}>
-        개발자 모드: LDS Figma 추출
+        Developer mode: LDS Figma extract
       </div>
-      <p class="settings-desc">
-        두 가지 모드 지원:
+      <p class="settings-desc">Two modes supported:</p>
+      <p class="settings-desc" style={{ marginTop: 2 }}>
+        <strong>A) Run from the LDS source file</strong> — once published (or republished), scans
+        every COMPONENT/COMPONENT_SET to collect the full vocabulary. Recommended.
       </p>
       <p class="settings-desc" style={{ marginTop: 2 }}>
-        <strong>A) LDS 원본 파일에서 실행</strong> — 퍼블리시(또는 Republish)된 상태에서
-        모든 COMPONENT/COMPONENT_SET를 스캔해 전체 어휘 수집. 권장.
-      </p>
-      <p class="settings-desc" style={{ marginTop: 2 }}>
-        <strong>B) LDS 인스턴스를 쓴 작업 파일에서 실행</strong> — 실제 쓰이는
-        INSTANCE의 mainComponent에서 key 수집. 퍼블리시 권한 없어도 동작.
+        <strong>B) Run from a working file that uses LDS instances</strong> — collects keys from
+        each INSTANCE's mainComponent. Works without publish permissions.
       </p>
       <p class="settings-desc" style={{ marginTop: 4 }}>
-        결과는 <strong>기존 어휘에 자동 병합</strong>되어 출력됩니다. 여러 파일에서 차례로
-        추출하면 커버리지가 누적됩니다.
+        Results are <strong>auto-merged with the existing vocabulary</strong>. Run across multiple
+        files to accumulate coverage.
       </p>
 
       <div class="settings-actions">
         <button class="btn" onClick={onExtract} disabled={extracting}>
-          {extracting ? "추출 중..." : "현재 파일에서 LDS 컴포넌트 추출"}
+          {extracting ? "Extracting..." : "Extract LDS components from current file"}
         </button>
       </div>
 
       {extractedLibrary && (
         <>
           <p class="settings-desc" style={{ marginTop: 4 }}>
-            <strong>{extractedLibrary.components.length}개</strong> 수집 · INSTANCE{" "}
-            {extractedLibrary.instanceCount}개 + COMPONENT{" "}
-            {extractedLibrary.componentCount}개 · 페이지 {extractedLibrary.pageCount}개
+            <strong>{extractedLibrary.components.length}</strong> collected · INSTANCE{" "}
+            {extractedLibrary.instanceCount} + COMPONENT {extractedLibrary.componentCount} ·{" "}
+            {extractedLibrary.pageCount} pages
           </p>
           {(() => {
             const m = mergeFigmaComponents(extractedLibrary);
             return (
               <p class="settings-desc" style={{ marginTop: 2 }}>
-                기존 <strong>{m.existingCount}</strong>개 + 이번 추가{" "}
-                <strong>{m.addedCount}</strong>개
-                {m.updatedCount > 0 ? ` (key 갱신 ${m.updatedCount}개)` : ""} → 병합 총{" "}
-                <strong>{m.list.length}</strong>개
+                Existing <strong>{m.existingCount}</strong> + added <strong>{m.addedCount}</strong>
+                {m.updatedCount > 0 ? ` (key updates ${m.updatedCount})` : ""} → merged total{" "}
+                <strong>{m.list.length}</strong>
               </p>
             );
           })()}
@@ -407,12 +407,12 @@ export function SettingsTab({
           </label>
           <div class="settings-actions">
             <button class="btn primary" onClick={copyJson}>
-              클립보드 복사
+              Copy to clipboard
             </button>
             {copyMark && <span class="settings-saved">{copyMark}</span>}
           </div>
           <p class="settings-note">
-            버튼이 안 되면 textarea 클릭 → Cmd+A → Cmd+C로 복사해주세요.
+            If the button doesn't work, click the textarea → Cmd+A → Cmd+C to copy.
           </p>
         </>
       )}

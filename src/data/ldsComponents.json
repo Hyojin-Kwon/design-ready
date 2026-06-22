@@ -19187,26 +19187,9 @@
       "Primary White",
       "Navigation Outline"
     ],
-    "size": [
-      "Small",
-      "Medium",
-      "Large"
-    ],
-    "background": [
-      "Light BG",
-      "Dark BG",
-      "Overlay",
-      "Common"
-    ],
-    "state": [
-      "On",
-      "Off",
-      "Active",
-      "Inactive",
-      "Selected",
-      "Unselected",
-      "Default"
-    ]
+    "size": ["Small", "Medium", "Large"],
+    "background": ["Light BG", "Dark BG", "Overlay", "Common"],
+    "state": ["On", "Off", "Active", "Inactive", "Selected", "Unselected", "Default"]
   },
   "rules": [
     "최상위 컴포넌트는 숫자 prefix로 구분 (예: 101 Button, 206 Card)",

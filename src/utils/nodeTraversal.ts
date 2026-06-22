@@ -19,11 +19,7 @@ export function walk(root: BaseNode, visit: (node: SceneNode, depth: number) => 
         continue;
       }
       // 페이지 바로 아래 최상위 노드에서 필터 적용
-      if (
-        topLevelFilter &&
-        node.type === "PAGE" &&
-        !topLevelFilter.has((child as SceneNode).id)
-      ) {
+      if (topLevelFilter && node.type === "PAGE" && !topLevelFilter.has((child as SceneNode).id)) {
         continue;
       }
       visit(child as SceneNode, depth);
@@ -133,7 +129,9 @@ export function isNearlyInvisible(node: SceneNode): boolean {
 export function countSceneDescendants(node: SceneNode): number {
   if (!("children" in node)) return 0;
   let count = 0;
-  const stack: readonly SceneNode[] = [...(node as ChildrenMixin).children as readonly SceneNode[]];
+  const stack: readonly SceneNode[] = [
+    ...((node as ChildrenMixin).children as readonly SceneNode[]),
+  ];
   const queue: SceneNode[] = [...stack];
   while (queue.length > 0) {
     const current = queue.pop()!;

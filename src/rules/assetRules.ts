@@ -38,7 +38,7 @@ export function checkRasterInIconSlot(node: SceneNode): Issue | null {
     title: "아이콘 자리에 Raster 이미지",
     description: `"${node.name}"이 ${Math.round(w)}×${Math.round(h)} 크기에 raster 이미지 fill을 사용합니다. 아이콘은 SVG(Vector)로 만들어야 코드 변환 시 <svg>로 선명하게 뽑힙니다.`,
     severity: "warning",
-    category: "style"
+    category: "style",
   };
 }
 
@@ -63,7 +63,7 @@ export function checkIconWithoutVector(node: SceneNode): Issue | null {
     title: "아이콘에 Vector 없음",
     description: `"${node.name}"은 아이콘으로 네이밍되었지만 내부에 vector가 없습니다. SVG로 변환되지 못하고 빈 요소로 뽑힐 수 있습니다.`,
     severity: "info",
-    category: "style"
+    category: "style",
   };
 }
 
@@ -84,6 +84,6 @@ export function checkOversizedRaster(node: SceneNode): Issue | null {
     title: "큰 Raster 이미지",
     description: `"${node.name}"이 ${Math.round(w)}×${Math.round(h)}px의 큰 raster입니다. 코드에선 <img>로 뽑히므로 export 설정(해상도, 포맷, alt)을 확인해주세요.`,
     severity: "info",
-    category: "style"
+    category: "style",
   };
 }

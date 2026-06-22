@@ -12,7 +12,7 @@ const SPACING_KEYS = [
   "paddingLeft",
   "paddingRight",
   "paddingTop",
-  "paddingBottom"
+  "paddingBottom",
 ] as const;
 
 export function checkSubpixelSpacing(node: SceneNode): Issue | null {
@@ -34,7 +34,7 @@ export function checkSubpixelSpacing(node: SceneNode): Issue | null {
     title: "서브픽셀 간격",
     description: `"${node.name}"의 padding/gap에 소수점 값이 있습니다(${fractional.length}개). 코드 변환 시 반올림되어 레이아웃이 어긋날 수 있습니다.`,
     severity: "info",
-    category: "hygiene"
+    category: "hygiene",
   };
 }
 
@@ -60,7 +60,7 @@ export function checkSubpixelPosition(node: SceneNode): Issue | null {
     title: "서브픽셀 위치",
     description: `"${node.name}"이 (${x.toFixed(2)}, ${y.toFixed(2)})에 배치되어 있습니다. 정수 좌표로 맞춰주세요.`,
     severity: "info",
-    category: "hygiene"
+    category: "hygiene",
   };
 }
 
@@ -70,7 +70,7 @@ const SIZE_EXEMPT_TYPES: ReadonlyArray<SceneNode["type"]> = [
   "BOOLEAN_OPERATION",
   "STAR",
   "POLYGON",
-  "LINE"
+  "LINE",
 ];
 
 export function checkSubpixelSize(node: SceneNode): Issue | null {
@@ -88,6 +88,6 @@ export function checkSubpixelSize(node: SceneNode): Issue | null {
     title: "서브픽셀 크기",
     description: `"${node.name}"의 크기가 ${w.toFixed(2)} × ${h.toFixed(2)}입니다. 정수 픽셀로 맞춰주세요.`,
     severity: "info",
-    category: "hygiene"
+    category: "hygiene",
   };
 }

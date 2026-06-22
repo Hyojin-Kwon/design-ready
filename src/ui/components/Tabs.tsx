@@ -1,3 +1,5 @@
+import type { ComponentChildren } from "preact";
+
 interface Tab {
   id: string;
   label: string;
@@ -7,9 +9,10 @@ interface Props {
   tabs: Tab[];
   active: string;
   onChange: (id: string) => void;
+  rightSlot?: ComponentChildren;
 }
 
-export function Tabs({ tabs, active, onChange }: Props) {
+export function Tabs({ tabs, active, onChange, rightSlot }: Props) {
   return (
     <nav class="tabs">
       {tabs.map((tab) => (
@@ -21,6 +24,7 @@ export function Tabs({ tabs, active, onChange }: Props) {
           {tab.label}
         </button>
       ))}
+      {rightSlot}
     </nav>
   );
 }

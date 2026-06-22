@@ -3,14 +3,14 @@ import { findExactLdsMatch } from "../ai/ldsMatch";
 import {
   hasComponentNamedAncestor,
   isDefaultName,
-  looksLikeComponentNaming
+  looksLikeComponentNaming,
 } from "../rules/namingRules";
 import {
   approxEqual,
   isComponentInternal,
   isInsideHidden,
   isSameSizeAsParent,
-  walk
+  walk,
 } from "../utils/nodeTraversal";
 
 interface Suggestion {
@@ -48,12 +48,12 @@ async function suggestFromInstance(node: SceneNode): Promise<Suggestion | null> 
   if (text) {
     return {
       name: `${main.name} / ${text}`,
-      reason: `메인 컴포넌트 "${main.name}" + 텍스트 "${text}"`
+      reason: `메인 컴포넌트 "${main.name}" + 텍스트 "${text}"`,
     };
   }
   return {
     name: main.name,
-    reason: `메인 컴포넌트 "${main.name}"과 일치`
+    reason: `메인 컴포넌트 "${main.name}"과 일치`,
   };
 }
 
@@ -108,15 +108,17 @@ function suggestFromTextContent(node: SceneNode): Suggestion | null {
   if (/^\d+\s*(min|mins|hr|hrs|h|d|day|days)\s*ago$/i.test(t))
     return { name: "RelativeTime", reason: "상대 시간" };
   if (/^\d+%$/.test(t)) return { name: "Percentage", reason: "퍼센트" };
-  if (/^[¥$€£₩]\s*[\d,]+(\.\d+)?$/.test(t) || /^[\d,]+(\.\d+)?\s*(원|달러|엔|USD|KRW|JPY)$/i.test(t))
+  if (
+    /^[¥$€£₩]\s*[\d,]+(\.\d+)?$/.test(t) ||
+    /^[\d,]+(\.\d+)?\s*(원|달러|엔|USD|KRW|JPY)$/i.test(t)
+  )
     return { name: "Price", reason: "가격 표기" };
   if (/^\+?\d{1,4}$/.test(t)) return { name: "Counter", reason: "숫자 카운터" };
   if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(t)) return { name: "Email", reason: "이메일" };
   if (/^https?:\/\//i.test(t)) return { name: "Url", reason: "URL" };
   if (/^[+]?[\d\s()-]{7,20}$/.test(t) && /\d{3,}/.test(t) && !/^[\d,]+$/.test(t))
     return { name: "PhoneNumber", reason: "전화번호" };
-  if (/^[^A-Za-z0-9]?\d+(\.\d+)?[^A-Za-z0-9]?$/.test(t) && t.length <= 4)
-    return null;
+  if (/^[^A-Za-z0-9]?\d+(\.\d+)?[^A-Za-z0-9]?$/.test(t) && t.length <= 4) return null;
 
   return null;
 }
@@ -141,10 +143,13 @@ async function suggestFromAutoLayout(node: SceneNode): Promise<Suggestion | null
       if (frame.layoutMode === "HORIZONTAL") {
         return {
           name: kids.length >= 3 ? "TabBar" : "ButtonGroup",
-          reason: `horizontal 오토레이아웃 + 동일 인스턴스 ${kids.length}개`
+          reason: `horizontal 오토레이아웃 + 동일 인스턴스 ${kids.length}개`,
         };
       }
-      return { name: "ButtonList", reason: `vertical 오토레이아웃 + 동일 인스턴스 ${kids.length}개` };
+      return {
+        name: "ButtonList",
+        reason: `vertical 오토레이아웃 + 동일 인스턴스 ${kids.length}개`,
+      };
     }
   }
 
@@ -246,7 +251,7 @@ const RULES: Array<(node: SceneNode) => Promise<Suggestion | null> | Suggestion 
   suggestHeader,
   suggestBottomNavigation,
   suggestTitle,
-  suggestCaption
+  suggestCaption,
 ];
 
 const GENERIC_PARENT_NAMES = new Set([
@@ -256,7 +261,7 @@ const GENERIC_PARENT_NAMES = new Set([
   "Content",
   "Wrapper",
   "Group",
-  "Frame"
+  "Frame",
 ]);
 
 function isInheritableParent(name: string): boolean {
@@ -284,17 +289,14 @@ function getSemanticParentPrefix(node: SceneNode): string | null {
   return null;
 }
 
-function applyContextInheritance(
-  node: SceneNode,
-  suggestion: Suggestion
-): Suggestion {
+function applyContextInheritance(node: SceneNode, suggestion: Suggestion): Suggestion {
   if (suggestion.name.includes("/")) return suggestion;
   const prefix = getSemanticParentPrefix(node);
   if (!prefix) return suggestion;
   if (prefix === suggestion.name) return suggestion;
   return {
     name: `${prefix}/${suggestion.name}`,
-    reason: `${suggestion.reason} · 부모 "${prefix}" 계승`
+    reason: `${suggestion.reason} · 부모 "${prefix}" 계승`,
   };
 }
 
@@ -328,7 +330,7 @@ export async function proposeSemanticNames(root: BaseNode): Promise<NamingSugges
             nodeType: node.type,
             currentName: node.name,
             suggestedName: inherited.name,
-            reason: inherited.reason
+            reason: inherited.reason,
           });
           break;
         }
@@ -348,7 +350,7 @@ export async function proposeSemanticNames(root: BaseNode): Promise<NamingSugges
           currentName: node.name,
           suggestedName: match.match,
           reason: `디태치 의심 → LDS 정확 일치 "${match.match}"`,
-          ldsComponentKey: match.key ?? undefined
+          ldsComponentKey: match.key ?? undefined,
         });
       }
     }
@@ -373,7 +375,7 @@ function dedupeSiblings(suggestions: NamingSuggestion[]): NamingSuggestion[] {
       result.push({
         ...s,
         suggestedName: `${name}${idx + 1}`,
-        reason: `${s.reason} · 형제 중복으로 번호 부여`
+        reason: `${s.reason} · 형제 중복으로 번호 부여`,
       });
     });
   }

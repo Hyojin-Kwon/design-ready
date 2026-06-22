@@ -67,7 +67,6 @@ const Ico = ({ id, style }: { id: string; style?: React.CSSProperties }) => (
 
 /* ── Reusable pieces ─────────────────────────────────────────────────── */
 
-
 const SectionHeader = ({ title }: { title: string }) => (
   <>
     <div style={{ height: 8, background: "#FFFFFF" }} />
@@ -81,9 +80,7 @@ const SectionHeader = ({ title }: { title: string }) => (
         paddingBottom: 7,
       }}
     >
-      <span style={{ fontSize: 11, fontWeight: fw.Medium, color: "#555555" }}>
-        {title}
-      </span>
+      <span style={{ fontSize: 11, fontWeight: fw.Medium, color: "#555555" }}>{title}</span>
     </div>
   </>
 );
@@ -97,14 +94,7 @@ interface RowProps {
   rowHeight?: number;
 }
 
-const Row = ({
-  iconId,
-  label,
-  labelColor = "#000000",
-  value,
-  isNew,
-  rowHeight = 50,
-}: RowProps) => (
+const Row = ({ iconId, label, labelColor = "#000000", value, isNew, rowHeight = 50 }: RowProps) => (
   <div
     style={{
       height: rowHeight,
@@ -131,7 +121,9 @@ const Row = ({
 
     {/* Label + optional "New" badge */}
     <div style={{ display: "flex", alignItems: "center", flex: 1, marginLeft: 13 }}>
-      <span style={{ fontSize: 14, fontWeight: fw.SemiBold, color: labelColor, lineHeight: "21px" }}>
+      <span
+        style={{ fontSize: 14, fontWeight: fw.SemiBold, color: labelColor, lineHeight: "21px" }}
+      >
         {label}
       </span>
       {isNew && (
@@ -275,7 +267,16 @@ export default function Setting() {
         <div style={{ height: 2, background: "#FFFFFF" }} />
 
         {/* ── Search bar — ChatTab style ───────────────────────── */}
-        <div style={{ height: 50, background: "#FFFFFF", display: "flex", alignItems: "center", paddingLeft: 16, paddingRight: 16 }}>
+        <div
+          style={{
+            height: 50,
+            background: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            paddingLeft: 16,
+            paddingRight: 16,
+          }}
+        >
           <div
             style={{
               flex: 1,
@@ -291,7 +292,9 @@ export default function Setting() {
             }}
           >
             <Ico id="SEARCH_SM" />
-            <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>Search</span>
+            <span style={{ flex: 1, fontSize: 14, fontWeight: fw.Medium, color: "#B7B7B7" }}>
+              Search
+            </span>
           </div>
         </div>
 
@@ -455,7 +458,6 @@ export default function Setting() {
         <Row iconId="PHOTO" label="写真と動画" labelColor="#111111" />
 
         <Row iconId="CHAT" label="トーク" labelColor="#111111" />
-
       </div>
 
       {/* ── Home Indicator (fixed at bottom) ───────────────────────── */}

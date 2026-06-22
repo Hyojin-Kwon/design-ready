@@ -3,13 +3,13 @@ import type { Category, CategoryScore, Issue, Severity } from "../types";
 const WEIGHTS: Record<Severity, number> = {
   critical: 2,
   warning: 0.8,
-  info: 0.25
+  info: 0.25,
 };
 
 const SEVERITY_RANK: Record<Severity, number> = {
   critical: 2,
   warning: 1,
-  info: 0
+  info: 0,
 };
 
 function worstSeverityPerNode(issues: Issue[]): Severity[] {
@@ -42,7 +42,7 @@ export function computeCategoryScores(totalNodes: number, issues: Issue[]): Cate
       category,
       passRate: Math.round(passRate * 100),
       issueCount: categoryIssues.length,
-      totalCount: totalNodes
+      totalCount: totalNodes,
     };
   });
 }
