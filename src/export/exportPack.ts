@@ -84,6 +84,9 @@ export async function buildExportPack(input: ExportPackInput): Promise<ExportPac
 
   zip.file("PROMPT.md", renderPromptMd(input, screenSlugs));
   zip.file("README.md", renderReadmeMd(input, screenSlugs));
+  // 에이전트(Codex 등)가 작업 폴더 루트에서 자동으로 읽는 정제 지침 + 확정 잠금 목록.
+  zip.file("AGENTS.md", AGENTS_MD);
+  zip.file("LOCKED.md", LOCKED_MD_TEMPLATE);
 
   if (input.ldsReference.trim()) {
     zip.file("lds.md", input.ldsReference.trim() + "\n");
@@ -270,8 +273,86 @@ function renderPromptMd(input: ExportPackInput, slugs: string[]): string {
   parts.push(input.systemPrompt.trim());
   parts.push("");
 
+  parts.push(HANDOFF_SECTION);
+  parts.push("");
+
   return parts.join("\n");
 }
+
+// 변환 완료 직후 AI가 자동으로 정제 루프를 여는 핸드오프. 시스템 프롬프트와 별개로
+// 항상 PROMPT.md에 붙어, 사용자가 시스템 프롬프트를 덮어써도 유지된다.
+const HANDOFF_SECTION = `## 변환 완료 후 — 정제 루프 (필수)
+
+변환을 모두 마치면, **추가 지시 없이** 마지막 턴을 정확히 아래 메시지로 끝맺으세요. ("설명/마크다운 없이 .tsx만 출력" 규칙의 유일한 예외입니다.)
+
+> 변환을 완료했습니다. 렌더 결과를 확인해 주세요. **디자인과 다른 섹션이 있으면, 그 섹션의 Figma 캡처를 주시면 캡처와 비교해서 그 부분만 정확히 맞추겠습니다.** (한 번에 한 섹션씩 진행합니다.)
+
+- 변환 직후에 스타일을 임의로 추측해 고치지 마세요. 사용자가 캡처로 틀린 섹션을 지목할 때까지 기다립니다.
+- 캡처를 받으면 그때부터 \`AGENTS.md\`의 정제 규칙을 따르세요: ① 캡처(정답)와 현재 렌더를 비교해 **다른 점만** 수정 → ② 반복은 데이터 배열로 → ③ 일치하면 \`LOCKED.md\`에 추가하고 다음 섹션. \`LOCKED.md\`에 이미 있는 섹션은 절대 수정하지 마세요.`;
+
+// 에이전트가 폴더 루트에서 자동으로 읽는 정제 루프 지침. 화면별 내용이 아니라
+// 모든 pack에 동일하게 적용되는 행동 규칙이므로 정적 상수로 동봉한다.
+const AGENTS_MD = `# AGENTS.md — 이 폴더에서 작업하는 에이전트(Codex 등) 지침
+
+이 폴더는 \`design-ready\` 플러그인이 만든 Figma → React 변환 팩입니다.
+**변환(생성)** 규칙은 \`PROMPT.md\`를 따르고, **변환 후 디자인과 맞춰가는 "정제"** 는 아래 규칙을 반드시 따르세요.
+
+---
+
+## 핵심 행동 규칙 (반드시 지킬 것)
+
+### 1. 한 섹션씩, 위에서 아래로
+- 한 번에 화면 전체를 고치지 마세요. 한 섹션(헤더 → 검색 → 배너 → 리스트 …)씩 처리합니다.
+- 사용자가 "전체 다 고쳐줘"라고 해도, 섹션 단위로 쪼개서 순서대로 진행하겠다고 먼저 제안하세요.
+
+### 2. 디자인 이미지와 비교해서 고친다 (추측 금지)
+- 코드만 보고 스타일을 바꾸지 마세요. **디자인 캡처(PNG)가 없으면 먼저 요청**하세요:
+  > "이 섹션의 Figma 화면 캡처를 주시면 그것과 비교해서 정확히 맞추겠습니다."
+- 캡처를 받으면: 정답 PNG ↔ 현재 렌더 결과를 비교 → **다른 점만** 골라 고칩니다. 비교 항목: 레이아웃·간격·색·폰트·정렬·요소 유무.
+
+### 3. 반복되는 마크업은 데이터로 분리
+- 같은 구조가 여러 번 복붙돼 있으면, 마크업 1벌 + 데이터 배열(\`.map()\`)로 정리하세요.
+- \`tree.json\`의 \`repeatCount: N\` 노드도 마찬가지로 처리합니다.
+
+### 4. 확정된 섹션은 절대 건드리지 않는다
+- 작업 시작 시 **\`LOCKED.md\`를 먼저 읽으세요.** 거기 적힌 섹션/컴포넌트는 수정 금지입니다.
+- 한 섹션이 디자인과 일치하면, 사용자에게 "이 섹션 확정할까요?"라고 물어 \`LOCKED.md\`에 추가하세요.
+- 잠긴 섹션을 바꿔야만 하는 상황이면, 고치기 전에 반드시 먼저 사용자에게 알리고 확인받으세요.
+
+---
+
+## 수정 후 검증 방법 (스스로 확인할 것)
+
+- 생성한 \`.tsx\`를 실제로 렌더해서(미니 프리뷰/개발 서버) 디자인 캡처와 비교하세요. "맞을 것 같다"로 끝내지 말 것.
+- **색상은 스크린샷으로 단정하지 말고** 계산된 CSS 값(토큰)으로 확인하세요.
+
+---
+
+## 한계 (알고 있을 것)
+
+- 실제 **사진/아이콘 이미지**는 채울 수 없습니다(원본 에셋이 placeholder). 비교·수정은 **구조(레이아웃·간격·색·폰트·정렬)** 에 집중하고, 이미지 자리는 placeholder로 둡니다.
+- 토큰은 \`foundation/\`의 CSS 변수를 사용하고, 순수 기하(px)는 토큰화하지 마세요.
+
+---
+
+## 요약
+
+> **디자인 이미지를 보여달라 → 한 섹션씩 비교해서 다른 점만 고친다 → 반복은 데이터로 → 일치하면 LOCKED.md에 잠그고 다음 섹션.**
+> "알아서 잘 만들기"가 아니라 "이 이미지와 똑같이 맞추기"가 목표입니다.
+`;
+
+// 확정(수정 금지) 섹션 목록. 빈 템플릿으로 시작하고, 정제 루프가 진행되며 항목이 채워진다.
+const LOCKED_MD_TEMPLATE = `# LOCKED — 수정 금지 (디자인 대조 통과한 섹션)
+
+디자인과 일치 확인이 끝난 섹션을 여기에 기록합니다. **에이전트는 이 목록의 항목을 수정하지 마세요.**
+변경이 꼭 필요하면 고치기 전에 사용자에게 먼저 확인받으세요.
+
+> 아직 확정된 섹션이 없습니다. 한 섹션이 디자인과 일치하면 아래 표에 추가하세요.
+
+| 섹션 | 위치 (파일 › 식별자) | 확정일 | 비고 |
+|---|---|---|---|
+| _(예: 상단 탭)_ | _(예: screens/foo/Foo.tsx › filterTabs)_ | _(YYYY-MM-DD)_ | _(데이터만 변경 허용 등)_ |
+`;
 
 function renderReadmeMd(input: ExportPackInput, slugs: string[]): string {
   const totalIcons = input.screens.reduce((acc, s) => acc + Object.keys(s.iconMap).length, 0);
@@ -291,7 +372,9 @@ function renderReadmeMd(input: ExportPackInput, slugs: string[]): string {
     "   > `PROMPT.md` 지침을 따라 `screens/` 아래 모든 화면을 React + TypeScript 컴포넌트로 변환해줘. 공용 컴포넌트는 `components/` 로 추출하고, `flow.md` 의 네비게이션을 react-router 로 연결해줘.",
     "",
     "## 파일 구성",
-    "- `PROMPT.md` — 시스템 프롬프트 + 변환 지침",
+    "- `PROMPT.md` — 시스템 프롬프트 + 변환 지침 (끝에 변환 완료 후 정제 루프 핸드오프 포함)",
+    "- `AGENTS.md` — 에이전트(Codex 등)가 자동으로 읽는 정제 루프 규칙",
+    "- `LOCKED.md` — 디자인 대조 통과한 '수정 금지' 섹션 목록 (정제하며 채워짐)",
     "- `README.md` — 이 파일",
     "- `icons/` — 추출된 아이콘 SVG + `_manifest.json` (화면별 localId → file 매핑)",
     "- `screens/<slug>/` — 화면별 메타/리포트" + (input.includeTreeJson ? "/트리" : ""),
