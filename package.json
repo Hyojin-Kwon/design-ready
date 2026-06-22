@@ -4,6 +4,8 @@
   "private": true,
   "description": "Figma plugin for file health check and semantic naming",
   "scripts": {
+    "clean": "rm -rf dist",
+    "prebuild": "rm -rf dist",
     "build": "node esbuild.config.mjs",
     "build:dev": "DESIGN_READY_DEV=true node esbuild.config.mjs",
     "watch": "DESIGN_READY_DEV=true node esbuild.config.mjs --watch",

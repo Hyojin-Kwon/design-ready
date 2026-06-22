@@ -6,9 +6,12 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const watch = process.argv.includes("--watch");
 
-// 워크트리에서 실행 중이면 메인 프로젝트 dist/로 자동 sync
+// 워크트리에서 빌드 시 메인 프로젝트 dist/로 자동 sync — 기본 OFF.
+// (과거 worktree 테스트 빌드가 메인 dist를 stale하게 덮어써 변환 회귀를 유발했음.
+//  명시적으로 DESIGN_READY_SYNC_MAIN=true 일 때만 동작하게 가드.)
+const syncMain = process.env.DESIGN_READY_SYNC_MAIN === "true";
 const worktreeMatch = __dirname.match(/^(.+)\/.claude\/worktrees\/[^/]+$/);
-const mainDistDir = worktreeMatch ? resolve(worktreeMatch[1], "dist") : null;
+const mainDistDir = syncMain && worktreeMatch ? resolve(worktreeMatch[1], "dist") : null;
 
 const outDir = resolve(__dirname, "dist");
 await mkdir(outDir, { recursive: true });
