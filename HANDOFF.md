@@ -31,10 +31,20 @@ Figma: Plugins → Development → Import plugin from manifest → 이 폴더의
 - 남은 worktree 없음(`git worktree list`로 확인 — `youthful-joliot`는 이미 정리됨).
 
 **3. 정상 확인되면 prod 재배포 — ⏳ 사람 필요**
-- `npm run build`(이제 prebuild가 dist 자동 clean) → Figma 데스크탑에서 **Publish**(사람이 직접; CLI 불가).
-- 게시 직전 30초 검증: `grep -c "TOKEN REPORT" dist/ui.html`(=0), `grep -ic "render the component inline" dist/ui.html`(=1).
 
-**4. PR #1 머지** (검증·배포 끝나면) — base `main`, MERGEABLE. 가드 커밋 push 완료.
+> ⚠️ **퍼블리시 전 필수 체크리스트 (순서 지킬 것)** — 빌드 가드(prebuild clean)로도 안 막히는 "빌드 시점" 문제. 6/22에 기능 커밋(`38f9a75` AGENTS/LOCKED/정제루프)이 머지되기 *전에* 뜬 빌드를 퍼블리시해 정제-루프 안내가 누락된 사고 있었음.
+>
+> 1. **모든 PR/커밋 머지 완료**부터 확인 → `git fetch && git log origin/main --oneline -1`
+> 2. 작업 브랜치를 main 최신과 동기화(또는 main 체크아웃)해서 **배포하려는 코드가 HEAD에 다 있는지** 확인
+> 3. **그 다음에** `npm run build` (prebuild가 dist 자동 clean)
+> 4. 게시 직전 30초 검증 (아래) → 통과하면 Figma 데스크탑에서 **Publish**(사람이 직접; CLI 불가)
+
+- 게시 직전 검증: `grep -c "TOKEN REPORT" dist/ui.html`(=0), `grep -ic "render the component inline" dist/ui.html`(=1).
+- export pack 기능 검증(한글은 esbuild charset=ascii로 `\uXXXX` 이스케이프되니 **디코드 후** 검사):
+  `node -e 'const h=require("fs").readFileSync("dist/ui.html","utf8").replace(/\\u([0-9a-fA-F]{4})/g,(_,c)=>String.fromCharCode(parseInt(c,16))); console.log("정제루프:",h.includes("정제 루프 (필수)"),"AGENTS:",h.includes("AGENTS.md — 이 폴더에서 작업하는"))'`
+
+**4. PR 머지 — ✅ 완료**
+- PR #1(빌드 가드+회귀 fix), PR #2(`38f9a75` exportPack 정제루프/AGENTS/LOCKED) 모두 main 머지됨. 정식 브랜치 보존.
 
 ## 현재 상태 (v0.2.0, 커밋 e576eaf)
 
